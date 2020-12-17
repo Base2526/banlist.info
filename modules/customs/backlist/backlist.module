@@ -1,0 +1,51 @@
+<?php
+
+/**
+ * @file
+ * This module holds functions useful for Drupal development.
+ *
+ * Please contribute!
+ *
+ * Devel is allowed to use its own functions kpr(), dpm() and dpq() so disable
+ * the coding standard which gives warnings for using these.
+ * phpcs:disable Drupal.Functions.DiscouragedFunctions
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Url;
+
+/**
+ * Implements hook_help().
+ */
+function backlist_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    case 'help.page.backlist':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('The Devel module provides a suite of modules containing fun for module developers and themers. For more information, see the <a href=":url">online documentation for the Devel module</a>.', [':url' => 'https://www.drupal.org/docs/8/modules/devel']) . '</p>';
+      $output .= '<h3>' . t('Uses') . '</h3>';
+      $output .= '<dl>';
+      $output .= '<dt>' . t('Inspecting Service Container') . '</dt>';
+      $output .= '<dd>' . t('The module allows you to inspect Services and Parameters registered in the Service Container. You can see those informations on <a href=":url">Container info</a> page.', [':url' => Url::fromRoute('devel.container_info.service')->toString()]) . '</dd>';
+      $output .= '<dt>' . t('Inspecting Routes') . '</dt>';
+      $output .= '<dd>' . t('The module allows you to inspect routes information, gathering all routing data from <em>.routing.yml</em> files and from classes which subscribe to the route build/alter events. You can see those informations on <a href=":url">Routes info</a> page.', [':url' => Url::fromRoute('devel.route_info')->toString()]) . '</dd>';
+      $output .= '<dt>' . t('Inspecting Events') . '</dt>';
+      $output .= '<dd>' . t('The module allow you to inspect listeners registered in the event dispatcher. You can see those informations on <a href=":url">Events info</a> page.', [':url' => Url::fromRoute('devel.event_info')->toString()]) . '</dd>';
+      $output .= '</dl>';
+      return $output;
+  }
+}
+
+/*
+ * Implements hook_theme()
+*/
+function backlist_theme($existing, $type, $theme, $path) {  
+  return array(
+    'front-page' => array(
+      'variables' => array(
+        'backlists' => array(),
+        'current_user_id'=> 0
+      ),
+    ),   
+  );
+}

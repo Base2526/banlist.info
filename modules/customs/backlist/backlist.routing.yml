@@ -1,0 +1,14 @@
+frontpage:
+  path: '/frontpage'
+  defaults:
+    _controller: '\Drupal\backlist\Plugin\Page\FrontPage::page'
+  requirements:
+    _access: 'TRUE'
+
+login_form.form:
+  path: '/customer/account/login'
+  # path: '/printing_view_form/create/{nid}'
+  defaults:
+    _form: '\Drupal\backlist\Form\LoginForm'
+  requirements:
+    _access: 'TRUE'
