@@ -2,6 +2,7 @@ frontpage:
   path: '/frontpage'
   defaults:
     _controller: '\Drupal\backlist\Plugin\Page\FrontPage::page'
+    # _form: '\Drupal\backlist\Form\SearchForm'
   requirements:
     _access: 'TRUE'
 
@@ -12,3 +13,19 @@ login_form.form:
     _form: '\Drupal\backlist\Form\LoginForm'
   requirements:
     _access: 'TRUE'
+
+search_form.form:
+  path: '/search_form'
+  # path: '/printing_view_form/create/{nid}'
+  defaults:
+    _form: '\Drupal\backlist\Form\SearchForm'
+  requirements:
+    _access: 'TRUE'
+
+backlist.autocomplete.fname:
+  path: '/admin/backlist/autocomplete/fname'
+  defaults:
+    _controller: '\Drupal\backlist\Controller\BacklistAutoCompleteController::handleAutocomplete'
+    _format: json
+  requirements:
+    _permission: 'access content'

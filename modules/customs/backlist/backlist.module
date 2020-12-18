@@ -12,6 +12,7 @@
  */
 
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 
 /**
@@ -47,5 +48,84 @@ function backlist_theme($existing, $type, $theme, $path) {
         'current_user_id'=> 0
       ),
     ),   
+    'footer-backlist-block'=> array(
+      'variables' => array(),
+    ),   
   );
+}
+
+/**
+ * Implement hook_form_alter()
+ * add js to form
+ * 
+ * https://www.drupal.org/forum/support/module-development-and-code-questions/2019-03-26/hook_form_alter-custom-submit-handler
+ * 
+*/
+// array &$form, FormStateInterface $form_state
+function backlist_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  // dpm( $form_id );
+  $form['revision_information']['#access'] = false;
+}
+
+/**
+ * @file
+ * Contains dn_students.module.
+ */
+ 
+function get_students($opt,$fname,$marks) {
+  /*
+	$res = array();
+  if($opt == "All"){	
+    $results = db_select('students', 'st')
+    ->extend('\Drupal\Core\Database\Query\PagerSelectExtender')
+    ->limit(15);
+    $results->fields('st');
+    $results->orderBy('st.id','DESC');
+    $res = $results->execute()->fetchAll();
+    $ret = [];
+  }else{
+    $results = db_select('students', 'st')
+    ->extend('\Drupal\Core\Database\Query\PagerSelectExtender')
+    ->limit(15);
+    $results->fields('st');
+    $results->orderBy('st.id','DESC');
+    $results->condition('fname', $fname);
+    $results->condition('marks', $marks);
+    $res = $results->execute()->fetchAll();
+    $ret = [];
+  }
+  foreach ($res as $row) {
+
+    $delete = Url::fromUserInput('/admin/structure/dn_students/students/delete/' . $row->id, array('attributes' => array('onclick' => "return confirm('Are you Sure')")));
+    $edit = Url::fromUserInput('/admin/structure/dn_students/students/edit/' . $row->id);
+    $edit_link = \Drupal::l('edit', $edit);
+    $delete_link = \Drupal::l('delete', $delete);
+
+    $mainLink = t('@linkApprove  @linkReject', array('@linkApprove' => $edit_link, '@linkReject' => $delete_link));
+    
+    $ret[] = [
+      'id' => $row->id,
+      'fname' => $row->fname,
+      'sname' => $row->sname,
+      'age' => $row->age,
+      'marks' => $row->marks,
+      'opt' => $mainLink,
+    ];
+  }
+
+  */
+
+  $ret = array();
+  for($i = 0; $i< 50; $i++ ){
+    $ret[] = [
+      'id' => '$row->id ' . $i,
+      'fname' => '$row->fname ' . $i,
+      'sname' => '$row->sname ' . $i,
+      'age' => '$row->age ' . $i,
+      'marks' => '$row->marks ' . $i,
+      'opt' => '$mainLink ' . $i,
+    ];
+  }
+
+  return $ret;
 }
