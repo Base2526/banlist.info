@@ -40,11 +40,14 @@ class BacklistAutoCompleteController extends ControllerBase {
   }
 
   /**
-   * Handler for autocomplete request.
+   * Handler for autocomplete Sales Person Name request.
    */
   public function handleAutocomplete(Request $request) {
     $results = [];
     $input = $request->query->get('q');
+    $vid   = $request->query->get('vid');
+
+    \Drupal::logger('handleAutocomplete')->error($vid);
 
     // Get the typed string from the URL, if it exists.
     if (!$input) {
@@ -89,4 +92,5 @@ class BacklistAutoCompleteController extends ControllerBase {
 
     return new JsonResponse($results);
   }
+
 }

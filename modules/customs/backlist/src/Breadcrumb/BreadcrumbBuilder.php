@@ -94,7 +94,7 @@ class BreadcrumbBuilder implements BreadcrumbBuilderInterface {
             }
             
             case 'frontpage':{
-                dpm('Breadcrumb : frontpage');
+                // dpm('Breadcrumb : frontpage');
                 break;
             }
             /*

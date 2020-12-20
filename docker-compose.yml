@@ -15,6 +15,7 @@ services:
     volumes:
       - ./modules:/opt/drupal/web/sites/default/modules
       - ./settings.php:/opt/drupal/web/sites/default/settings.php
+      - ./services.yml:/opt/drupal/web/sites/default/services.yml
     #   - ./drupal8/modules:/var/www/html/sites/default/modules
     #   - ./drupal8/themes:/var/www/html/sites/default/themes
     #   - ./drupal8/info.php:/var/www/html/info.php

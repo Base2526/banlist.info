@@ -52,6 +52,8 @@ class FrontPage extends ControllerBase {
 
     */
 
+    $limit = 30;
+
     //====load filter controller
 	  $form['form'] = $this->formBuilder()->getForm('Drupal\backlist\Form\SearchForm');
  
@@ -59,21 +61,20 @@ class FrontPage extends ControllerBase {
     //Get parameter value while submitting filter form  
     $fname = \Drupal::request()->query->get('fname');
     $marks = \Drupal::request()->query->get('marks');
+    $current_page = empty(\Drupal::request()->query->get('page')) ? 0 : \Drupal::request()->query->get('page') ;
 
     // dpm( $fname );
     // dpm( $marks );
+    // dpm( $current_page );
 
     // Create table header.
     $header = [
-      // 'id' => $this->t('Id'),
-      'fname' => $this->t('First Name'),
-      'product_type'=>$this->t('Product Type'),
-      'tel' => $this->t('Tel'),
-      'bank_card_number' => $this->t('Bank card number'),
-      'sname' => $this->t('Detail'),
-      'balance'=> $this->t('Balance'),
+      'sales_person_name' => $this->t('Sales person name'), // ชื่อบัญชีผู้รับเงินโอน
+      'product_type'=>$this->t('Product type'),             // สินค้า/ประเภท
+      'transfer_amount' => $this->t('Transfer amount'),     // ยอดเงิน
+      // 'detail' => $this->t('Detail'),
       'date_post'=> $this->t('Date post'),	  
-      // 'opt' =>$this->t('Operations')
+      'reportor' =>$this->t('Reportor')
     ];
 
     $storage = \Drupal::entityTypeManager()->getStorage('node');
@@ -83,35 +84,42 @@ class FrontPage extends ControllerBase {
     $query->condition('status', 1);
     $query->sort('changed' , 'DESC');
     $query->tableSort($header);
-    // Default value is 10.
-    $query->pager(15);
-    $nids = $query->execute();
 
+    $all_nids = $query->execute();
+    // Default value is 10.
+    $query->pager($limit);
+
+    // $all_nids = $query->execute();
+    $nids = $query->execute();
+    
     $date_formatter = \Drupal::service('date.formatter');
     $rows = [];
     foreach ($storage->loadMultiple($nids) as $node) {
       $row = [];
       // $row[] = $node->id();
-      $row[] = $node->toLink();
 
-      $row[] = '0988264820';
-      $row[] = 'xxxxxxxxxx';
-      $row[] = 'ดูรายละเอียด';//Utils::truncate($node->get('body')->value, 200);
+      // $node->toLink();
+      // dpm( $node->get('field_sales_person_name')->getValue() );
+      $row[] = Utils::truncate($node->get('field_sales_person_name')->getValue()[0]['value'], 50);
 
-      // image
-      $row[] = [
-        'data' => [
-          '#theme' => 'image',
-          // '#text' => $date_formatter->format($created),
-          // '#attributes' => [
-          //   'datetime' => $date_formatter->format($created, 'custom', \DateTime::RFC3339),
-          // ],
-          '#uri' => 'https://www.drupal.org/files/styles/drupalorg_user_picture/public/user-pictures/picture-324696-1401239339.png?itok=LMwPjqdb',
-          // '#alt' => $title,
-          // '#title' => $title,
-          '#width' => '80px',
-        ],
-      ];
+      $row[] = $node->label();
+      $row[] = $node->get('field_transfer_amount')->getValue()[0]['value'];
+      // $row[] = 'ดูรายละเอียด';//Utils::truncate($node->get('body')->value, 200);
+
+      // // image
+      // $row[] = [
+      //   'data' => [
+      //     '#theme' => 'image',
+      //     // '#text' => $date_formatter->format($created),
+      //     // '#attributes' => [
+      //     //   'datetime' => $date_formatter->format($created, 'custom', \DateTime::RFC3339),
+      //     // ],
+      //     '#uri' => 'https://www.drupal.org/files/styles/drupalorg_user_picture/public/user-pictures/picture-324696-1401239339.png?itok=LMwPjqdb',
+      //     // '#alt' => $title,
+      //     // '#title' => $title,
+      //     '#width' => '80px',
+      //   ],
+      // ];
 
       $created = $node->get('created')->value;
       $row[] = [
@@ -123,9 +131,9 @@ class FrontPage extends ControllerBase {
           ],
         ],
       ];
-      // $row[] = [
-      //   'data' => $node->get('uid')->view(),
-      // ];
+      $row[] = [
+        'data' => $node->get('uid')->view(),
+      ];
       // $row[] = theme('image', array('path' => 'https://www.drupal.org/files/styles/drupalorg_user_picture/public/user-pictures/picture-324696-1401239339.png?itok=LMwPjqdb'));
       // $rows[] = array('<img src="https://www.drupal.org/files/styles/drupalorg_user_picture/public/user-pictures/picture-324696-1401239339.png?itok=LMwPjqdb" alt="photo" style="width:100px;height:300px">');
       
@@ -154,6 +162,14 @@ class FrontPage extends ControllerBase {
     $form['pager'] = [
       '#type' => 'pager'
     ];
+
+    $form['count'] = array(
+      '#markup' => t('Displaying %start - %end of %all', array('%start'=>($current_page * $limit + 1), 
+                                                               '%end'=>(($current_page * $limit) + $limit),
+                                                               '%all'=>count($all_nids))),
+      '#weight' => 100000,
+    );
+   
     return $form;
   }
 }

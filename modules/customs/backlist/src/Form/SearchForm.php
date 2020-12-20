@@ -35,20 +35,36 @@ class SearchForm extends FormBase {
         // dpm(urlencode("https://geeksforgeeks.org/"));
 
         $form['filters'] = [
-            '#type'  => 'fieldset',
-            '#title' => $this->t('Filter'),
+            '#type' => 'details',
+            '#title' => $this->t('Filters'),
             '#open'  => true,
         ];
      
-        $form['filters']['fname'] = [
-            '#title'         => 'First Name',
-            '#type' => 'textfield',
-            '#autocomplete_route_name' => 'backlist.autocomplete.fname',
+        $form['filters']['sales_person_name'] = [
+            '#title'    => $this->t('Sales person name'),
+            '#type'     => 'textfield',
+            '#autocomplete_route_name' => 'backlist.autocomplete',
+            '#autocomplete_route_parameters' => ['vid' => 'sales_person_name'],
         ];
-        $form['filters']['marks'] = [
-            '#title'         => 'Marks',
-            '#type'          => 'search'
+
+        $form['filters']['product_type'] = [
+            '#title'    => $this->t('Product type'),
+            '#type'     => 'textfield',
+            '#autocomplete_route_name' => 'backlist.autocomplete',
+            '#autocomplete_route_parameters' => ['vid' => 'product_type'],
         ];
+
+        $form['filters']['reportor'] = [
+            '#title'    => $this->t('Reportor'),
+            '#type'     => 'textfield',
+            '#autocomplete_route_name' => 'backlist.autocomplete',
+            '#autocomplete_route_parameters' => ['vid' => 'reportor'],
+        ];
+
+        // $form['filters']['marks'] = [
+        //     '#title'         => 'Marks',
+        //     '#type'          => 'search'
+        // ];
         
         $form['filters']['actions'] = [
             '#type'       => 'actions'

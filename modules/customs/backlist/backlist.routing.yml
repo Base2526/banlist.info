@@ -6,7 +6,7 @@ frontpage:
   requirements:
     _access: 'TRUE'
 
-login_form.form:
+login.form:
   path: '/customer/account/login'
   # path: '/printing_view_form/create/{nid}'
   defaults:
@@ -14,7 +14,7 @@ login_form.form:
   requirements:
     _access: 'TRUE'
 
-search_form.form:
+search.form:
   path: '/search_form'
   # path: '/printing_view_form/create/{nid}'
   defaults:
@@ -22,8 +22,16 @@ search_form.form:
   requirements:
     _access: 'TRUE'
 
-backlist.autocomplete.fname:
-  path: '/admin/backlist/autocomplete/fname'
+my_profile.form:
+  path: '/my_profile/{uid}/{mode}'
+  # path: '/printing_view_form/create/{nid}'
+  defaults:
+    _form: '\Drupal\backlist\Form\MyProfileForm'
+  requirements:
+    _access: 'TRUE'
+
+backlist.autocomplete:
+  path: '/admin/backlist/autocomplete'
   defaults:
     _controller: '\Drupal\backlist\Controller\BacklistAutoCompleteController::handleAutocomplete'
     _format: json
