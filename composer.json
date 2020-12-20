@@ -16,11 +16,12 @@
     ],
     "require": {
         "composer/installers": "^1.9",
+        "doctrine/common": "^2.7",
         "drupal/core-composer-scaffold": "^9",
         "drupal/core-project-message": "^9",
         "drupal/core-recommended": "^9",
-        "symfony/var-dumper": "^4 || ^5",
-        "doctrine/common": "^2.7"
+        "facebook/graph-sdk": "^5.7",
+        "symfony/var-dumper": "^4 || ^5"
     },
     "conflict": {
         "drupal/drupal": "*"
