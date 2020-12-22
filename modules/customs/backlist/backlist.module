@@ -66,7 +66,40 @@ function backlist_theme($existing, $type, $theme, $path) {
 function backlist_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   // dpm( $form_id );
   $form['revision_information']['#access'] = false;
+
+  if($form_id == 'user_login_form'){
+    $form['register'] = [
+      '#type' => 'link',
+      '#title' => t('Register'),
+      // Example of a Url object from a route. See the documentation
+      // for more methods that may help generate a Url object.
+      '#url' => Url::fromRoute('user.register'),
+      '#weight' => 1000,
+    ];
+
+    $form['help'] = [
+      '#type' => 'item',
+      '#title' => t('  '),
+      // '#markup' => t('  '),
+      '#weight' => 1000,
+    ];
+
+    $form['login_with_facebook'] = [
+      '#type' => 'link',
+      '#title' => t('Login with facebook'),
+      // Example of a Url object from a route. See the documentation
+      // for more methods that may help generate a Url object.
+      '#url' => Url::fromRoute('user.register'),
+      '#weight' => 1000,
+    ];
+  }
 }
+
+// function  MODULE_user_login_foo_submit($form, &$form_state) {
+//   // drupal_goto('/path/to/request.php', array('external' => TRUE));
+//   $url = Url::fromRoute('<front>');
+//   $form_state->setRedirectUrl($url); 
+// }
 
 /**
  * @file

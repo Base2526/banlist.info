@@ -9,7 +9,7 @@ services:
       - 80:80
     environment:
       - DB_HOST=postgres
-      - DB_NAME=backlist
+      - DB_NAME=banlist
       - DB_USER_NAME=postgres
       - DB_PASSWORD=postgres
     volumes:
@@ -46,15 +46,15 @@ services:
   #     - ./nodejs:/usr/src/app
   postgres:
     image: postgres:10
-    container_name: pg_backlist
+    container_name: pg_banlist
     environment:
-      POSTGRES_DB: backlist
+      POSTGRES_DB: banlist
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     restart: always
   pgadmin:
-    image: dpage/pgadmin4:3.3
-    container_name: pgadmin_backlist
+    image: dpage/pgadmin4:3.6
+    container_name: pgadmin_banlist
     ports:
       - 7777:80
     volumes:

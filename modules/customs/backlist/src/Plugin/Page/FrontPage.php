@@ -69,8 +69,8 @@ class FrontPage extends ControllerBase {
 
     // Create table header.
     $header = [
-      'sales_person_name' => $this->t('Sales person name'), // ชื่อบัญชีผู้รับเงินโอน
       'product_type'=>$this->t('Product type'),             // สินค้า/ประเภท
+      'sales_person_name' => $this->t('Sales person name'), // ชื่อบัญชีผู้รับเงินโอน
       'transfer_amount' => $this->t('Transfer amount'),     // ยอดเงิน
       // 'detail' => $this->t('Detail'),
       'date_post'=> $this->t('Date post'),	  
@@ -98,13 +98,15 @@ class FrontPage extends ControllerBase {
       $row = [];
       // $row[] = $node->id();
 
-      // $node->toLink();
+    
+      $row[] = $node->toLink();
       // dpm( $node->get('field_sales_person_name')->getValue() );
       $row[] = Utils::truncate($node->get('field_sales_person_name')->getValue()[0]['value'], 50);
 
-      $row[] = $node->label();
+      // $row[] = $node->label();
       $row[] = $node->get('field_transfer_amount')->getValue()[0]['value'];
       // $row[] = 'ดูรายละเอียด';//Utils::truncate($node->get('body')->value, 200);
+
 
       // // image
       // $row[] = [
