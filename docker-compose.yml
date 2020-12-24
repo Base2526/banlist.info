@@ -13,6 +13,8 @@ services:
       - DB_USER_NAME=postgres
       - DB_PASSWORD=postgres
     volumes:
+      # /opt/drupal/web/core/themes/bartik/templates/
+      # /opt/drupal/web/core/themes/bartik/templates/classy/field
       - ./modules:/opt/drupal/web/sites/default/modules
       - ./settings.php:/opt/drupal/web/sites/default/settings.php
       - ./services.yml:/opt/drupal/web/sites/default/services.yml
@@ -30,6 +32,9 @@ services:
       - ./vendor:/opt/drupal/vendor
       - ./composer.json:/opt/drupal/composer.json
       - ./composer.lock:/opt/drupal/composer.lock
+    # custom theme
+      - ./web/core/themes/bartik/templates/node--back-list.html.twig:/opt/drupal/web/core/themes/bartik/templates/node--back-list.html.twig
+      - ./web/core/themes/bartik/templates/classy/field/field--node--field-images--back-list.html.twig:/opt/drupal/web/core/themes/bartik/templates/classy/field/field--node--field-images--back-list.html.twig
     restart: always
   # backend:
   #   build: './nodejs'

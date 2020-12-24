@@ -13,7 +13,8 @@ use Drupal\node\Entity\Node;
 use Drupal\file\Entity\File;
 use Drupal\Core\Url;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-// use Drupal\paragraphs\Entity\Paragraph;
+use Drupal\Core\Ajax\AjaxResponse;
+use Drupal\Core\Ajax\RedirectCommand;
 
 class SearchForm extends FormBase {
 
@@ -28,30 +29,41 @@ class SearchForm extends FormBase {
      * {@inheritdoc}.
      */
     public function buildForm(array $form, FormStateInterface $form_state) {
-        // $route_match = \Drupal::service('current_route_match');
+        $route_match = \Drupal::service('current_route_match');
         // $keys = $route_match->getParameter('keys');
         // dpm($keys);
 
         // dpm(urlencode("https://geeksforgeeks.org/"));
 
+        $product_type       = \Drupal::request()->query->get('product_type');
+        $sales_person_name  = \Drupal::request()->query->get('sales_person_name');
+        $reportor           = \Drupal::request()->query->get('reportor');
+
+        // dpm( $route_match  );
+        // dpm( $product_type );
+        // dpm( $sales_person_name );
+        // dpm( $reportor );
+
         $form['filters'] = [
             '#type' => 'details',
             '#title' => $this->t('Filters'),
-            '#open'  => true,
+            '#open'  => false,
         ];
      
-        $form['filters']['sales_person_name'] = [
-            '#title'    => $this->t('Sales person name'),
-            '#type'     => 'textfield',
-            '#autocomplete_route_name' => 'backlist.autocomplete',
-            '#autocomplete_route_parameters' => ['vid' => 'sales_person_name'],
-        ];
-
         $form['filters']['product_type'] = [
             '#title'    => $this->t('Product type'),
             '#type'     => 'textfield',
             '#autocomplete_route_name' => 'backlist.autocomplete',
             '#autocomplete_route_parameters' => ['vid' => 'product_type'],
+            '#default_value' => empty($product_type) ? '' : $product_type,
+        ];
+
+        $form['filters']['sales_person_name'] = [
+            '#title'    => $this->t('Sales person name'),
+            '#type'     => 'textfield',
+            '#autocomplete_route_name' => 'backlist.autocomplete',
+            '#autocomplete_route_parameters' => ['vid' => 'sales_person_name'],
+            '#default_value' => empty($sales_person_name) ? '' : $sales_person_name,
         ];
 
         $form['filters']['reportor'] = [
@@ -59,6 +71,7 @@ class SearchForm extends FormBase {
             '#type'     => 'textfield',
             '#autocomplete_route_name' => 'backlist.autocomplete',
             '#autocomplete_route_parameters' => ['vid' => 'reportor'],
+            '#default_value' => empty($reportor) ? '' : $reportor,
         ];
 
         // $form['filters']['marks'] = [
@@ -74,19 +87,55 @@ class SearchForm extends FormBase {
             '#type'  => 'submit',
             '#value' => $this->t('Filter')
         ];
+
+
+        // dpm( $route_match  );
+        // dpm( $product_type );
+        // dpm( $sales_person_name );
+
+        if(!(empty($product_type) && empty($sales_person_name) && empty($reportor))){
+            $form['filters']['actions']['reset'] = array(
+                '#type' => 'submit',
+                '#value' => $this->t('Reset'),
+                '#ajax' => [
+                  'callback' => [$this, 'submitModalFormAjax'],
+                  'event' => 'click',
+                ],
+            );
+        }
+
        
         return $form;
     }
+
+    public function submitModalFormAjax(array $form, FormStateInterface $form_state) {
+        $response = new AjaxResponse();
+      
+        if ($form_state->hasAnyErrors()) {
+          // Do validation stuff here
+          // ex: $response->addCommand(new ReplaceCommand... on error fields
+        }
+      
+        else {
+          // Do submit stuff here
+      
+          $url = Url::fromRoute('<front>');
+          $command = new RedirectCommand($url->toString());
+          $response->addCommand($command);
+        }
+      
+        return $response;
+      }
 
     /**
      * {@inheritdoc}
      */
     public function validateForm(array &$form, FormStateInterface $form_state) {
-        if ( $form_state->getValue('fname') == "") {
-            $form_state->setErrorByName('from', $this->t('You must enter a valid first name.'));
-        }elseif( $form_state->getValue('marks') == ""){
-            $form_state->setErrorByName('marks', $this->t('You must enter a valid to marks.'));
-        }
+        // if ( $form_state->getValue('fname') == "") {
+        //     $form_state->setErrorByName('from', $this->t('You must enter a valid first name.'));
+        // }elseif( $form_state->getValue('marks') == ""){
+        //     $form_state->setErrorByName('marks', $this->t('You must enter a valid to marks.'));
+        // }
     }
 
     /**
@@ -94,17 +143,28 @@ class SearchForm extends FormBase {
     */
     public function submitForm(array & $form, FormStateInterface $form_state) {	  
         $field = $form_state->getValues();
-        $fname = $field["fname"];
-        $marks = $field["marks"];
+
+        $product_type       = $field['product_type'];
+        $sales_person_name  = $field['sales_person_name'];
+        $reportor           = $field['reportor'];
+
+
+        // $fname = 'f';//$field["fname"];
+        // $marks = 'm';//$field["marks"];
 
         $page = \Drupal::request()->query->get('page');
 
         if(!empty($page)){
             $url = \Drupal\Core\Url::fromRoute('<front>')
-            ->setRouteParameters(array('fname'=>$fname,'marks'=>$marks, 'page'=>$page));
+            ->setRouteParameters(array( 'product_type'=>$product_type,
+                                        'sales_person_name'=>$sales_person_name, 
+                                        'reportor'=>$reportor, 
+                                        'page'=>$page));
         }else{
             $url = \Drupal\Core\Url::fromRoute('<front>')
-            ->setRouteParameters(array('fname'=>$fname,'marks'=>$marks));
+            ->setRouteParameters(array( 'product_type'=>$product_type,
+                                        'sales_person_name'=>$sales_person_name, 
+                                        'reportor'=>$reportor, ));
         }
         
         $form_state->setRedirectUrl($url); 

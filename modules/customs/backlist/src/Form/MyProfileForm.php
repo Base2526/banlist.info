@@ -57,7 +57,7 @@ class MyProfileForm extends FormBase {
 
     $current_route_match = \Drupal::service('current_route_match');
     $uid = $current_route_match->getParameter('uid'); 
-    $mode = empty($current_route_match->getParameter('mode')) ? 'add' : $current_route_match->getParameter('mode'); 
+    // $mode = empty($current_route_match->getParameter('mode')) ? 'add' : $current_route_match->getParameter('mode'); 
 
     $current_user_id = \Drupal::currentUser()->id();
 
@@ -86,42 +86,51 @@ class MyProfileForm extends FormBase {
     }
     // dpm( $image_with_preview_fids );
 
-    $form['image_with_preview'] = [
-      '#type' => 'managed_file',
-      '#title' => t('Picture profile'),
-      '#upload_validators' => [
-        'file_validate_extensions' => $this->allowFileExtension,
-        'file_validate_size' => $this->allowFileSize,
-      ],
-      '#theme' => 'image_widget',
-      '#preview_image_style' => 'medium',
-      '#upload_location' => 'public://',
-      '#required' => FALSE,
-      '#default_value' => $image_with_preview_fids,
-    ];
-
-    $form['user'] = array(
-      '#type' => 'textfield',
-      '#title' => t('User'),
-      '#attributes' => array('placeholder' => t('User ldap'), 'readonly' => 'readonly'),
-      '#default_value' => $name,
-      '#size' => 25,
-    );
-
-    $form['email'] = array(
-      '#type' => 'textfield',
-      '#title' => t('Email'),
-      '#attributes' => array('placeholder' => t('Email')),
-      '#default_value' => $email,
-      '#size' => 25,
-    );
-
-    $form['send'] = array(
-      '#type' => 'submit',
-      '#name' => 'login',
-      '#value' => $this->t('Save'),
-    );
-      
+    if($uid == $current_user_id){
+      $form['image_with_preview'] = [
+        '#type' => 'managed_file',
+        '#title' => t('Picture profile'),
+        '#upload_validators' => [
+          'file_validate_extensions' => $this->allowFileExtension,
+          'file_validate_size' => $this->allowFileSize,
+        ],
+        '#theme' => 'image_widget',
+        '#preview_image_style' => 'medium',
+        '#upload_location' => 'public://',
+        '#required' => FALSE,
+        '#default_value' => $image_with_preview_fids,
+      ];
+  
+      $form['user'] = array(
+        '#type' => 'textfield',
+        '#title' => t('User'),
+        '#attributes' => array('placeholder' => t('User'), 'readonly' => 'readonly'),
+        '#default_value' => $name,
+        '#size' => 25,
+      );
+  
+      $form['email'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Email'),
+        '#attributes' => array('placeholder' => t('Email'), 'readonly' => 'readonly'),
+        '#default_value' => $email,
+        '#size' => 25,
+      );
+  
+      $form['send'] = array(
+        '#type' => 'submit',
+        '#name' => 'login',
+        '#value' => $this->t('Save'),
+      );
+    }else{
+      $form['user'] = array(
+        '#type' => 'textfield',
+        '#title' => t('User'),
+        '#attributes' => array('placeholder' => t('User'), 'readonly' => 'readonly'),
+        '#default_value' => $name,
+        '#size' => 25,
+      );
+    } 
     return $form;
   }
 

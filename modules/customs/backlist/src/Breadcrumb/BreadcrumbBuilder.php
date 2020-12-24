@@ -30,7 +30,9 @@ class BreadcrumbBuilder implements BreadcrumbBuilderInterface {
             case 'frontpage':
             case 'entity.node.canonical':
             case 'user.login':
+            case 'user.pass':
             case 'user.register':
+            case 'my_profile.form':
             // case 'new_member.step3':
             // case 'new_member.step4':
             // case 'what_is_bigcard.form': 
@@ -89,7 +91,7 @@ class BreadcrumbBuilder implements BreadcrumbBuilderInterface {
                 switch($node_type->id()){
                     case 'back_list':{
                         $breadcrumb->setLinks([ Link::createFromRoute(t('Home'), '<front>'),
-                                        Link::createFromRoute(t('Add ban list'), '<none>'),]);
+                                        Link::createFromRoute(t('Create Ban list'), '<none>'),]);
                     break;
                     }
                 }
@@ -103,19 +105,27 @@ class BreadcrumbBuilder implements BreadcrumbBuilderInterface {
 
             case 'entity.node.canonical':{
                 $node = $route_match->getParameter('node');
-                switch($node->id()){
-                    case 2:{
-                        $breadcrumb->setLinks([ Link::createFromRoute(t('Home'), '<front>'),
-                                                Link::createFromRoute(t('Terms of service'), '<none>'),]);
-                    break;
-                    }
+                $content_type = $node->bundle();
 
-                    case 3:{
-                        $breadcrumb->setLinks([ Link::createFromRoute(t('Home'), '<front>'),
-                                                Link::createFromRoute(t('About us'), '<none>'),]);
-                    break;
+                if(strcmp($content_type, 'back_list') == 0){
+                    $breadcrumb->setLinks([ Link::createFromRoute(t('Home'), '<front>'),
+                                            Link::createFromRoute(t($node->label()), '<none>'),]);
+                }else if(strcmp($content_type, 'article') == 0){
+                    switch($node->id()){
+                        case 2:{
+                            $breadcrumb->setLinks([ Link::createFromRoute(t('Home'), '<front>'),
+                                                    Link::createFromRoute(t('Terms of service'), '<none>'),]);
+                        break;
+                        }
+    
+                        case 3:{
+                            $breadcrumb->setLinks([ Link::createFromRoute(t('Home'), '<front>'),
+                                                    Link::createFromRoute(t('About us'), '<none>'),]);
+                        break;
+                        }
                     }
                 }
+                
                 break;
             }
 
@@ -124,11 +134,24 @@ class BreadcrumbBuilder implements BreadcrumbBuilderInterface {
                                         Link::createFromRoute(t('Login'), '<none>'),]);
                 break;
             }
+
+            case 'user.pass':{
+                $breadcrumb->setLinks([ Link::createFromRoute(t('Home'), '<front>'),
+                                        Link::createFromRoute(t('Login'), 'user.login'),
+                                        Link::createFromRoute(t('Forgot password'), '<none>'),]);
+                break;
+            }
                 
             case 'user.register':{
                 $breadcrumb->setLinks([ Link::createFromRoute(t('Home'), '<front>'),
                                         Link::createFromRoute(t('Login'), 'user.login'),
                                         Link::createFromRoute(t('Register'), '<none>'),]);
+                break;
+            }
+
+            case 'my_profile.form':{
+                $breadcrumb->setLinks([ Link::createFromRoute(t('Home'), '<front>'),
+                                        Link::createFromRoute(t('Profile'), '<none>'),]);
                 break;
             }
             /*

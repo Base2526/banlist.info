@@ -23,17 +23,18 @@ search.form:
     _access: 'TRUE'
 
 my_profile.form:
-  path: '/my_profile/{uid}/{mode}'
+  path: '/my_profile/{uid}'
   # path: '/printing_view_form/create/{nid}'
   defaults:
     _form: '\Drupal\backlist\Form\MyProfileForm'
+    # mode: NULL
   requirements:
     _access: 'TRUE'
 
 backlist.autocomplete:
   path: '/admin/backlist/autocomplete'
   defaults:
-    _controller: '\Drupal\backlist\Controller\BacklistAutoCompleteController::handleAutocomplete'
+    _controller: '\Drupal\backlist\Controller\AutoCompleteController::handleAutocomplete'
     _format: json
   requirements:
     _permission: 'access content'

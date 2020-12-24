@@ -7,8 +7,9 @@ use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\node\Entity\Node;
 
 use Drupal\user\Entity\User;
-
+use Drupal\Core\Url;
 use Drupal\backlist\Utils\Utils;
+
 
 /**
  * Controller routines for page example routes.
@@ -58,29 +59,63 @@ class FrontPage extends ControllerBase {
 	  $form['form'] = $this->formBuilder()->getForm('Drupal\backlist\Form\SearchForm');
  
 
+    /*
+     $url = \Drupal\Core\Url::fromRoute('<front>')
+            ->setRouteParameters(array( 'product_type'=>$product_type,
+                                        'sales_person_name'=>$sales_person_name, 
+                                        'reportor'=>$reportor, 
+                                        'page'=>$page));
+    */
+
     //Get parameter value while submitting filter form  
-    $fname = \Drupal::request()->query->get('fname');
-    $marks = \Drupal::request()->query->get('marks');
+    $product_type       = \Drupal::request()->query->get('product_type');
+    $sales_person_name  = \Drupal::request()->query->get('sales_person_name');
+    $reportor           = \Drupal::request()->query->get('reportor');
+
     $current_page = empty(\Drupal::request()->query->get('page')) ? 0 : \Drupal::request()->query->get('page') ;
 
-    // dpm( $fname );
-    // dpm( $marks );
+    // dpm( $product_type );
+    // dpm( $sales_person_name );
+    // dpm( $reportor );
     // dpm( $current_page );
 
     // Create table header.
     $header = [
-      'product_type'=>$this->t('Product type'),             // สินค้า/ประเภท
-      'sales_person_name' => $this->t('Sales person name'), // ชื่อบัญชีผู้รับเงินโอน
-      'transfer_amount' => $this->t('Transfer amount'),     // ยอดเงิน
-      // 'detail' => $this->t('Detail'),
-      'date_post'=> $this->t('Date post'),	  
-      'reportor' =>$this->t('Reportor')
+      'product_type'      => $this->t('Product type'),        // สินค้า/ประเภท
+      'sales_person_name' => $this->t('Sales person name'),   // ชื่อบัญชีผู้รับเงินโอน
+      'details'           => $this->t('Details'),
+      'transfer_amount'   => $this->t('Transfer amount'),     // ยอดเงิน
+      'date_post'         => $this->t('Date post'),	  
+      'reportor'          => $this->t('Reportor')
     ];
 
     $storage = \Drupal::entityTypeManager()->getStorage('node');
     $query = $storage->getQuery();
     $query->condition('status', \Drupal\node\NodeInterface::PUBLISHED);
     $query->condition('type', 'back_list');
+
+    if(!empty($product_type)){
+      $query->condition('title', $product_type);
+    }
+
+    if(!empty($sales_person_name)){
+      $query->condition('field_sales_person_name', $sales_person_name, 'CONTAINS');
+    }
+
+    if(!empty($reportor)){
+      $userStorage = \Drupal::entityTypeManager()->getStorage('user');
+      $uids = $userStorage->getQuery()
+              ->condition('status', '1')
+              ->condition('name', $reportor, '=')
+              ->execute();
+
+      if(!empty($uids)){
+        $uid = reset($uids);
+
+        $query->condition('uid', $uid);
+      }
+    }
+
     $query->condition('status', 1);
     $query->sort('changed' , 'DESC');
     $query->tableSort($header);
@@ -98,11 +133,13 @@ class FrontPage extends ControllerBase {
       $row = [];
       // $row[] = $node->id();
 
+      // dpm( $Utils::truncate( ($node->get('body')->getValue()[0]['value']), 10) );
     
       $row[] = $node->toLink();
       // dpm( $node->get('field_sales_person_name')->getValue() );
       $row[] = Utils::truncate($node->get('field_sales_person_name')->getValue()[0]['value'], 50);
 
+      $row[] = Utils::truncate($node->get('body')->getValue()[0]['value'], 300, '');
       // $row[] = $node->label();
       $row[] = $node->get('field_transfer_amount')->getValue()[0]['value'];
       // $row[] = 'ดูรายละเอียด';//Utils::truncate($node->get('body')->value, 200);
@@ -133,17 +170,43 @@ class FrontPage extends ControllerBase {
           ],
         ],
       ];
-      $row[] = [
-        'data' => $node->get('uid')->view(),
-      ];
-      // $row[] = theme('image', array('path' => 'https://www.drupal.org/files/styles/drupalorg_user_picture/public/user-pictures/picture-324696-1401239339.png?itok=LMwPjqdb'));
-      // $rows[] = array('<img src="https://www.drupal.org/files/styles/drupalorg_user_picture/public/user-pictures/picture-324696-1401239339.png?itok=LMwPjqdb" alt="photo" style="width:100px;height:300px">');
-      
-      
 
-      // dpm();
+      //'my_profile'
+      // dpm( $node->getOwnerId() );
+      // \Drupal\Core\Url::fromRoute('<front>')
+
+      $ownerId = $node->getOwnerId();
+      if(!empty($ownerId)){
+        $user = User::load($ownerId);
+        $row[] = [
+          // 'data' => $node->get('uid')->view(),
+          'data' => [
+            '#theme' => 'links',
+            '#attributes' => [
+              'class' => [
+                'links',
+              ],
+            ],
+            '#links' => [
+              [
+                'title' => $user->get('name')->value,
+                'url' => Url::fromRoute('my_profile.form', ['uid' => $ownerId]),
+                'attributes' => [
+                  'class' => [
+                    'links__link',
+                  ],
+                ],
+              ],
+            ]
+          ]
+        ];
+        // $row[] = theme('image', array('path' => 'https://www.drupal.org/files/styles/drupalorg_user_picture/public/user-pictures/picture-324696-1401239339.png?itok=LMwPjqdb'));
+        // $rows[] = array('<img src="https://www.drupal.org/files/styles/drupalorg_user_picture/public/user-pictures/picture-324696-1401239339.png?itok=LMwPjqdb" alt="photo" style="width:100px;height:300px">');
       
-      $rows[] = $row;
+        // dpm();
+        
+        $rows[] = $row;
+      }
     }
 	
   //  if($fname == "" && $marks ==""){
