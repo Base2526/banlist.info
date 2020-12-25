@@ -33,6 +33,7 @@ class BreadcrumbBuilder implements BreadcrumbBuilderInterface {
             case 'user.pass':
             case 'user.register':
             case 'my_profile.form':
+            case 'forum.index':
             // case 'new_member.step3':
             // case 'new_member.step4':
             // case 'what_is_bigcard.form': 
@@ -152,6 +153,12 @@ class BreadcrumbBuilder implements BreadcrumbBuilderInterface {
             case 'my_profile.form':{
                 $breadcrumb->setLinks([ Link::createFromRoute(t('Home'), '<front>'),
                                         Link::createFromRoute(t('Profile'), '<none>'),]);
+                break;
+            }
+
+            case 'forum.index':{
+                $breadcrumb->setLinks([ Link::createFromRoute(t('Home'), '<front>'),
+                                        Link::createFromRoute(t('Forums'), '<none>'),]);
                 break;
             }
             /*

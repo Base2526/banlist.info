@@ -44,6 +44,21 @@ class SearchForm extends FormBase {
         // dpm( $sales_person_name );
         // dpm( $reportor );
 
+        $logged_in = \Drupal::currentUser()->isAuthenticated();
+
+        if($logged_in){
+            $form['add_back_list'] = [
+                '#type' => 'link',
+                '#title' => t('สร้าง Ban list ใหม่'),
+                '#options'=>array(
+                    'attributes'=>array(
+                        'class'=>array('button')
+                    ),
+                ),
+                '#url' => Url::fromRoute('node.add', ['node_type' => 'back_list']),
+            ];
+        }
+
         $form['filters'] = [
             '#type' => 'details',
             '#title' => $this->t('Filters'),
@@ -125,7 +140,7 @@ class SearchForm extends FormBase {
         }
       
         return $response;
-      }
+    }
 
     /**
      * {@inheritdoc}

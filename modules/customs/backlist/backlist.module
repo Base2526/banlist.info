@@ -16,6 +16,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 use Drupal\config_pages\Entity\ConfigPages;
 
+
 use Drupal\backlist\Utils\Utils;
 
 /**
@@ -100,49 +101,65 @@ function backlist_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   $form['revision_information']['#access'] = false;
 
   if($form_id == 'user_login_form'){
-    $form['forgot_password'] = [
+    // dpm($form);
+    $form['actions']['forgot_password'] = [
       '#type' => 'link',
       '#title' => t('Forgot password'),
       // Example of a Url object from a route. See the documentation
       // for more methods that may help generate a Url object.
       '#url' => Url::fromRoute('user.pass'),
+      '#options'=>array(
+        'attributes'=>array(
+            'class'=>array('button')
+        ),
+      ),
       '#weight' => 1000,
     ];
 
-    $form['s1'] = [
-      '#type' => 'item',
-      '#title' => t('  '),
-      // '#markup' => t('  '),
-      '#weight' => 1000,
-    ];
+    // $form['s1'] = [
+    //   '#type' => 'item',
+    //   '#title' => t('  '),
+    //   // '#markup' => t('  '),
+    //   '#weight' => 1000,
+    // ];
 
-    $form['register'] = [
+    $form['actions']['register'] = [
       '#type' => 'link',
       '#title' => t('Register'),
       // Example of a Url object from a route. See the documentation
       // for more methods that may help generate a Url object.
       '#url' => Url::fromRoute('user.register'),
+      '#options'=>array(
+        'attributes'=>array(
+            'class'=>array('button')
+        ),
+      ),
       '#weight' => 1000,
     ];
 
-    $form['s2'] = [
-      '#type' => 'item',
-      '#title' => t('  '),
-      // '#markup' => t('  '),
-      '#weight' => 1000,
-    ];
+    // $form['s2'] = [
+    //   '#type' => 'item',
+    //   '#title' => t('  '),
+    //   // '#markup' => t('  '),
+    //   '#weight' => 1000,
+    // ];
 
     $banlist = ConfigPages::config('banlist');
     $allow_login_with_fb      = $banlist->get('field_allow_login_with_fb')->getValue();
     if(!empty($allow_login_with_fb)){
       if(!empty($allow_login_with_fb[0]['value'])){
         // https://www.thaicreate.com/community/php-facebook-login-api-sdk-v5.html
-        $form['login_with_facebook'] = [
+        $form['actions']['login_with_facebook'] = [
           '#type' => 'link',
           '#title' => t('Login with facebook'),
           // Example of a Url object from a route. See the documentation
           // for more methods that may help generate a Url object.
           '#url' => Url::fromUri(Utils::FBLogin()),
+          '#options'=>array(
+            'attributes'=>array(
+                'class'=>array('button')
+            ),
+          ),
           '#weight' => 1000,
         ];
       }
@@ -275,4 +292,14 @@ function backlist_preprocess_image_widget(&$variables) {
   foreach (\Drupal\Core\Render\Element::children($element) as $child) {
     $variables['data'][$child] = $element[$child];
   }
+}
+
+
+/**
+* Implements hook_form_FORM_ID_alter().
+*
+* Disable the required 'Alternative text' field in the CKEditor's image dialog.
+*/
+function backlist_form_editor_image_dialog_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $form['attributes']['alt']['#required'] = FALSE;
 }
