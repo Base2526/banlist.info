@@ -14,6 +14,9 @@
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
+use Drupal\config_pages\Entity\ConfigPages;
+
+use Drupal\backlist\Utils\Utils;
 
 /**
  * Implements hook_help().
@@ -129,14 +132,21 @@ function backlist_form_alter(&$form, FormStateInterface $form_state, $form_id) {
       '#weight' => 1000,
     ];
 
-    $form['login_with_facebook'] = [
-      '#type' => 'link',
-      '#title' => t('Login with facebook'),
-      // Example of a Url object from a route. See the documentation
-      // for more methods that may help generate a Url object.
-      '#url' => Url::fromRoute('user.register'),
-      '#weight' => 1000,
-    ];
+    $banlist = ConfigPages::config('banlist');
+    $allow_login_with_fb      = $banlist->get('field_allow_login_with_fb')->getValue();
+    if(!empty($allow_login_with_fb)){
+      if(!empty($allow_login_with_fb[0]['value'])){
+        // https://www.thaicreate.com/community/php-facebook-login-api-sdk-v5.html
+        $form['login_with_facebook'] = [
+          '#type' => 'link',
+          '#title' => t('Login with facebook'),
+          // Example of a Url object from a route. See the documentation
+          // for more methods that may help generate a Url object.
+          '#url' => Url::fromUri(Utils::FBLogin()),
+          '#weight' => 1000,
+        ];
+      }
+    }
   }
 }
 

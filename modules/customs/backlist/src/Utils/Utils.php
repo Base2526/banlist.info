@@ -8,6 +8,12 @@ use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\user\Entity\User;
 
 use Drupal\config_pages\Entity\ConfigPages;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+
+use Facebook\FacebookSession;
+use Facebook\FacebookRequest;
+use Facebook\GraphUser;
+use Facebook\FacebookRedirectLoginHelper;
 
 class Utils extends ControllerBase {
 
@@ -2932,6 +2938,150 @@ class Utils extends ControllerBase {
    
    return $truncate;
    
-   }
+  }
 
+  public function FB(){
+    $banlist = ConfigPages::config('banlist');
+    $fb_app_id      = $banlist->get('field_fb_app_id')->getValue();
+    $fb_app_secret  = $banlist->get('field_fb_app_secret')->getValue();
+
+    $fb = new \Facebook\Facebook([
+        'app_id' => $fb_app_id[0]['value'],
+        'app_secret' => $fb_app_secret[0]['value'],
+        'default_graph_version' => 'v2.10',
+        //'default_access_token' => '{access-token}', // optional
+    ]);
+    return $fb;
+  }
+
+  public function FBLogin(){    
+    $helper = Utils::FB()->getRedirectLoginHelper();
+    $permissions = ['email' /*, 'user_likes'*/ ]; // optional
+    $loginUrl = $helper->getLoginUrl('https://banlist.info/admin/fb_login/callback', $permissions);
+    return $loginUrl;
+  }
+
+  public function FBcallback() {
+    /*
+    $banlist = ConfigPages::config('banlist');
+
+    $fb_app_id      = $banlist->get('field_fb_app_id')->getValue();
+    $fb_app_secret  = $banlist->get('field_fb_app_secret')->getValue();
+
+    $fb = new \Facebook\Facebook([
+        'app_id' => $fb_app_id[0]['value'],
+        'app_secret' => $fb_app_secret[0]['value'],
+        'default_graph_version' => 'v2.10',
+        //'default_access_token' => '{access-token}', // optional
+    ]);
+    */
+
+    $helper = Utils::FB()->getRedirectLoginHelper();
+    try {
+        $accessToken = $helper->getAccessToken();
+    } catch(Facebook\Exceptions\FacebookResponseException $e) {
+        // When Graph returns an error
+        echo 'Graph returned an error: ' . $e->getMessage();
+        exit;
+    } catch(Facebook\Exceptions\FacebookSDKException $e) {
+        // When validation fails or other local issues
+        echo 'Facebook SDK returned an error: ' . $e->getMessage();
+        exit;
+    }
+    
+    if (isset($accessToken)) {
+        // Logged in!
+        $_SESSION['facebook_access_token'] = (string) $accessToken;
+        
+        // Now you can redirect to another page and use the
+        // access token from $_SESSION['facebook_access_token']
+        
+        $response = $fb->get('/me?fields=id,name,gender,email,link', $accessToken);
+        
+        $user = $response->getGraphUser();
+        // echo'<pre>';
+        // dpm($user);
+        // echo'</pre>';
+        
+        //echo 'ID: ' . $user['id'];
+        //echo 'Name: ' . $user['name'];
+        //echo 'Gener: ' . $user['gener'];
+        //echo 'Email: ' . $user['email'];
+        //echo 'Link: ' . $user['link'];
+
+        // \Drupal\Core\Url::fromRoute('<front>');
+
+        Utils::logind9($user);
+    }
+
+    // return new JsonResponse([]);
+    return new RedirectResponse(\Drupal\Core\Url::fromRoute('<front>')->toString());
+  }
+
+  public static function logind9( $data ){
+
+    $name = $data['id'];
+
+    $ids = \Drupal::entityQuery('user')
+          ->condition('name', $name)
+          ->range(0, 1)
+          ->execute();
+
+    if(empty($ids)){
+      // register new member
+      // #1 register
+      $user = User::create();
+
+      //Mandatory settings
+      $user->setUsername( $name );
+      $user->setPassword( $name );
+      $user->enforceIsNew();
+      $user->setEmail( $data['email'] );
+  
+      //Optional settings
+      $language = \Drupal::languageManager()->getCurrentLanguage()->getId();
+      $user->set("init", 'email');
+      $user->set("langcode", $language);
+      $user->set("preferred_langcode", $language);
+      $user->set("preferred_admin_langcode", $language);  
+      $user->activate();
+      // $user->addRole('authenticated');
+      //Save user
+      $user->save();
+    }
+
+    $uid = \Drupal::service('user.auth')->authenticate( $name, $name);
+    
+    \Drupal::logger('bigcard')->notice('login_form > uid : %uid, name : %name.', array( '%uid' => $uid ));
+    if($uid){
+      $user = User::load($uid);
+
+      /*
+      $_SESSION["auth_token"]   = $data->authToken;
+      $_SESSION["bigcard"]      = $data->bigcard;
+      $_SESSION["id_card"]      = $data->idCard;
+      $_SESSION["mobile_phone"] = $data->mobilePhone;
+      $_SESSION["is_online_register"] = $data->isOnlineRegister;
+      */
+
+      // $user->set('field_auth_token', $data->authToken);
+      // $user->set('field_bigcard', $data->bigcard);
+      // $user->set('field_id_card', $data->idCard);
+      // $user->set('field_mobile_phone', $data->mobilePhone);
+      // $user->set('field_is_online_register', $data->isOnlineRegister);
+
+      // is login with FB
+      $user->set('field_login_with_fb', 1);
+
+      // 25: male, 26: Female
+      $user->set('field_gender', $data['gender'] == 'male' ? 25 : 26);
+      $user->save();
+
+      user_login_finalize($user);
+
+      return true;
+    }
+
+    return false;
+  }
 }

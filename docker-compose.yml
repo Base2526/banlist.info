@@ -32,6 +32,8 @@ services:
       - ./vendor:/opt/drupal/vendor
       - ./composer.json:/opt/drupal/composer.json
       - ./composer.lock:/opt/drupal/composer.lock
+      - ./files:/opt/drupal/web/sites/default/files
+
     # custom theme
       - ./web/core/themes/bartik/templates/node--back-list.html.twig:/opt/drupal/web/core/themes/bartik/templates/node--back-list.html.twig
       - ./web/core/themes/bartik/templates/classy/field/field--node--field-images--back-list.html.twig:/opt/drupal/web/core/themes/bartik/templates/classy/field/field--node--field-images--back-list.html.twig

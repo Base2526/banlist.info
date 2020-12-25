@@ -5,3 +5,7 @@ docker exec -t -u postgres your-db-container pg_dumpall -c > dump_`date +%d-%m-%
 
 Restore:
 cat your_dump.sql | docker exec -i your-db-container psql -Upostgres
+
+
+Facebook Login
+https://www.thaicreate.com/community/php-facebook-login-api-sdk-v5.html

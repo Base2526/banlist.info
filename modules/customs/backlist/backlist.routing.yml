@@ -38,3 +38,10 @@ backlist.autocomplete:
     _format: json
   requirements:
     _permission: 'access content'
+
+backlist.fb_login_callback:
+  path: '/admin/fb_login/callback'
+  defaults:
+    _controller: '\Drupal\backlist\Utils\Utils::FBcallback'
+  requirements:
+    _permission: 'access content'
