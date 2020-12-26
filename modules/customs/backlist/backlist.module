@@ -97,6 +97,9 @@ function backlist_theme($existing, $type, $theme, $path) {
 */
 // array &$form, FormStateInterface $form_state
 function backlist_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+
+  $form['#attached']['library'][] = 'backlist/backlist_js';
+
   // dpm( $form_id );
   $form['revision_information']['#access'] = false;
 
@@ -165,6 +168,10 @@ function backlist_form_alter(&$form, FormStateInterface $form_state, $form_id) {
       }
     }
   }
+}
+
+function backlist_page_attachments(array &$attachments) {
+  $attachments['#attached']['library'][] = 'backlist/backlist_js';
 }
 
 // function  MODULE_user_login_foo_submit($form, &$form_state) {

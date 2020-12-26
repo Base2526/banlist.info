@@ -1,0 +1,7 @@
+backlist_js:
+    version: 1.0
+    js:
+        js/custom-js.js: {}
+    dependencies:
+        - core/jquery
+        - core/drupal
