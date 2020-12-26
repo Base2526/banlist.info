@@ -7,6 +7,7 @@ services:
     # command: sh -c "cron"
     ports:
       - 80:80
+      - 443:443
     environment:
       - DB_HOST=postgres
       - DB_NAME=banlist
