@@ -36,8 +36,8 @@ services:
       - ./files:/opt/drupal/web/sites/default/files
 
     # custom theme
-      - ./web/core/themes/bartik/templates/node--back-list.html.twig:/opt/drupal/web/core/themes/bartik/templates/node--back-list.html.twig
-      - ./web/core/themes/bartik/templates/classy/field/field--node--field-images--back-list.html.twig:/opt/drupal/web/core/themes/bartik/templates/classy/field/field--node--field-images--back-list.html.twig
+    # - ./web/core/themes/bartik/templates/node--back-list.html.twig:/opt/drupal/web/core/themes/bartik/templates/node--back-list.html.twig
+    # - ./web/core/themes/bartik/templates/classy/field/field--node--field-images--back-list.html.twig:/opt/drupal/web/core/themes/bartik/templates/classy/field/field--node--field-images--back-list.html.twig
     restart: always
   # backend:
   #   build: './nodejs'
