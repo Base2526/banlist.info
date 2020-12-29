@@ -100,9 +100,8 @@ function backlist_form_alter(&$form, FormStateInterface $form_state, $form_id) {
 
   $form['#attached']['library'][] = 'backlist/backlist_js';
 
-  // dpm( $form_id );
+  dpm( $form_id );
   $form['revision_information']['#access'] = false;
-
   if($form_id == 'user_login_form'){
     // dpm($form);
     $form['actions']['forgot_password'] = [

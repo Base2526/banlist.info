@@ -24,7 +24,7 @@ class BreadcrumbBuilder implements BreadcrumbBuilderInterface {
     public function applies(RouteMatchInterface $route_match) {
         /* Allways use this. Change this is another module needs to use a new custom breadcrumb */
 
-        // dpm( ">> |" . $route_match->getRouteName() . "| <<");
+        dpm( ">> |" . $route_match->getRouteName() . "| <<");
         switch($route_match->getRouteName()){
             case 'node.add':
             case 'frontpage':

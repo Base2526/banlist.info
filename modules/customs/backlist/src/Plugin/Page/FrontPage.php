@@ -214,7 +214,7 @@ class FrontPage extends ControllerBase {
       '#type' => 'table',
       '#header' => $header,
       '#rows' => $rows,//get_students("All","",""),
-      '#empty' => $this->t('No users found'),
+      '#empty' => $this->t('No data'),
       '#prefix' => '<div class="banlist-table">',
       '#suffix' => '</div>'
     ];

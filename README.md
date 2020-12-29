@@ -14,3 +14,6 @@ https://www.thaicreate.com/community/php-facebook-login-api-sdk-v5.html
 Theme
 https://www.drupal.org/docs/8/themes/barrio-bootstrap-4-drupal-89-theme/bootstrap-barrio-installation/installation
 https://www.youtube.com/watch?v=59QBCzaH6JI&feature=youtu.be
+
+Theme bootstrap_barrio status_messages
+https://www.drupal.org/project/bootstrap_barrio/issues/3037643
