@@ -12,5 +12,4 @@ RUN mkdir web/sites/default/files && \
 
 COPY modules web/sites/default/modules
 
-
-EXPOSE 80
+EXPOSE 80 443

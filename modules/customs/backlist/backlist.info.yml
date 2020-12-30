@@ -4,9 +4,11 @@ description: 'Back list module.'
 package: Customs
 core_version_requirement: ^8.8 || ^9
 php: 7.2
-# configure: devel.admin_settings
-# tags:
-#  - developer
+
+dependencies:
+  - paragraphs:paragraphs
+  - config_pages:config_pages
+  - field_group:field_group
 
 # Information added by Drupal.org packaging script on 2020-09-16
 version: '4.0.1'
