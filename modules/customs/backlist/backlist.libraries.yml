@@ -2,8 +2,8 @@ backlist_js:
     version: 1.0
     js:
         js/custom-js.js: {}
-        js/slick.js: {}
-        js/slick-lightbox.js: {}
+        js/slick.min.js: {}
+        js/slick-lightbox.min.js: {}
     css:
         layout:
             css/slick-theme.css: {}
