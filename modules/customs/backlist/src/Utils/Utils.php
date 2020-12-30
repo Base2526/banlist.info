@@ -6,7 +6,7 @@ use \Drupal\node\Entity\Node;
 use Drupal\taxonomy\Entity\Term;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\user\Entity\User;
-
+use Drupal\file\Entity\File;
 use Drupal\config_pages\Entity\ConfigPages;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
@@ -2365,9 +2365,27 @@ class Utils extends ControllerBase {
     }   
   }
 
+  public static function is_localhost() {
+		// set the array for testing the local environment
+    $whitelist = array( '127.0.0.1', '::1' , 'localhost');
+    
+		// check if the server is in the array
+		if ( in_array( $_SERVER['REMOTE_ADDR'], $whitelist ) || in_array($_SERVER['SERVER_NAME'], $whitelist) ) {
+			// this is a local environment
+			return true;
+    }
+    return false;
+	}
+
   public static function get_file_url($target_id){   
-    $file = \Drupal\file\Entity\File::load($target_id);
-    return  !empty($file) ?  preg_replace("/^http:/i", "https:", $file->url())  : '';
+    $file = \Drupal::entityTypeManager()->getStorage('file')->load($target_id);//File::load($target_id);
+    $url = file_create_url($file->getFileUri());
+    return  !empty($file) ? Utils::is_localhost() ?  $url  : preg_replace("/^http:/i", "https:",  $url )  : '';
+  }
+
+  public static function get_file_uri($target_id){   
+    $file = \Drupal::entityTypeManager()->getStorage('file')->load($target_id);//File::load($target_id);
+    return $file->getFileUri();
   }
 
   // 

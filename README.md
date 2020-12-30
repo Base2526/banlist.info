@@ -17,3 +17,5 @@ https://www.youtube.com/watch?v=59QBCzaH6JI&feature=youtu.be
 
 Theme bootstrap_barrio status_messages
 https://www.drupal.org/project/bootstrap_barrio/issues/3037643
+
+https://gist.github.com/bdlangton/e826276a0c78d9a89d8dec23dd0c7683

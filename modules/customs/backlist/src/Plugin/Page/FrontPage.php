@@ -135,7 +135,29 @@ class FrontPage extends ControllerBase {
 
       // dpm( $Utils::truncate( ($node->get('body')->getValue()[0]['value']), 10) );
     
-      $row[] = $node->toLink();
+      //   path: '/backlist_view/{nid}'
+      // $row[] = $node->toLink();
+      $row[] = [
+                'data' => [
+                  '#theme' => 'links',
+                  '#attributes' => [
+                    'class' => [
+                      'links',
+                    ],
+                  ],
+                  '#links' => [
+                    [
+                      'title' => $node->label(),
+                      'url' => Url::fromRoute('report_view.form', ['nid' => $node->id()]),
+                      'attributes' => [
+                        'class' => [
+                          'links__link',
+                        ],
+                      ],
+                    ],
+                  ]
+                ]
+              ];
       // dpm( $node->get('field_sales_person_name')->getValue() );
       $row[] = Utils::truncate($node->get('field_sales_person_name')->getValue()[0]['value'], 50);
 
