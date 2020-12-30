@@ -49,13 +49,15 @@ class SearchForm extends FormBase {
         if($logged_in){
             $form['add_back_list'] = [
                 '#type' => 'link',
-                '#title' => t('สร้าง Ban list ใหม่'),
+                '#title' => t('+ สร้าง Ban list ใหม่'),
                 '#options'=>array(
                     'attributes'=>array(
                         'class'=>array('button')
                     ),
                 ),
                 '#url' => Url::fromRoute('node.add', ['node_type' => 'back_list']),
+                '#prefix' => '<span class="add-list-button">',
+                '#suffix' => '</span>'
             ];
         }
 
@@ -71,6 +73,9 @@ class SearchForm extends FormBase {
             '#autocomplete_route_name' => 'backlist.autocomplete',
             '#autocomplete_route_parameters' => ['vid' => 'product_type'],
             '#default_value' => empty($product_type) ? '' : $product_type,
+            '#prefix' => '<div class="row">
+                            <div class="col-lg-3 col-md-3 col-sm-12 col-12 pr-1">',
+            '#suffix' => '</div>'
         ];
 
         $form['filters']['sales_person_name'] = [
@@ -79,6 +84,8 @@ class SearchForm extends FormBase {
             '#autocomplete_route_name' => 'backlist.autocomplete',
             '#autocomplete_route_parameters' => ['vid' => 'sales_person_name'],
             '#default_value' => empty($sales_person_name) ? '' : $sales_person_name,
+            '#prefix' => '<div class="col-lg-3 col-md-3 col-sm-12 col-12 pl-1 pr-1">',
+            '#suffix' => '</div>'
         ];
 
         $form['filters']['reportor'] = [
@@ -87,6 +94,8 @@ class SearchForm extends FormBase {
             '#autocomplete_route_name' => 'backlist.autocomplete',
             '#autocomplete_route_parameters' => ['vid' => 'reportor'],
             '#default_value' => empty($reportor) ? '' : $reportor,
+            '#prefix' => '<div class="col-lg-3 col-md-3 col-sm-12 col-12 pl-1 pr-1">',
+            '#suffix' => '</div>'
         ];
 
         // $form['filters']['marks'] = [
@@ -95,7 +104,9 @@ class SearchForm extends FormBase {
         // ];
         
         $form['filters']['actions'] = [
-            '#type'       => 'actions'
+            '#type'       => 'actions',
+            '#prefix' => '<div class="col-lg-2 col-md-2 col-sm-12 col-12 pl-1">',
+            '#suffix' => '</div></div>'
         ];
      
         $form['filters']['actions']['submit'] = [
