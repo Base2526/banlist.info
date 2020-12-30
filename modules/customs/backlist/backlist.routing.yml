@@ -45,3 +45,11 @@ backlist.fb_login_callback:
     _controller: '\Drupal\backlist\Utils\Utils::FBcallback'
   requirements:
     _permission: 'access content'
+
+report_view.form:
+  path: '/report/{nid}'
+  defaults:
+    _form: '\Drupal\backlist\Form\ReportViewForm'
+    nid: 0
+  requirements:
+    _permission: 'access content'
