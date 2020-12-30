@@ -7,6 +7,7 @@ services:
     # command: sh -c "cron"
     ports:
       - 80:80
+      - 443:443
     environment:
       - DB_HOST=postgres
       - DB_NAME=banlist
@@ -16,6 +17,7 @@ services:
       # /opt/drupal/web/core/themes/bartik/templates/
       # /opt/drupal/web/core/themes/bartik/templates/classy/field
       - ./modules:/opt/drupal/web/sites/default/modules
+      - ./libraries:/opt/drupal/web/sites/default/libraries
       - ./themes:/opt/drupal/web/themes
       - ./settings.php:/opt/drupal/web/sites/default/settings.php
       - ./services.yml:/opt/drupal/web/sites/default/services.yml
