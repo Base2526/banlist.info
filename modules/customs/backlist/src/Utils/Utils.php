@@ -2380,7 +2380,8 @@ class Utils extends ControllerBase {
   public static function get_file_url($target_id){   
     $file = \Drupal::entityTypeManager()->getStorage('file')->load($target_id);//File::load($target_id);
     $url = file_create_url($file->getFileUri());
-    return  !empty($file) ? Utils::is_localhost() ?  $url  : preg_replace("/^http:/i", "https:",  $url )  : '';
+    // return  !empty($file) ? (Utils::is_localhost() ?  $url  : preg_replace("/^http:/i", "https:",  $url ))  : '';
+    return preg_replace("/^http:/i", "http:",  $url );
   }
 
   public static function get_file_uri($target_id){   

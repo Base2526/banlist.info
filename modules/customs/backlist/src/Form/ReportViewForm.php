@@ -112,7 +112,7 @@ class ReportViewForm extends FormBase {
         $images = array();
         foreach ($node->get('field_images')->getValue() as $imi=>$imv){
             // dpm( Utils::get_file_uri($imv['target_id']) );
-            $images[] = Utils::get_file_uri($imv['target_id']);
+            $images[] = $imv['target_id'];
         }
 
         // 8. วันโอนเงิน
@@ -195,17 +195,24 @@ class ReportViewForm extends FormBase {
             '#suffix' => '',
         ];
 
+        $form['images']= array(
+            '#type' => 'fieldset',
+            '#collapsible' => TRUE,
+            '#collapsed' => TRUE,
+            '#prefix' => '<div class="row" id="report-view-slick-lightbox">',
+            '#suffix' => '</div>',
+        );
         foreach ($images as $im_key => $uri) {
             $form['images'][$im_key] = array(
                 '#theme' => 'image_style',
                 '#style_name' => 'thumbnail',
-                '#uri' => $uri,
+                '#uri' => Utils::get_file_uri($uri),
                 '#width' => '150px',
                 '#height' => '150px',
-                '#prefix' => '',
-                '#suffix' => '',
+                '#prefix' => '<a href="'. Utils::get_file_url($uri) .'" target="_blank" class="thumbnail">',
+                '#suffix' => '</a>',
             );
-        }
+        } 
 
         $form['transfer_date'] = [
             '#type' => 'item',
