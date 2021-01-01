@@ -2975,7 +2975,7 @@ class Utils extends ControllerBase {
 
   public function FBLogin(){    
     $helper = Utils::FB()->getRedirectLoginHelper();
-    $permissions = ['email' /*, 'user_likes'*/ ]; // optional
+  $permissions = ['email' /*, 'user_likes'*/ ]; // optional
     $loginUrl = $helper->getLoginUrl('https://banlist.info/admin/fb_login/callback', $permissions);
     return $loginUrl;
   }
@@ -2996,6 +2996,12 @@ class Utils extends ControllerBase {
     */
 
     $helper = Utils::FB()->getRedirectLoginHelper();
+
+
+    if (isset($_GET['state'])) {
+      $helper->getPersistentDataHandler()->set('state', $_GET['state']);
+    }
+
     try {
         $accessToken = $helper->getAccessToken();
     } catch(Facebook\Exceptions\FacebookResponseException $e) {
@@ -3015,7 +3021,7 @@ class Utils extends ControllerBase {
         // Now you can redirect to another page and use the
         // access token from $_SESSION['facebook_access_token']
         
-        $response = $fb->get('/me?fields=id,name,gender,email,link', $accessToken);
+        $response = Utils::FB()->get('/me?fields=id,name,gender,email,link', $accessToken);
         
         $user = $response->getGraphUser();
         // echo'<pre>';
@@ -3038,8 +3044,27 @@ class Utils extends ControllerBase {
   }
 
   public static function logind9( $data ){
+    $name   = $data['id'];
+    $gener  = $data['gener'];
+    $email  = $data['email'];
+    $link  = $data['link'];
 
-    $name = $data['id'];
+    $strPicture = "https://graph.facebook.com/".$data['id']."/picture?type=large";
+
+    \Drupal::logger('logind9')->error( 'id    = %id,  
+                                        name  = %name, 
+                                        gener = %gener, 
+                                        email = %email, 
+                                        link  = %link,
+                                        strPicture  = %strPicture',
+                                        array(
+                                          '%id' => $data['id'],
+                                          '%name' => $data['name'],
+                                          '%gener' => $data['gener'],
+                                          '%email' => $data['email'],
+                                          '%link' => $data['link'],
+                                          '%strPicture' => $strPicture,
+                                        ) );
 
     $ids = \Drupal::entityQuery('user')
           ->condition('name', $name)
@@ -3053,7 +3078,7 @@ class Utils extends ControllerBase {
 
       //Mandatory settings
       $user->setUsername( $name );
-      $user->setPassword( $name );
+      $user->setPassword( MD5($name) );
       $user->enforceIsNew();
       $user->setEmail( $data['email'] );
   
@@ -3069,12 +3094,14 @@ class Utils extends ControllerBase {
       $user->save();
     }
 
-    $uid = \Drupal::service('user.auth')->authenticate( $name, $name);
+    $uid = \Drupal::service('user.auth')->authenticate( $name, MD5($name));
     
     \Drupal::logger('bigcard')->notice('login_form > uid : %uid, name : %name.', array( '%uid' => $uid ));
     if($uid){
-      $user = User::load($uid);
+      // Create file object from remote URL.
+      $file = file_save_data(file_get_contents($strPicture), 'public://'. $data['id'] . '_' . date('m-d-Y_hia') .'.png', FILE_EXISTS_REPLACE);
 
+      $user = User::load($uid);
       /*
       $_SESSION["auth_token"]   = $data->authToken;
       $_SESSION["bigcard"]      = $data->bigcard;
@@ -3089,11 +3116,14 @@ class Utils extends ControllerBase {
       // $user->set('field_mobile_phone', $data->mobilePhone);
       // $user->set('field_is_online_register', $data->isOnlineRegister);
 
+      $user->set('field_display_name', $data['name']);
+      $user->set('user_picture', $file->id());
+
       // is login with FB
       $user->set('field_login_with_fb', 1);
 
       // 25: male, 26: Female
-      $user->set('field_gender', $data['gender'] == 'male' ? 25 : 26);
+      $user->set('field_gender', empty($data['gender']) ? '' : ($data['gender'] == 'male' ? 25 : 26) );
       $user->save();
 
       user_login_finalize($user);
