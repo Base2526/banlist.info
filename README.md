@@ -19,3 +19,6 @@ Theme bootstrap_barrio status_messages
 https://www.drupal.org/project/bootstrap_barrio/issues/3037643
 
 https://gist.github.com/bdlangton/e826276a0c78d9a89d8dec23dd0c7683
+
+Secure Apache with Let's Encrypt on Debian 10
+https://linuxize.com/post/secure-apache-with-let-s-encrypt-on-debian-10/
