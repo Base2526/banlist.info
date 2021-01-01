@@ -10,6 +10,9 @@ use Drupal\file\Entity\File;
 use Drupal\config_pages\Entity\ConfigPages;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
+use Drupal\Component\Utility\SafeMarkup;
+use Drupal\Core\Render\Markup;
+
 use Facebook\FacebookSession;
 use Facebook\FacebookRequest;
 use Facebook\GraphUser;
@@ -3132,5 +3135,44 @@ class Utils extends ControllerBase {
     }
 
     return false;
+  }
+
+  function test_send_email() {
+    // $mailManager = \Drupal::service('plugin.manager.mail');
+    // $module = 'backlist';
+    // $key = 'node_insert'; // Replace with Your key
+    // $to = 'mr.simajarn@gmail.com';//\Drupal::currentUser()->getEmail();
+    // $params['message'] = '---message---';
+    // $params['title'] = '---title---';
+    // $langcode = \Drupal::currentUser()->getPreferredLangcode();
+    // $send = true;
+  
+    // $result = $mailManager->mail($module, $key, $to, $langcode, $params, NULL, $send);
+    // if ($result['result'] != true) {
+    //   $message = t('There was a problem sending your email notification to @email.', array('@email' => $to));
+    //   // drupal_set_message($message, 'error');
+    //   \Drupal::logger('mail-log')->error($message);
+    //   return;
+    // }
+  
+    // $message = t('An email notification has been sent to @email ', array('@email' => $to));
+    // // drupal_set_message($message);
+    // \Drupal::logger('mail-log')->notice($message);
+
+    $mailManager = \Drupal::service('plugin.manager.mail');
+    $module = 'backlist';
+    $key = 'create_article';
+    $to = 'mr.simajarn@gmail.com';// \Drupal::currentUser()->getEmail();
+    $params['message'] = Markup::create("fff");
+    $params['node_title'] = '$entity->label()';
+    $langcode = \Drupal::currentUser()->getPreferredLangcode();
+    $send = true;
+    $result = $mailManager->mail($module, $key, $to, $langcode, $params, NULL, $send);
+    if ($result['result'] !== true) {
+      \Drupal::messenger()->addStatus(t('There was a problem sending your message and it was not sent.'), 'error');
+    }
+    else {
+      \Drupal::messenger()->addStatus(t('Your message has been sent.'));
+    }
   }
 }

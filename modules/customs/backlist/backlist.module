@@ -16,6 +16,10 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 use Drupal\config_pages\Entity\ConfigPages;
 
+use Drupal\Core\Mail\MailManagerInterface;
+use Drupal\Component\Utility\SafeMarkup;
+use Drupal\Component\Utility\Html;
+
 
 use Drupal\backlist\Utils\Utils;
 
@@ -40,6 +44,24 @@ function backlist_help($route_name, RouteMatchInterface $route_match) {
       return $output;
   }
 }
+
+/**
+ * Implements hook_mail().
+ */
+function backlist_mail($key, &$message, $params) {
+  $options = array(
+    'langcode' => $message['langcode'],
+  );
+  switch ($key) {
+  case 'create_article':
+      $message['format'] = 'text/html';
+      $message['headers']['Content-Type'] = SWIFTMAILER_FORMAT_HTML;
+      $message['from'] = \Drupal::config('system.site')->get('mail');
+      $message['subject'] = t('Article created: @title', array('@title' => $params['node_title']), $options);
+      $message['body'][] = $params['message'];
+      break;
+  }
+ }
 
 /**
  * Implements hook_user_login() 
@@ -68,6 +90,36 @@ function backlist_user_login(\Drupal\user\UserInterface $account) {
             $url
         );
     }
+}
+
+function backlist_user_insert(Drupal\Core\Entity\EntityInterface $entity) {
+  switch($entity->bundle()){
+    case 'user':{
+      // \Drupal::logger('backlist_user_insert')->error( 'bundle    = %bundle,
+      //                                                 name    = %name,',
+      //                                               array(
+      //                                                 '%bundle' => $entity->bundle(),
+      //                                                 '%name' => $entity->getDisplayName()
+      //                                               ));
+
+      $field_login_with_fb  = $entity->get('field_login_with_fb')->getValue();
+      if(!empty($field_login_with_fb)){
+        $login_with_fb = $field_login_with_fb[0]['value'];
+
+        if($login_with_fb){
+          return;
+        }
+      }
+
+      $entity->set('field_display_name', $entity->getDisplayName());
+      $entity->save();
+      break;
+    }
+  }
+  
+
+
+
 }
 
 /*

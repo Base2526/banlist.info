@@ -21,6 +21,7 @@
         "drupal/core-composer-scaffold": "^9",
         "drupal/core-project-message": "^9",
         "drupal/core-recommended": "^9",
+        "drupal/phpmailer_smtp": "^2.0",
         "facebook/graph-sdk": "^5.7",
         "html2text/html2text": "^4.3",
         "swiftmailer/swiftmailer": "^6.2",
