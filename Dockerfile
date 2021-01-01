@@ -23,6 +23,10 @@ RUN mkdir  -p .well-known/acme-challenge && \
 
 COPY modules web/sites/default/modules
 
-COPY 000-default.conf /etc/apache2/sites-available/000-default.conf
+# prod
+# COPY 000-default.conf /etc/apache2/sites-available/000-default.conf
+
+# dev
+COPY 000-default.conf.org /etc/apache2/sites-available/000-default.conf
 
 EXPOSE 80 443

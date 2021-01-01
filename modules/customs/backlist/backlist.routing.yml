@@ -39,6 +39,8 @@ backlist.autocomplete:
   requirements:
     _permission: 'access content'
 
+# https://banlist.info/admin/fb_login/callback?code=AQCipCA_aNDHfgC1h-O60bbrF2ceKLgHbCjAbBcKYed-0I-4V7eAGFRqy9PxhqEWQ3Yz2TeyDnx_UdR0EtKFJwScbv1P4KJH04TIcg5T524GFR1UWOSIqnrzYyOAwlydXTKoTKJ2yAPj-ss2LzCGtMXl3FvIJ79IB6bjQYn98XjEOGHkwJmnsZlYqHRsglAmzX-XaC_K9eYc135YyQtes9k5L69WeWfY9KB8mLw_0-Ls_UBQVcMpDag7BXnqoQjXFz-lUQLtKb0cbj_w47ixq_WOLpcDTHUOMGI6dowdFFol6ea7RIHsrAl7oGwPllrfjMBnCR0slFCPtH4sJxHWf4uw&state=ed6c8fc3042e2225bad06dfa60be5d19#_=_
+# https://banlist.info/admin/fb_login/callback
 backlist.fb_login_callback:
   path: '/admin/fb_login/callback'
   defaults:
