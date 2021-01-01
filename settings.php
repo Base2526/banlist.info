@@ -305,7 +305,7 @@ $settings['hash_salt'] = '8A94uMMDrFGJxy5SgltZ3vOOaPYfxS0PiU4Qao02PYEpU4z71e2zLo
  * After finishing the upgrade, be sure to open this file again and change the
  * TRUE back to a FALSE!
  */
-$settings['update_free_access'] = TRUE;
+$settings['update_free_access'] = FALSE;
 
 /**
  * Fallback to HTTP for Update Manager.
@@ -714,6 +714,13 @@ $settings['container_yamls'][] = $app_root . '/' . $site_path . '/services.yml';
  * will allow the site to run off of all variants of example.com and
  * example.org, with all subdomains included.
  */
+ 
+$settings['trusted_host_patterns'] = [
+     '^banlist\.info$',
+     '^.+\.banlist\.info$',
+     '^localhost$',
+     '^.+\.localhost$',
+];
 
 /**
  * The default list of directories that will be ignored by Drupal's file API.
@@ -793,4 +800,4 @@ $databases['default']['default'] = array (
   'namespace' => 'Drupal\\Core\\Database\\Driver\\pgsql',
   'driver' => 'pgsql',
 );
-# $settings['config_sync_directory'] = 'sites/default/files/config_Wu2o7rY4QGtLsF251RHYX75-Pc_RRupRit5LzdnsRE8FLRPblr-LKsO1C92LL9onCh7UCRB5VA/sync';
+$settings['config_sync_directory'] = 'sites/default/files/config_Wu2o7rY4QGtLsF251RHYX75-Pc_RRupRit5LzdnsRE8FLRPblr-LKsO1C92LL9onCh7UCRB5VA/sync';
