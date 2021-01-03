@@ -138,6 +138,14 @@ span.add-list-button a{
     color: white !important;
 }
 
+#fieldset-bank-account{
+    background-color: aliceblue;
+}
+
+.filter-by-person-sammary{
+    text-align: right;
+}
+
 /* desktop */
 @media (min-width: 769px){
     form.user-login-form,

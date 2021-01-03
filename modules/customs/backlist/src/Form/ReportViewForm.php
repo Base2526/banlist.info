@@ -58,7 +58,7 @@ class ReportViewForm extends FormBase {
         // 1. สินค้า/ประเภท
         $name = $node->label();
 
-        // 2. ชื่อบัญชีผู้รับเงินโอน
+        // 2. ชื่อบัญชี-นามสกุล ผู้รับเงินโอน
         $sales_person_name = '';
         $field_sales_person_name = $node->get('field_sales_person_name')->getValue();
         if(!empty($field_sales_person_name)){
@@ -71,6 +71,7 @@ class ReportViewForm extends FormBase {
         if(!empty($field_sales_person_surname)){
             $sales_person_surname = $field_sales_person_surname[0]['value'];
         }
+        
 
         // 4. บัญชีธนาคารคนขาย
         $merchant_bank_accounts = array();
@@ -105,7 +106,7 @@ class ReportViewForm extends FormBase {
         $body = '';
         $field_body = $node->get('body')->getValue();
         if(!empty($field_body)){
-            $body = $field_body[0]['value'];
+            $body = strip_tags($field_body[0]['value']);
         }
 
         // 7. รูปภาพประกอบ
@@ -152,16 +153,24 @@ class ReportViewForm extends FormBase {
         $form['name'] = [
             '#type' => 'item',
             '#markup' => '<div>'.$name.'</div>',
-            '#prefix' => '',
-            '#suffix' => '',
+            '#prefix' => '<div>'.$this->t('สินค้า/ประเภท'),
+            '#suffix' => '</div>',
         ];
 
-        $form['sales_person_name__sales_person_surname'] = [
+        $form['sales_person_name'] = [
             '#type' => 'item',
-            '#markup' => '<div>'.$sales_person_name.' '. $sales_person_surname .'</div>',
-            '#prefix' => '',
-            '#suffix' => '',
+            '#markup' => '<div>'.$sales_person_name . ' ' . $sales_person_surname.'</div>',
+            '#prefix' => '<div>'.$this->t('ชื่อบัญชี-นามสกุล ผู้รับเงินโอน'),
+            '#suffix' => '</div>',
         ];
+
+        $form['bank_account']= array(
+            '#type' => 'fieldset',
+            '#collapsible' => TRUE,
+            '#collapsed' => TRUE,
+            '#prefix' => '<div id="fieldset-bank-account">'.$this->t('บัญชีธนาคารคนขาย'),
+            '#suffix' => '</div>',
+        );
 
         foreach ($merchant_bank_accounts as $merchant_key => $merchant_value){
             // เลขบัญชี
@@ -173,7 +182,7 @@ class ReportViewForm extends FormBase {
                                         );
 
             // ธนาคาร/ระบบ Wallet
-            $form['bank_wallet'][]  = array(
+            $form['bank_account'][]  = array(
                                             '#type' => 'item',
                                             '#markup' => '<div>'.$merchant_value['bank_wallet'].'</div>',
                                             '#prefix' => '',
@@ -184,55 +193,57 @@ class ReportViewForm extends FormBase {
         $form['transfer_amount'] = [
             '#type' => 'item',
             '#markup' => '<div>'.$transfer_amount.'</div>',
-            '#prefix' => '',
-            '#suffix' => '',
+            '#prefix' => '<div>'.$this->t('ยอดเงิน'),
+            '#suffix' => '</div>',
         ];
 
         $form['body'] = [
             '#type' => 'item',
             '#markup' => '<div>'.$body.'</div>',
-            '#prefix' => '',
-            '#suffix' => '',
+            '#prefix' => '<div>'.$this->t('รายละเอียดเพิ่มเติม'), 
+            '#suffix' => '</div>',
         ];
 
-        $form['images']= array(
-            '#type' => 'fieldset',
-            '#collapsible' => TRUE,
-            '#collapsed' => TRUE,
-            '#prefix' => '<div class="row" id="report-view-slick-lightbox">',
-            '#suffix' => '</div>',
-        );
-        foreach ($images as $im_key => $uri) {
-            $form['images'][$im_key] = array(
-                '#theme' => 'image_style',
-                '#style_name' => 'thumbnail',
-                '#uri' => Utils::get_file_uri($uri),
-                '#width' => '150px',
-                '#height' => '150px',
-                '#prefix' => '<a href="'. Utils::get_file_url($uri) .'" target="_blank" class="thumbnail">',
-                '#suffix' => '</a>',
+        if(!empty($images)){
+            $form['images']= array(
+                '#type' => 'fieldset',
+                '#collapsible' => TRUE,
+                '#collapsed' => TRUE,
+                '#prefix' => '<div class="row" id="report-view-slick-lightbox"><div>'.$this->t('รูปภาพประกอบ').'</div>',
+                '#suffix' => '</div>',
             );
-        } 
-
+            foreach ($images as $im_key => $uri) {
+                $form['images'][$im_key] = array(
+                    '#theme' => 'image_style',
+                    '#style_name' => 'large',
+                    '#uri' => Utils::get_file_uri($uri),
+                    '#width' => '150px',
+                    // '#height' => '150px',
+                    '#prefix' => '<a href="'. Utils::get_file_url($uri) .'" target="_blank" class="thumbnail">',
+                    '#suffix' => '</a>',
+                );
+            } 
+        }
+       
         $form['transfer_date'] = [
             '#type' => 'item',
             '#markup' => '<div>'.$transfer_date.'</div>',
-            '#prefix' => '',
-            '#suffix' => '',
+            '#prefix' => '<div>'.$this->t('วันโอนเงิน'), 
+            '#suffix' => '</div>',
         ];
 
         $form['id_card_number'] = [
             '#type' => 'item',
             '#markup' => '<div>'.$id_card_number.'</div>',
-            '#prefix' => '',
-            '#suffix' => '',
+            '#prefix' => '<div>'.$this->t('เลขบัตรประชาชนคนขาย'), 
+            '#suffix' => '</div>',
         ];
 
         $form['selling_website'] = [
             '#type' => 'item',
             '#markup' => '<div>'.$selling_website.'</div>',
-            '#prefix' => '',
-            '#suffix' => '',
+            '#prefix' => '<div>'.$this->t('เว็บไซด์ประกาศขายของ'), 
+            '#suffix' => '</div>',
         ];
 
         return $form;
