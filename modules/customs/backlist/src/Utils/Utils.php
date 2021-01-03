@@ -2978,12 +2978,12 @@ class Utils extends ControllerBase {
 
   public function FBLogin(){    
     $helper = Utils::FB()->getRedirectLoginHelper();
-  $permissions = ['email' /*, 'user_likes'*/ ]; // optional
+    $permissions = ['email' /*, 'user_likes'*/ ]; // optional
     $loginUrl = $helper->getLoginUrl('https://banlist.info/admin/fb_login/callback', $permissions);
     return $loginUrl;
   }
 
-  public function FBcallback() {
+  public function FBCallback() {
     /*
     $banlist = ConfigPages::config('banlist');
 
@@ -3135,6 +3135,32 @@ class Utils extends ControllerBase {
     }
 
     return false;
+  }
+
+  public function Google(){
+    $banlist = ConfigPages::config('banlist');
+    $field_google_client_credentials      = $banlist->get('field_google_client_credentials')->getValue();
+
+    $url = '';
+    if(!empty($field_google_client_credentials)){
+      $google_client_credentials = $field_google_client_credentials[0]['target_id'];
+  
+      $url = Utils::get_file_url($google_client_credentials);
+      // $url2 = Utils::get_file_uri($google_client_credentials);
+  
+      $url = substr($url, strlen($GLOBALS['base_url'] . '/'));
+    }
+  
+    $client = new Google\Client();
+    $client->setAuthConfig($url);
+    $client->setScopes(array('https://www.googleapis.com/auth/plus.me', 'https://www.googleapis.com/auth/moderator'));
+  
+    return $client->createAuthUrl(); 
+  }
+
+  public function GoogleCallback(){
+
+    return new RedirectResponse(\Drupal\Core\Url::fromRoute('<front>')->toString()); 
   }
 
   function test_send_email() {
