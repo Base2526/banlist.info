@@ -158,12 +158,51 @@ class FrontPage extends ControllerBase {
                   ]
                 ]
               ];
-      // dpm( $node->get('field_sales_person_name')->getValue() );
-      $row[] = Utils::truncate($node->get('field_sales_person_name')->getValue()[0]['value'], 50);
 
-      $row[] = Utils::truncate($node->get('body')->getValue()[0]['value'], 300, '');
+      
+      // 2. ชื่อบัญชี-นามสกุล ผู้รับเงินโอน
+      $sales_person_name = '';
+      $field_sales_person_name = $node->get('field_sales_person_name')->getValue();
+      if(!empty($field_sales_person_name)){
+          $sales_person_name = $field_sales_person_name[0]['value'];
+      }
+
+      // 3. นามสกุลผู้รับเงินโอน
+      $sales_person_surname = '';
+      $field_sales_person_surname = $node->get('field_sales_person_surname')->getValue();
+      if(!empty($field_sales_person_surname)){
+          $sales_person_surname = $field_sales_person_surname[0]['value'];
+      }
+      
+      // dpm( $node->get('field_sales_person_name')->getValue() );
+      // $row[] = $sales_person_name . ' ' . $sales_person_surname;//Utils::truncate($node->get('field_sales_person_name')->getValue()[0]['value'], 50);
+
+      $row[] = [
+        'data' => [
+          '#theme' => 'links',
+          '#attributes' => [
+            'class' => [
+              'links',
+            ],
+          ],
+          '#links' => [
+            [
+              'title' => $sales_person_name . ' ' . $sales_person_surname,
+              'url' => Url::fromRoute('filter_by_person.form', ['name'=>$sales_person_name, 'surname'=>$sales_person_surname]),
+              'attributes' => [
+                'class' => [
+                  'links__link',
+                ],
+              ],
+            ],
+          ]
+        ]
+      ];
+
+
+      $row[] = Utils::truncate(strip_tags($node->get('body')->getValue()[0]['value']), 800, '');
       // $row[] = $node->label();
-      $row[] = $node->get('field_transfer_amount')->getValue()[0]['value'];
+      $row[] = number_format($node->get('field_transfer_amount')->getValue()[0]['value'], 2, '.', ',');
       // $row[] = 'ดูรายละเอียด';//Utils::truncate($node->get('body')->value, 200);
 
 

@@ -15,11 +15,12 @@ use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 use Drupal\config_pages\Entity\ConfigPages;
-
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Drupal\Core\Mail\MailManagerInterface;
 use Drupal\Component\Utility\SafeMarkup;
 use Drupal\Component\Utility\Html;
 
+use Drupal\node\Entity\Node;
 
 use Drupal\backlist\Utils\Utils;
 
@@ -110,16 +111,44 @@ function backlist_user_insert(Drupal\Core\Entity\EntityInterface $entity) {
           return;
         }
       }
-
+      // $entity->setPassword( $entity->get('field_password')->getValue()[0]['value'] );
       $entity->set('field_display_name', $entity->getDisplayName());
       $entity->save();
       break;
     }
   }
-  
+}
 
+/**
+ * Implements hook_ENTITY_TYPE_insert().
+ */
+function backlist_node_insert(Node $node) {
+  if ($node->bundle() == 'back_list') {
+    // $copy = Node::create([
+    //   'title' => $node->getTitle() . ' copy!',
+    //   'type' => 'article',
+    //   'status' => 0,
+    // ]);
+    // foreach ($node as $key => $value) {
+    //   // Copy values from all fields (fields start with "field_").
+    //   if (strpos($key, 'field_') === 0) {
+    //     if (isset($copy->{$key})) {
+    //       $copy->{$key}->setValue($node->{$key}->getValue());
+    //     }
+    //   }
+    // }
+    // $copy->save();
 
+    /*
+    url = \Drupal\Core\Url::fromRoute('<front>')
+            ->setRouteParameters(array( 'product_type'=>$product_type,
+                                        'sales_person_name'=>$sales_person_name, 
+                                        'reportor'=>$reportor, ));
+    */
 
+    $response = new RedirectResponse(Url::fromRoute('report_view.form')->setRouteParameters(array( 'nid'=>$node->id() ))->toString());
+    $response->send();
+  }
 }
 
 /*
@@ -219,6 +248,44 @@ function backlist_form_alter(&$form, FormStateInterface $form_state, $form_id) {
       }
     }
   }
+  /*else if($form_id == 'user_register_form'){
+    // $form['actions']['forgot_password'] = [
+    //   '#type' => 'link',
+    //   '#title' => t('Forgot password'),
+    //   // Example of a Url object from a route. See the documentation
+    //   // for more methods that may help generate a Url object.
+    //   '#url' => Url::fromRoute('user.pass'),
+    //   '#options'=>array(
+    //     'attributes'=>array(
+    //         'class'=>array('button')
+    //     ),
+    //   ),
+    //   '#weight' => 2,
+    // ];
+      // dpm($form['actions']['password']);
+
+  
+    
+    $form['actions']['pass'] = array(
+      '#type' => 'password',
+      '#title' => t('Password'),
+      '#maxlength' => 64,
+      '#description' => t('Passwords must contain at least eight characters, including at least 1 letter and 1 number.'), 
+      '#required' => TRUE,
+      // '#attributes' => array('style' => array('display:none;'))
+    );
+
+    // $form['actions']['submit']['#value'] = t('Publish');
+    $form['actions']['submit']['#submit'][] = 'user_register_form_method';
+    
+  }
+  */
+  
+}
+
+// &$form, FormStateInterface $form_state, $form_id
+function user_register_form_method(&$form, FormStateInterface $form_state) {
+  \Drupal::messenger()->addStatus(t('user_register_form_method'));
 }
 
 function backlist_page_attachments(array &$attachments) {

@@ -35,6 +35,7 @@ class BreadcrumbBuilder implements BreadcrumbBuilderInterface {
             case 'my_profile.form':
             case 'forum.index':
             case 'report_view.form':
+            case 'filter_by_person.form':
             // case 'new_member.step3':
             // case 'new_member.step4':
             // case 'what_is_bigcard.form': 
@@ -165,14 +166,35 @@ class BreadcrumbBuilder implements BreadcrumbBuilderInterface {
 
             case 'report_view.form':{
                 $nid = $route_match->getParameter('nid');
+                $from = $route_match->getParameter('from');
+
+                // dpm($from);
+
                 $node = Node::load($nid);
-                if(!empty($node)){
+                if($from == 'frontpage'){
+                    if(!empty($node)){
+                        $breadcrumb->setLinks([ Link::createFromRoute(t('Home'), '<front>'),
+                                                Link::createFromRoute(t($node->label()), '<none>'),]);
+                    }
+                }else{
+
+                    $from = explode("&", urldecode( $from ));
                     $breadcrumb->setLinks([ Link::createFromRoute(t('Home'), '<front>'),
-                                            Link::createFromRoute(t($node->label()), '<none>'),]);
+                                            Link::fromTextAndUrl(t('Search results'), Url::fromRoute('filter_by_person.form', array('name' => $from[0], 'surname' => $from[1] ))),
+                                            Link::createFromRoute(t($node->label()), '<none>'),
+                                            ]);
                 }
+               
 
                 break;
             }
+
+            case 'filter_by_person.form':{
+                $breadcrumb->setLinks([ Link::createFromRoute(t('Home'), '<front>'),
+                                        Link::createFromRoute(t('Search results'), '<none>'),]);
+                break;
+            }
+            
             /*
             case 'new_member.step3':
             case 'new_member.step4': {

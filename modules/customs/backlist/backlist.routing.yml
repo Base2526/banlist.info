@@ -22,6 +22,15 @@ search.form:
   requirements:
     _access: 'TRUE'
 
+filter_by_person.form:
+  path: '/filter_by_person/{name}/{surname}'
+  defaults:
+    _form: '\Drupal\backlist\Form\FilterByPersonForm'
+    name: NULL
+    surname: NULL
+  requirements:
+    _access: 'TRUE'
+
 my_profile.form:
   path: '/my_profile/{uid}'
   # path: '/printing_view_form/create/{nid}'
@@ -49,9 +58,10 @@ backlist.fb_login_callback:
     _permission: 'access content'
 
 report_view.form:
-  path: '/report/{nid}'
+  path: '/report/{nid}/{from}'
   defaults:
     _form: '\Drupal\backlist\Form\ReportViewForm'
     nid: 0
+    from: 'frontpage'
   requirements:
     _permission: 'access content'
