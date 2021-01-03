@@ -36,6 +36,7 @@ class BreadcrumbBuilder implements BreadcrumbBuilderInterface {
             case 'forum.index':
             case 'report_view.form':
             case 'filter_by_person.form':
+            case 'entity.user.canonical':
             // case 'new_member.step3':
             // case 'new_member.step4':
             // case 'what_is_bigcard.form': 
@@ -192,6 +193,12 @@ class BreadcrumbBuilder implements BreadcrumbBuilderInterface {
             case 'filter_by_person.form':{
                 $breadcrumb->setLinks([ Link::createFromRoute(t('Home'), '<front>'),
                                         Link::createFromRoute(t('Search results'), '<none>'),]);
+                break;
+            }
+
+            case 'entity.user.canonical':{
+                $breadcrumb->setLinks([ Link::createFromRoute(t('Home'), '<front>'),
+                                        Link::createFromRoute(t('Profile'), '<none>'),]);
                 break;
             }
             

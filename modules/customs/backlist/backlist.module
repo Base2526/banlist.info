@@ -166,6 +166,11 @@ function backlist_theme($existing, $type, $theme, $path) {
       'variables' => array(
       ),
     ),   
+    'row-merchant-bank-account'=> array(
+      'variables' => array(
+        'items' => array(),
+      ),
+    ),   
   );
 }
 
