@@ -153,14 +153,14 @@ class ReportViewForm extends FormBase {
         $form['name'] = [
             '#type' => 'item',
             '#markup' => '<div>'.$name.'</div>',
-            '#prefix' => '<div>'.$this->t('สินค้า/ประเภท'),
+            '#prefix' => '<div><b>'.$this->t('สินค้า/ประเภท') . '</b>',
             '#suffix' => '</div>',
         ];
 
         $form['sales_person_name'] = [
             '#type' => 'item',
             '#markup' => '<div>'.$sales_person_name . ' ' . $sales_person_surname.'</div>',
-            '#prefix' => '<div>'.$this->t('ชื่อบัญชี-นามสกุล ผู้รับเงินโอน'),
+            '#prefix' => '<div><b>'.$this->t('ชื่อบัญชี-นามสกุล ผู้รับเงินโอน'). '</b>',
             '#suffix' => '</div>',
         ];
 
@@ -168,7 +168,7 @@ class ReportViewForm extends FormBase {
             '#type' => 'fieldset',
             '#collapsible' => TRUE,
             '#collapsed' => TRUE,
-            '#prefix' => '<div id="fieldset-bank-account">'.$this->t('บัญชีธนาคารคนขาย'),
+            '#prefix' => '<div id="fieldset-bank-account"><b>'.$this->t('บัญชีธนาคารคนขาย') . '</b>',
             '#suffix' => '</div>',
         );
 
@@ -193,14 +193,14 @@ class ReportViewForm extends FormBase {
         $form['transfer_amount'] = [
             '#type' => 'item',
             '#markup' => '<div>'.$transfer_amount.'</div>',
-            '#prefix' => '<div>'.$this->t('ยอดเงิน'),
+            '#prefix' => '<div><b>'.$this->t('ยอดเงิน'). '</b>',
             '#suffix' => '</div>',
         ];
 
         $form['body'] = [
             '#type' => 'item',
             '#markup' => '<div>'.$body.'</div>',
-            '#prefix' => '<div>'.$this->t('รายละเอียดเพิ่มเติม'), 
+            '#prefix' => '<div><b>'.$this->t('รายละเอียดเพิ่มเติม'). '</b>',
             '#suffix' => '</div>',
         ];
 
@@ -209,7 +209,7 @@ class ReportViewForm extends FormBase {
                 '#type' => 'fieldset',
                 '#collapsible' => TRUE,
                 '#collapsed' => TRUE,
-                '#prefix' => '<div class="row" id="report-view-slick-lightbox"><div>'.$this->t('รูปภาพประกอบ').'</div>',
+                '#prefix' => '<div class="row" id="report-view-slick-lightbox"><div><b>'.$this->t('รูปภาพประกอบ').'</b></div>',
                 '#suffix' => '</div>',
             );
             foreach ($images as $im_key => $uri) {
@@ -227,22 +227,22 @@ class ReportViewForm extends FormBase {
        
         $form['transfer_date'] = [
             '#type' => 'item',
-            '#markup' => '<div>'.$transfer_date.'</div>',
-            '#prefix' => '<div>'.$this->t('วันโอนเงิน'), 
+            '#markup' => '<div>'. ( empty($transfer_date) ? '-' : $transfer_date ) .'</div>',
+            '#prefix' => '<div><b>'.$this->t('วันโอนเงิน') . '</b>', 
             '#suffix' => '</div>',
         ];
 
         $form['id_card_number'] = [
             '#type' => 'item',
-            '#markup' => '<div>'.$id_card_number.'</div>',
-            '#prefix' => '<div>'.$this->t('เลขบัตรประชาชนคนขาย'), 
+            '#markup' => '<div>'.  ( empty($id_card_number) ? '-' : $id_card_number ) .'</div>',
+            '#prefix' => '<div><b>'.$this->t('เลขบัตรประชาชนคนขาย'). '</b>',  
             '#suffix' => '</div>',
         ];
 
         $form['selling_website'] = [
             '#type' => 'item',
-            '#markup' => '<div>'.$selling_website.'</div>',
-            '#prefix' => '<div>'.$this->t('เว็บไซด์ประกาศขายของ'), 
+            '#markup' => '<div>'. ( empty($selling_website) ? '-' : $selling_website ).'</div>',
+            '#prefix' => '<div><b>'.$this->t('เว็บไซด์ประกาศขายของ'). '</b>', 
             '#suffix' => '</div>',
         ];
 

@@ -84,6 +84,7 @@ class FrontPage extends ControllerBase {
       'product_type'      => $this->t('Product type'),        // สินค้า/ประเภท
       'sales_person_name' => $this->t('Sales person name'),   // ชื่อบัญชีผู้รับเงินโอน
       'details'           => $this->t('Details'),
+      'bank_account' => $this->t('Bank account'),
       'transfer_amount'   => $this->t('Transfer amount'),     // ยอดเงิน
       'date_post'         => $this->t('Date post'),	  
       'reportor'          => $this->t('Reportor')
@@ -201,6 +202,34 @@ class FrontPage extends ControllerBase {
 
 
       $row[] = Utils::truncate(strip_tags($node->get('body')->getValue()[0]['value']), 800, '');
+      
+      $merchant_bank_accounts = array();
+      foreach ($node->get('field_merchant_bank_account')->getValue() as $mi=>$mv){
+          
+          $merchant_bank_account = array();
+          $p = Paragraph::load( $mv['target_id'] );
+          
+          // เลขบัญชี
+          $field_bank_account = $p->get('field_bank_account')->getValue();
+          if(!empty($field_bank_account)){
+              $bank_account = $field_bank_account[0]['value'];
+              $merchant_bank_account['bank_account'] = $bank_account;
+          } 
+
+          // ธนาคาร/ระบบ Wallet
+          $bank_wallet_target_id = $p->get('field_bank_wallet')->target_id;
+          $bank_wallet = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->load($bank_wallet_target_id);
+          $merchant_bank_account['bank_wallet'] = $bank_wallet->label();
+          
+          $merchant_bank_accounts[] = $merchant_bank_account;
+      }
+
+      $row[] = ['data' => 
+                    [
+                      '#theme'     => 'row-merchant-bank-account',
+                      '#items'    => $merchant_bank_accounts,
+                    ]
+                ];
       // $row[] = $node->label();
       $row[] = number_format($node->get('field_transfer_amount')->getValue()[0]['value'], 2, '.', ',');
       // $row[] = 'ดูรายละเอียด';//Utils::truncate($node->get('body')->value, 200);
@@ -239,6 +268,9 @@ class FrontPage extends ControllerBase {
       $ownerId = $node->getOwnerId();
       if(!empty($ownerId)){
         $user = User::load($ownerId);
+
+        // $field_display_name = $user->get('field_display_name')->value;
+        // dpm($field_display_name);
         $row[] = [
           // 'data' => $node->get('uid')->view(),
           'data' => [
@@ -250,8 +282,10 @@ class FrontPage extends ControllerBase {
             ],
             '#links' => [
               [
-                'title' => $user->get('name')->value,
-                'url' => Url::fromRoute('my_profile.form', ['uid' => $ownerId]),
+                'title' =>  empty($user->get('field_display_name')->value) ? $user->get('name')->value : $user->get('field_display_name')->value,
+                // 'url' => Url::fromRoute('my_profile.form', ['uid' => $ownerId]),
+                // 'url' => Url::fromRoute('entity.user.edit_form', ['user' => $ownerId]),
+                'url' => Url::fromRoute('entity.user.canonical', ['user' => $ownerId]),
                 'attributes' => [
                   'class' => [
                     'links__link',
@@ -261,6 +295,8 @@ class FrontPage extends ControllerBase {
             ]
           ]
         ];
+
+        // entity.user.edit_form', ['user' => $this->currentUser()->id()], [], 301);
         // $row[] = theme('image', array('path' => 'https://www.drupal.org/files/styles/drupalorg_user_picture/public/user-pictures/picture-324696-1401239339.png?itok=LMwPjqdb'));
         // $rows[] = array('<img src="https://www.drupal.org/files/styles/drupalorg_user_picture/public/user-pictures/picture-324696-1401239339.png?itok=LMwPjqdb" alt="photo" style="width:100px;height:300px">');
       

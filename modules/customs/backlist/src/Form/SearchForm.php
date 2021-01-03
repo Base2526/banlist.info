@@ -88,6 +88,7 @@ class SearchForm extends FormBase {
             '#suffix' => '</div>'
         ];
 
+        // Bank account
         $form['filters']['reportor'] = [
             '#title'    => $this->t('Reportor'),
             '#type'     => 'textfield',
