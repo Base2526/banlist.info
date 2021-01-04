@@ -29,3 +29,8 @@ Google OAuth client created
 693724870615-2hkmknke3sj6puo9c88nk67ouuu9m8l1.apps.googleusercontent.com
 - Your Client Secret
 zaqrtYlJrf-1215zE42xBBIe
+
+
+- docker mmap() failed: [12] Cannot allocate memory
+Composer require runs out of memory. PHP Fatal error: Allowed memory size of xxxxx bytes exhausted
+https://www.digitalocean.com/community/tutorials/how-to-add-swap-on-centos-7
