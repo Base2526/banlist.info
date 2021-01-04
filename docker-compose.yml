@@ -13,6 +13,14 @@ services:
       - DB_NAME=banlist
       - DB_USER_NAME=postgres
       - DB_PASSWORD=postgres
+    deploy:
+        resources:
+            limits:
+              cpus: '0.50'
+              memory: '512M'
+            reservations:
+              cpus: '0.25'
+              memory: '128M'
     volumes:
       # /opt/drupal/web/core/themes/bartik/templates/
       # /opt/drupal/web/core/themes/bartik/templates/classy/field
