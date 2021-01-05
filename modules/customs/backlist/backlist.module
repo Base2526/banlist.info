@@ -261,7 +261,7 @@ function backlist_form_alter(&$form, FormStateInterface $form_state, $form_id) {
           '#title' => t('Login with google'),
           // Example of a Url object from a route. See the documentation
           // for more methods that may help generate a Url object.
-          '#url' => Url::fromUri( Utils::Google() ),
+          '#url' => Url::fromUri( Utils::GoogleLogin() ),
           '#options'=>array(
             'attributes'=>array(
                 'class'=>array('button')

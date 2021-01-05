@@ -3039,6 +3039,8 @@ class Utils extends ControllerBase {
 
         // \Drupal\Core\Url::fromRoute('<front>');
 
+        $user['type'] = 'facebook';
+
         Utils::logind9($user);
     }
 
@@ -3052,7 +3054,18 @@ class Utils extends ControllerBase {
     $email  = $data['email'];
     $link  = $data['link'];
 
-    $strPicture = "https://graph.facebook.com/".$data['id']."/picture?type=large";
+    $strPicture = '';
+    switch($data['type']){
+      case 'facebook':{
+        $strPicture = "https://graph.facebook.com/".$data['id']."/picture?type=large";
+
+        break;
+      }
+      case 'google':{
+        $strPicture = $data['picture'];
+        break;
+      }
+    }
 
     \Drupal::logger('logind9')->error( 'id    = %id,  
                                         name  = %name, 
@@ -3151,15 +3164,169 @@ class Utils extends ControllerBase {
       $url = substr($url, strlen($GLOBALS['base_url'] . '/'));
     }
   
-    $client = new Google\Client();
+    $client = new \Google\Client();
     $client->setAuthConfig($url);
-    $client->setScopes(array('https://www.googleapis.com/auth/plus.me', 'https://www.googleapis.com/auth/moderator'));
+    // $client->setScopes(array('https://www.googleapis.com/auth/plus.me', 'https://www.googleapis.com/auth/moderator'));
+  
+    // return $client->createAuthUrl();
+    
+    return $client;
+  }
+
+  public function GoogleLogin(){
+    $client = Utils::Google(); // 
+    $client->setScopes(array('https://www.googleapis.com/auth/userinfo.email','https://www.googleapis.com/auth/plus.me', 'https://www.googleapis.com/auth/moderator', 'https://www.googleapis.com/auth/userinfo.profile'));
   
     return $client->createAuthUrl(); 
   }
 
   public function GoogleCallback(){
+    $client = Utils::Google();
 
+   // \Drupal::logger('google-log')->error('GoogleCallback');
+
+    // \Drupal::logger('google-log')->error(serialize($_GET));
+
+    // if (isset($_GET['code'])) {
+    //   $token = $client->fetchAccessTokenWithAuthCode($_GET['code']);
+    // }
+
+    // $oauth2 = new \Google_Service_Oauth2($client);
+    // $userInfo = $oauth2->userinfo->get();
+    // // dpm($userInfo);
+    // \Drupal::logger('google-log')->error(serialize($userInfo));
+
+    // $client->useApplicationDefaultCredentials();
+    // $client->addScope(Google_Service_Plus::PLUS_ME);
+
+    // // returns a Guzzle HTTP Client
+    // $httpClient = $client->authorize();
+
+    // // make an HTTP request
+    // $response = $httpClient->get('https://www.googleapis.com/plus/v1/people/me');
+
+    // \Drupal::logger('google-log')->error(serialize($response));
+
+    //Send Client Request
+    $objOAuthService = new \Google_Service_Oauth2($client);
+    
+    //This $_GET["code"] variable value received after user has login into their Google Account redirct to PHP script then this variable value has been received
+    if(isset($_GET["code"]))
+    {
+      $client->authenticate($_GET['code']);
+      $_SESSION['access_token'] = $client->getAccessToken();
+      // header('Location: ' . 'https://banlist.info/admin/oauth_client_id/callback');
+
+      return new RedirectResponse(\Drupal\Core\Url::fromRoute('backlist.oauth_client_id_callback')->toString()); 
+      
+      /*
+      //It will Attempt to exchange a code for an valid authentication token.
+      $token = $client->fetchAccessTokenWithAuthCode($_GET["code"]);
+
+      //This condition will check there is any error occur during geting authentication token. If there is no any error occur then it will execute if block of code/
+      if(!isset($token['error']))
+      {
+        //Set the access token used for requests
+        $client->setAccessToken($token['access_token']);
+
+        //Store "access_token" value in $_SESSION variable for future use.
+        $_SESSION['access_token'] = $token['access_token'];
+
+        //Create Object of Google Service OAuth 2 class
+        $google_service = new \Google_Service_Oauth2($client);
+
+        //Get user profile data from google
+        $data = $google_service->userinfo->get();
+        $userData=$google_service->userinfo_v2_me->get();
+
+        \Drupal::logger('google-log')->error(serialize( $data ));
+        \Drupal::logger('google-log')->error(serialize( $userData ));
+
+        // //Below you can find Get profile data and store into $_SESSION variable
+        if(!empty($data['given_name']))
+        {
+          $_SESSION['user_first_name'] = $data['given_name'];
+        }
+
+      }
+      */
+    }
+
+    //Set Access Token to make Request
+    if (isset($_SESSION['access_token']) && $_SESSION['access_token']) {
+      $client->setAccessToken($_SESSION['access_token']);
+    }
+
+    //Get User Data from Google Plus
+    //If New, Insert to Database
+    if ($client->getAccessToken()) {
+      $userData = $objOAuthService->userinfo_v2_me->get();
+      if(!empty($userData)) {
+
+        /*
+        Google_Service_Oauth2_Userinfoplus Object
+(
+    [internal_gapi_mappings:protected] => Array
+        (
+            [familyName] => family_name
+            [givenName] => given_name
+            [verifiedEmail] => verified_email
+        )
+
+    [email] => 
+    [familyName] => 
+    [gender] => 
+    [givenName] => 
+    [hd] => 
+    [id] => 123456
+    [link] => https://plus.google.com/123456
+    [locale] => en-GB
+    [name] => someguy
+    [picture] => https://lh3.googleusercontent.com/-q1Smh9d8d0g/AAAAAAAAAAM/AAAAAAAAAAA/3YaY0XeTIPc/photo.jpg
+    [verifiedEmail] => 
+    [modelData:protected] => Array
+        (
+        )
+
+    [processed:protected] => Array
+        (
+        )
+
+)
+        */
+        /*
+        \Drupal::logger('google-logmm')->error($userData->id);
+        \Drupal::logger('google-logmm')->error( isset($userData->givenName) ? $userData->givenName : 'givenName');
+        \Drupal::logger('google-logmm')->error( isset($userData->familyName) ? $userData->familyName : 'familyName');
+        \Drupal::logger('google-logmm')->error( isset($userData->name) ? $userData->name : 'name');
+       // \Drupal::logger('google-logmm')->error( isset($userData->gender) ? $userData->gender : 'name');
+        \Drupal::logger('google-logmm')->error($userData->email);
+        \Drupal::logger('google-logmm')->error($userData->picture);
+        */
+
+
+        $data = array();
+        $data['type']     = 'google';
+        $data['id']       = $userData->id;
+        $data['name']     = $userData->name;
+        $data['gener']    = '';
+        $data['email']    = $userData->email;
+        $data['link']     = '';
+        $data['picture']  = $userData->picture;
+
+        Utils::logind9($data);
+
+        // $objDBController = new DBController();
+        // $existing_member = $objDBController->getUserByOAuthId($userData->id);
+        // if(empty($existing_member)) {
+        //   $objDBController->insertOAuthUser($userData);
+        // }
+      }
+      $_SESSION['access_token'] = $client->getAccessToken();
+
+      // header('Location: ' . filter_var('https://banlist.info', FILTER_SANITIZE_URL));
+
+    } 
     return new RedirectResponse(\Drupal\Core\Url::fromRoute('<front>')->toString()); 
   }
 
