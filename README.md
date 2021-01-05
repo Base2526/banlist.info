@@ -22,3 +22,18 @@ https://gist.github.com/bdlangton/e826276a0c78d9a89d8dec23dd0c7683
 
 Secure Apache with Let's Encrypt on Debian 10
 https://linuxize.com/post/secure-apache-with-let-s-encrypt-on-debian-10/
+
+
+Google OAuth client created
+- Your Client ID
+693724870615-2hkmknke3sj6puo9c88nk67ouuu9m8l1.apps.googleusercontent.com
+- Your Client Secret
+zaqrtYlJrf-1215zE42xBBIe
+
+
+- docker mmap() failed: [12] Cannot allocate memory
+Composer require runs out of memory. PHP Fatal error: Allowed memory size of xxxxx bytes exhausted
+https://www.digitalocean.com/community/tutorials/how-to-add-swap-on-centos-7
+
+Login with Google
+https://console.developers.google.com/apis/credentials?project=banlist-info&folder=&organizationId=

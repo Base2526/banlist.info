@@ -53,7 +53,15 @@ backlist.autocomplete:
 backlist.fb_login_callback:
   path: '/admin/fb_login/callback'
   defaults:
-    _controller: '\Drupal\backlist\Utils\Utils::FBcallback'
+    _controller: '\Drupal\backlist\Utils\Utils::FBCallback'
+  requirements:
+    _permission: 'access content'
+
+# OAuth client ID
+backlist.oauth_client_id_callback:
+  path: '/admin/oauth_client_id/callback'
+  defaults:
+    _controller: '\Drupal\backlist\Utils\Utils::GoogleCallback'
   requirements:
     _permission: 'access content'
 
