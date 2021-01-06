@@ -112,10 +112,20 @@ class FilterByPersonForm extends FormBase {
 
                 $summary += $transfer_amount;
 
+                // $form['headers'][] = array(
+                //     '#type' => 'item',
+                //     '#prefix' =>    '<tr>
+                //                         <td><a href="/'. $this->language .'/node/'.$node->id().'/'. urlencode($name.'&'.$surname) .'">'. $node->label() .'</a></td>
+                //                         <td>'. strip_tags($node->get('body')->getValue()[0]['value']) .'</td>
+                //                         <td>'. number_format($transfer_amount, 2, '.', ',') .'</td>
+                //                     </tr>',
+                //     '#suffix' => '',
+                // );
+
                 $form['headers'][] = array(
                     '#type' => 'item',
                     '#prefix' =>    '<tr>
-                                        <td><a href="/'. $this->language .'/report/'.$node->id().'/'. urlencode($name.'&'.$surname) .'">'. $node->label() .'</a></td>
+                                        <td><a href="/'. $this->language .'/node/'.$node->id().'?from='. urlencode($name.'&'.$surname) .'">'. $node->label() .'</a></td>
                                         <td>'. strip_tags($node->get('body')->getValue()[0]['value']) .'</td>
                                         <td>'. number_format($transfer_amount, 2, '.', ',') .'</td>
                                     </tr>',

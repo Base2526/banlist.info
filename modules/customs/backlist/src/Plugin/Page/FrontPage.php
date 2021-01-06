@@ -149,7 +149,8 @@ class FrontPage extends ControllerBase {
                   '#links' => [
                     [
                       'title' => $node->label(),
-                      'url' => Url::fromRoute('report_view.form', ['nid' => $node->id()]),
+                      // 'url' => Url::fromRoute('report_view.form', ['nid' => $node->id()]),
+                      'url' => Url::fromRoute('entity.node.canonical', ['node' => $node->id()], ['absolute' => TRUE]),
                       'attributes' => [
                         'class' => [
                           'links__link',
@@ -159,6 +160,12 @@ class FrontPage extends ControllerBase {
                   ]
                 ]
               ];
+
+               /*
+               $options = ['absolute' => TRUE];
+$url_object = Drupal\Core\Url::fromRoute('entity.node.canonical', ['node' => $nid], $options);
+
+               */
 
       
       // 2. ชื่อบัญชี-นามสกุล ผู้รับเงินโอน
