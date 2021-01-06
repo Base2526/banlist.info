@@ -3135,8 +3135,25 @@ class Utils extends ControllerBase {
       $user->set('field_display_name', $data['name']);
       $user->set('user_picture', $file->id());
 
-      // is login with FB
-      $user->set('field_login_with_fb', 1);
+      // is login with FB || Google
+      // $user->set('field_login_with_fb', 1);
+      
+
+      /*
+        website : 28
+        facebook : 29
+        google : 30
+      */
+      switch($data['type']){
+        case 'facebook':{
+          $user->set('field_type_login', 29);
+          break;
+        }
+        case 'google':{
+          $user->set('field_type_login', 30);
+          break;
+        }
+      }
 
       // 25: male, 26: Female
       $user->set('field_gender', empty($data['gender']) ? '' : ($data['gender'] == 'male' ? 25 : 26) );
