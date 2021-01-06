@@ -25,6 +25,7 @@
         "facebook/graph-sdk": "^5.7",
         "google/apiclient": "^2.7",
         "html2text/html2text": "^4.3",
+        "kint-php/kint": "^3.3",
         "swiftmailer/swiftmailer": "^6.2",
         "symfony/var-dumper": "^4 || ^5"
     },

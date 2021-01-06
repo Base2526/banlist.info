@@ -108,12 +108,22 @@ class BreadcrumbBuilder implements BreadcrumbBuilderInterface {
             }
 
             case 'entity.node.canonical':{
-                $node = $route_match->getParameter('node');
+                $node         = $route_match->getParameter('node');
                 $content_type = $node->bundle();
 
                 if(strcmp($content_type, 'back_list') == 0){
+                    // $from = \Drupal::service('current_route_match')->getParameter('from');
+                    // dpm( $from );
+                    // $from = explode("&", urldecode( $from ));
+                    // $breadcrumb->setLinks([ Link::createFromRoute(t('Home'), '<front>'),
+                    //                         Link::fromTextAndUrl(t('Search results'), Url::fromRoute('filter_by_person.form', array('name' => $from[0], 'surname' => $from[1] ))),
+                    //                         Link::createFromRoute(t($node->label()), '<none>'),
+                    //                         ]);
+
                     $breadcrumb->setLinks([ Link::createFromRoute(t('Home'), '<front>'),
                                             Link::createFromRoute(t($node->label()), '<none>'),]);
+
+                    // kint( \Drupal::service('current_route_match')->getParameter('from') );
                 }else if(strcmp($content_type, 'article') == 0){
                     switch($node->id()){
                         case 2:{
