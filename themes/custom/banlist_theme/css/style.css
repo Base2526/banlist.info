@@ -146,6 +146,10 @@ span.add-list-button a{
     text-align: right;
 }
 
+.field__label{
+    font-weight: bold;
+}
+
 /* desktop */
 @media (min-width: 769px){
     form.user-login-form,
