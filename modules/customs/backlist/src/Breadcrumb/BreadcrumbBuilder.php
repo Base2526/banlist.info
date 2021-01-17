@@ -24,20 +24,21 @@ class BreadcrumbBuilder implements BreadcrumbBuilderInterface {
     public function applies(RouteMatchInterface $route_match) {
         /* Allways use this. Change this is another module needs to use a new custom breadcrumb */
 
-        // dpm( ">> |" . $route_match->getRouteName() . "| <<");
+        dpm( ">> |" . $route_match->getRouteName() . "| <<");
         switch($route_match->getRouteName()){
             case 'node.add':
             case 'frontpage':
             case 'entity.node.canonical':
+            case 'entity.node.edit_form':
             case 'user.login':
             case 'user.pass':
             case 'user.register':
-            case 'my_profile.form':
+            case 'profile.form':
             case 'forum.index':
             case 'report_view.form':
             case 'filter_by_person.form':
             case 'entity.user.canonical':
-            // case 'new_member.step3':
+            
             // case 'new_member.step4':
             // case 'what_is_bigcard.form': 
             // case 'exclusive.form':
@@ -143,6 +144,18 @@ class BreadcrumbBuilder implements BreadcrumbBuilderInterface {
                 break;
             }
 
+            case 'entity.node.edit_form':{
+                $node   = $route_match->getParameter('node');
+                $content_type = $node->bundle();
+                if(strcmp($content_type, 'back_list') == 0){
+                    $breadcrumb->setLinks([ Link::createFromRoute(t('Home'), '<front>'),
+                                            Link::fromTextAndUrl(t('My Profile'), Url::fromRoute('profile.form', array('uid' => \Drupal::currentUser()->id() ))),
+                                            Link::createFromRoute(t('Edit') .' '. t($node->label()), '<none>'),]);
+
+                    break;
+                }
+            }
+
             case 'user.login':{
                 $breadcrumb->setLinks([ Link::createFromRoute(t('Home'), '<front>'),
                                         Link::createFromRoute(t('Login'), '<none>'),]);
@@ -163,7 +176,7 @@ class BreadcrumbBuilder implements BreadcrumbBuilderInterface {
                 break;
             }
 
-            case 'my_profile.form':{
+            case 'profile.form':{
                 $breadcrumb->setLinks([ Link::createFromRoute(t('Home'), '<front>'),
                                         Link::createFromRoute(t('Profile'), '<none>'),]);
                 break;
