@@ -225,8 +225,12 @@ $url_object = Drupal\Core\Url::fromRoute('entity.node.canonical', ['node' => $ni
 
           // ธนาคาร/ระบบ Wallet
           $bank_wallet_target_id = $p->get('field_bank_wallet')->target_id;
-          $bank_wallet = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->load($bank_wallet_target_id);
-          $merchant_bank_account['bank_wallet'] = $bank_wallet->label();
+
+          if(!empty($bank_wallet_target_id)){
+            $bank_wallet = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->load($bank_wallet_target_id);
+            $merchant_bank_account['bank_wallet'] = $bank_wallet->label();
+          }
+          
           
           $merchant_bank_accounts[] = $merchant_bank_account;
       }

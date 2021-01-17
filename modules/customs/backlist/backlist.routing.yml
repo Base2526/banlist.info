@@ -32,11 +32,12 @@ filter_by_person.form:
     _access: 'TRUE'
 
 profile.form:
-  path: '/profile/{uid}'
+  path: '/profile/{uid}/{mode}'
   # path: '/printing_view_form/create/{nid}'
   defaults:
     _form: '\Drupal\backlist\Form\MyProfileForm'
     uid: 0
+    mode: NULL
   requirements:
     _access: 'TRUE'
 
