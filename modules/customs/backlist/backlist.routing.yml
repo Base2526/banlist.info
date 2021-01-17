@@ -76,12 +76,11 @@ report_view.form:
     _permission: 'access content'
 
 api.check_banlist:
-  path: '/api/check_banlist.json'
+  path: '/api/check_banlist'
   methods: [POST]
   defaults: 
     _controller: '\Drupal\backlist\Controller\API::CheckBanlist'
-  requirements:
-    _permission: 'access content' 
-    # _role: 'authenticated+administrator'
+  requirements: 
+    _role: 'administrator'
   options:
     _auth: ['basic_auth']
