@@ -2175,6 +2175,16 @@ class Utils extends ControllerBase {
   public static function getTaxonomy_term($cid, $clear = FALSE){
     $type = 'taxonomy_term';
 
+    $branchs_terms = \Drupal::EntityTypeManager()->getStorage($type)->loadTree($cid);
+    $branchs = array();
+    foreach ($branchs_terms as $tag_term) {
+      $branchs[$tag_term->tid] = $tag_term->name;
+    }   
+
+    return $branchs;
+
+
+    /*
     $our_service = \Drupal::service('bigcard.cache');
     $cache = $our_service->getCache($type, $cid);
 
@@ -2366,6 +2376,7 @@ class Utils extends ControllerBase {
     }else{
       return $cache;
     }   
+    */
   }
 
   public static function is_localhost() {

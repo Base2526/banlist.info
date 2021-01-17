@@ -15,6 +15,8 @@ use Drupal\Core\Url;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Drupal\user\Entity\User;
 
+use Drupal\backlist\Utils\Utils;
+
 /**
  * Controller routines for page example routes.
  */
@@ -40,21 +42,21 @@ class MyProfileForm extends FormBase {
   }
 
   public function getFormId() {
-    return 'my_profile_form';
+    return 'profile_form';
   }
 
   public function userLg(){
-    $response = new RedirectResponse(\Drupal::url('user.login'));
+    $response = new RedirectResponse(Url::fromRoute('<front>')->toString());
     $response->send();
     return;
   }
 
-  private function getBackListNode($current_user_id){
+  private function getBackListNode($uid){
     $storage = \Drupal::entityTypeManager()->getStorage('node');
     $query = $storage->getQuery();
     $query->condition('status', \Drupal\node\NodeInterface::PUBLISHED);
     $query->condition('type', 'back_list');
-    $query->condition('uid', $current_user_id);
+    $query->condition('uid', $uid);
 
     $nids = $query->execute();
     // foreach ($storage->loadMultiple($nids) as $node) {
@@ -122,10 +124,12 @@ class MyProfileForm extends FormBase {
             //     '#suffix' => '',
             // );
 
+            // 
+
             $form['headers'][] = array(
                 '#type' => 'item',
                 '#prefix' =>    '<tr>
-                                    <td><a href="/'. $this->language .'/node/'.$node->id().'/edit">'. $node->label() .'</a></td>
+                                    <td><a href="/'. $this->language .'/node/'.$node->id() . (\Drupal::currentUser()->id() == $uid ? '/edit' : ''). '">'. $node->label() .'</a></td>
                                     <td>'. strip_tags($node->get('body')->getValue()[0]['value']) .'</td>
                                     <td>'. number_format($transfer_amount, 2, '.', ',') .'</td>
                                 </tr>',
@@ -157,16 +161,10 @@ class MyProfileForm extends FormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $form['#tree'] = TRUE;
-
     $current_route_match = \Drupal::service('current_route_match');
     $uid = $current_route_match->getParameter('uid'); 
-    // $mode = empty($current_route_match->getParameter('mode')) ? 'add' : $current_route_match->getParameter('mode'); 
-
+    $mode = $current_route_match->getParameter('mode'); 
     $current_user_id = \Drupal::currentUser()->id();
-
-    // dpm($uid);
-    // dpm($mode);
-    // dpm( $current_user_id );
 
     if(empty($uid)){
       $logged_in = \Drupal::currentUser()->isAuthenticated();
@@ -175,6 +173,10 @@ class MyProfileForm extends FormBase {
       }else{
         $uid = \Drupal::currentUser()->id();
       }
+    }else if( $mode != NULL ){
+      if(strtolower($mode) != 'edit'){
+        $this->userLg();
+      }
     }
 
     $user = User::load($uid);
@@ -182,8 +184,14 @@ class MyProfileForm extends FormBase {
       $this->userLg();
     }
 
-    // $uid    = $user->get('uid')->value;
-    $name   = $user->get('name')->value;
+    $name   = '';
+    $display_name = $user->get('field_display_name')->getValue();
+    if(!empty($display_name)){
+      $name   = $display_name[0]['value'];
+    }else{
+      $name   = $user->get('name')->value;
+    }
+
     $email  = $user->get('mail')->value;
 
     $image_with_preview_fids = array();  
@@ -192,15 +200,67 @@ class MyProfileForm extends FormBase {
         $image_with_preview_fids[] = $value['target_id'];
       }
     }
-    // dpm( $image_with_preview_fids );
+
+    $profile_fieldsets_title = t('ข้อมูลส่วนบุคคล');
+    if($uid == $current_user_id){
+      $profile_fieldsets_title = t('ข้อมูลส่วนบุคคล <a href=":edit_profile">แก้ไข</a>', [':edit_profile' => '/profile/' .$uid. '/edit']);
+    }
+
     $form['profile_fieldsets'] = array(
-      '#type' => 'fieldset',
-      '#title' => t('ข้อมูลส่วนบุคคล'),
-      '#collapsible' => TRUE,
-      '#collapsed' => TRUE
+      '#type'         => 'fieldset',
+      '#title'        => $profile_fieldsets_title,
+      '#collapsible'  => TRUE,
+      '#collapsed'    => TRUE
     );
 
-    if($uid == $current_user_id){
+    // $output .= '<p>' . t('The Swift Mailer module is designed to replace the default mail system that is shipped with Drupal. The initial configuration of this is done through the <a href=":mailsystem_settings">Mail System module</a>. Swift Mailer allows you to choose how e-mails should be sent. To read more about how this module works, please have a look at the <a href=":documentation">Swift Mailer documentation</a>.', [':mailsystem_settings' => Url::fromRoute('mailsystem.settings')->toString(), ':documentation' => 'https://swiftmailer.symfony.com/docs/introduction.html']) . '</p>';
+     
+
+    // if($uid == $current_user_id){
+    //   $form['profile_fieldsets']['image_with_preview'] = [
+    //     '#type' => 'managed_file',
+    //     '#title' => t('Picture profile'),
+    //     '#upload_validators' => [
+    //       'file_validate_extensions' => $this->allowFileExtension,
+    //       'file_validate_size' => $this->allowFileSize,
+    //     ],
+    //     '#theme' => 'image_widget',
+    //     '#preview_image_style' => 'medium',
+    //     '#upload_location' => 'public://',
+    //     '#required' => FALSE,
+    //     '#default_value' => $image_with_preview_fids,
+    //   ];
+    //   $form['profile_fieldsets']['user'] = array(
+    //     '#type' => 'textfield',
+    //     '#title' => t('User'),
+    //     '#attributes' => array('placeholder' => t('User'), 'readonly' => 'readonly'),
+    //     '#default_value' => $name,
+    //     '#size' => 25,
+    //   );
+    //   $form['profile_fieldsets']['email'] = array(
+    //     '#type' => 'textfield',
+    //     '#title' => t('Email'),
+    //     '#attributes' => array('placeholder' => t('Email'), 'readonly' => 'readonly'),
+    //     '#default_value' => $email,
+    //     '#size' => 25,
+    //   );
+    //   $form['profile_fieldsets']['send'] = array(
+    //     '#type' => 'submit',
+    //     '#name' => 'login',
+    //     '#value' => $this->t('Save'),
+    //   );
+    // }else{
+
+    $field_gender = $user->get('field_gender')->getValue();
+
+    if( $uid == $current_user_id && strtolower($mode) == 'edit'){
+      $form['profile_fieldsets'] = array(
+        '#type'         => 'fieldset',
+        '#title'        => t('แก้ไข ข้อมูลส่วนบุคคล'),
+        '#collapsible'  => TRUE,
+        '#collapsed'    => TRUE
+      );
+
       $form['profile_fieldsets']['image_with_preview'] = [
         '#type' => 'managed_file',
         '#title' => t('Picture profile'),
@@ -214,40 +274,66 @@ class MyProfileForm extends FormBase {
         '#required' => FALSE,
         '#default_value' => $image_with_preview_fids,
       ];
-  
-      $form['profile_fieldsets']['user'] = array(
+
+      $form['profile_fieldsets']['name'] = array(
         '#type' => 'textfield',
-        '#title' => t('User'),
-        '#attributes' => array('placeholder' => t('User'), 'readonly' => 'readonly'),
+        '#title' => t('Name'),
         '#default_value' => $name,
         '#size' => 25,
       );
-  
-      $form['profile_fieldsets']['email'] = array(
-        '#type' => 'textfield',
-        '#title' => t('Email'),
-        '#attributes' => array('placeholder' => t('Email'), 'readonly' => 'readonly'),
-        '#default_value' => $email,
-        '#size' => 25,
+
+      $form['profile_fieldsets']['gender'] = array(
+        '#type' => 'select',
+        '#empty_option' => $this->t('Please select'),
+        '#options' => Utils::getTaxonomy_Term('gender'),
+        '#title' => $this->t('Gender'),
+        '#default_value' => $field_gender[0]['target_id'] ,
       );
-  
+
       $form['profile_fieldsets']['send'] = array(
         '#type' => 'submit',
         '#name' => 'login',
         '#value' => $this->t('Save'),
       );
     }else{
-      $form['profile_fieldsets']['user'] = array(
-        '#type' => 'textfield',
-        '#title' => t('User'),
-        '#attributes' => array('placeholder' => t('User'), 'readonly' => 'readonly'),
-        '#default_value' => $name,
-        '#size' => 25,
+      
+      if(!empty($image_with_preview_fids)){
+        $form['profile_fieldsets']['images'] = [
+          'data' => [
+            '#theme' => 'image',
+            '#uri'   => Utils::get_file_url($image_with_preview_fids[0]),
+            '#width' => '80px',
+            '#prefix' => '<div>รูปโปรไฟล์</div>',
+            '#suffix' => '',
+          ],
+        ];
+      }
+      
+      $form['profile_fieldsets']['name'] = array(
+        '#type'   => 'item',
+        '#title'  => t("ชื่อ"),
+        '#markup' => $name,
       );
-    } 
 
-    $form[] = $this->getBackListNode($current_user_id);
-    
+      $form['profile_fieldsets']['email'] = array(
+        '#type'   => 'item',
+        '#title'  => t("อีเมลล์"),
+        '#markup' => $email,
+      );
+
+      
+      if(!empty($field_gender)){
+        $gender = empty($field_gender[0]['target_id']) ? 'ไม่มีระบุ' : \Drupal::entityTypeManager()->getStorage('taxonomy_term')->load($field_gender[0]['target_id'])->label();
+        $form['profile_fieldsets']['gender'] = array(
+          '#type'   => 'item',
+          '#title'  => t("เพศ"),
+          '#markup' => t($gender),
+        );
+      }
+
+      $form[] = $this->getBackListNode($uid);
+    } 
+   
     return $form;
   }
  
@@ -257,11 +343,6 @@ class MyProfileForm extends FormBase {
   */
   public function validateForm(array &$form, FormStateInterface $form_state) {
     parent::validateForm($form, $form_state);
-
-    // $email = $form_state->getValue('email');
-    // if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    //     $form_state->setErrorByName('email', $this->t('กรุณากรอก อีเมลล์ OR Invalid email format.'));
-    // }
   }
 
   /**
@@ -272,7 +353,32 @@ class MyProfileForm extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     // $session = \Drupal::request()->getSession();
-    $field= $form_state->getValues();
+
+    $current_route_match = \Drupal::service('current_route_match');
+    $uid = $current_route_match->getParameter('uid'); 
+
+    $user = User::load($uid);
+    if(!empty($user)){
+      $field= $form_state->getValues()['profile_fieldsets'];
+
+      $user->set('field_display_name', $field['name']);
+      $user->set('field_gender', $field['gender']);
+  
+      $image_with_preview = $field['image_with_preview'];
+      if(!empty($image_with_preview)){
+        $user->set('user_picture', $image_with_preview[0]);
+      }
+
+      $user->save();
+
+      \Drupal::messenger()->addStatus(t('Update profile succesfully.'));
+
+      $url = Url::fromRoute('profile.form')->setRouteParameters(array( 'uid'=>$uid ));
+
+      $form_state->setRedirectUrl($url); 
+    }
+
+    
 
     // $user = User::load($this->uid);
     // $user->set('mail', $field['email']);
@@ -286,6 +392,6 @@ class MyProfileForm extends FormBase {
     // }
     // $user->save();
 
-    drupal_set_message("Update user succesfully.");
+    // drupal_set_message("Update user succesfully.");
   }
 }
