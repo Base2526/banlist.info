@@ -185,6 +185,11 @@ function backlist_theme($existing, $type, $theme, $path) {
         'items' => array(),
       ),
     ),   
+    'top-head-content-block'=> array(
+      'variables' => array(
+        'params' => array(),
+      ),
+    ), 
   );
 }
 
