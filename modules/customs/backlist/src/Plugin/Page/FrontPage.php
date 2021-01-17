@@ -292,7 +292,7 @@ $url_object = Drupal\Core\Url::fromRoute('entity.node.canonical', ['node' => $ni
                 'title' =>  empty($user->get('field_display_name')->value) ? $user->get('name')->value : $user->get('field_display_name')->value,
                 // 'url' => Url::fromRoute('my_profile.form', ['uid' => $ownerId]),
                 // 'url' => Url::fromRoute('entity.user.edit_form', ['user' => $ownerId]),
-                'url' => Url::fromRoute('entity.user.canonical', ['user' => $ownerId]),
+                'url' => Url::fromRoute('profile.form', ['uid' => $ownerId]),
                 'attributes' => [
                   'class' => [
                     'links__link',

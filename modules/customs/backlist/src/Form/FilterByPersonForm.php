@@ -62,7 +62,6 @@ class FilterByPersonForm extends FormBase {
         $all_nids = $query->execute();
 
         
-    
         // dpm($all_nids);
         $form['search_results']= array(
             '#type' => 'item',

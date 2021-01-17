@@ -49,7 +49,110 @@ class MyProfileForm extends FormBase {
     return;
   }
 
-    /**
+  private function getBackListNode($current_user_id){
+    $storage = \Drupal::entityTypeManager()->getStorage('node');
+    $query = $storage->getQuery();
+    $query->condition('status', \Drupal\node\NodeInterface::PUBLISHED);
+    $query->condition('type', 'back_list');
+    $query->condition('uid', $current_user_id);
+
+    $nids = $query->execute();
+    // foreach ($storage->loadMultiple($nids) as $node) {
+    //   dpm($node->label());
+    // }
+
+    // dpm($nids);
+    // 
+    $form = array();
+    $form['search_results']= array(
+      '#type' => 'item',
+      // '#prefix' => '<div>'.$this->t('Search results') . '<div>พบทั้งหมด 1 รายการ</div>',
+      '#suffix' => '</div>',
+    );
+
+    $form['headers'] = array(
+      '#type' => 'item',
+      '#prefix' => '<table>
+                      <tr>
+                          <th>'.$this->t('สินค้า/ประเภท').'</th>
+                          <th>'.$this->t('รายละเอียด').'</th>
+                          <th>'.$this->t('ยอดเงิน').'</th>
+                      </tr>',
+      // '#suffix' => '</table>',
+    );
+
+    $summary = 0;
+    if(empty($nids)){
+        $form['headers'][] = array(
+            '#type' => 'item',
+            '#prefix' =>    '<tr>
+                                <td>Empty result.</td>
+                                <td></td>
+                                <td></td>
+                            </tr>',
+            '#suffix' => '',
+        );
+    }else{
+        foreach ($storage->loadMultiple($nids) as $node) {
+            // ชื่อบัญชี-นามสกุล ผู้รับเงินโอน
+            // $sales_person_name = '';
+            // $field_sales_person_name = $node->get('field_sales_person_name')->getValue();
+            // if(!empty($field_sales_person_name)){
+            //     $sales_person_name = $field_sales_person_name[0]['value'];
+            // }
+
+            // // นามสกุลผู้รับเงินโอน
+            // $sales_person_surname = '';
+            // $field_sales_person_surname = $node->get('field_sales_person_surname')->getValue();
+            // if(!empty($field_sales_person_surname)){
+            //     $sales_person_surname = $field_sales_person_surname[0]['value'];
+            // }
+
+            $transfer_amount = $node->get('field_transfer_amount')->getValue()[0]['value'];
+
+            $summary += $transfer_amount;
+
+            // $form['headers'][] = array(
+            //     '#type' => 'item',
+            //     '#prefix' =>    '<tr>
+            //                         <td><a href="/'. $this->language .'/node/'.$node->id().'/'. urlencode($name.'&'.$surname) .'">'. $node->label() .'</a></td>
+            //                         <td>'. strip_tags($node->get('body')->getValue()[0]['value']) .'</td>
+            //                         <td>'. number_format($transfer_amount, 2, '.', ',') .'</td>
+            //                     </tr>',
+            //     '#suffix' => '',
+            // );
+
+            $form['headers'][] = array(
+                '#type' => 'item',
+                '#prefix' =>    '<tr>
+                                    <td><a href="/'. $this->language .'/node/'.$node->id().'/edit">'. $node->label() .'</a></td>
+                                    <td>'. strip_tags($node->get('body')->getValue()[0]['value']) .'</td>
+                                    <td>'. number_format($transfer_amount, 2, '.', ',') .'</td>
+                                </tr>',
+                '#suffix' => '',
+            );
+        }
+
+        $form['headers'][] = array(
+            '#type' => 'item',
+            '#prefix' =>    '<tr>
+                                <td></td>
+                                <td class="filter-by-person-sammary">'.$this->t('ยอดรวม').'</td>
+                                <td>'. number_format($summary, 2, '.', ',') .'</td>
+                            </tr>',
+            '#suffix' => '',
+        );
+        
+    }
+
+    $form['search_results']['#prefix'] = '<div>'.$this->t('รายงานที่สร้างไว้') . '<div>'. $this->t('พบทั้งหมด '.count($nids).' รายการ').'</div>';
+    
+    $form['headers']['#suffix'] = '</table>';
+
+    return $form;
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
@@ -66,7 +169,12 @@ class MyProfileForm extends FormBase {
     // dpm( $current_user_id );
 
     if(empty($uid)){
-      $this->userLg();
+      $logged_in = \Drupal::currentUser()->isAuthenticated();
+      if(empty($logged_in)){
+        $this->userLg();
+      }else{
+        $uid = \Drupal::currentUser()->id();
+      }
     }
 
     $user = User::load($uid);
@@ -85,9 +193,15 @@ class MyProfileForm extends FormBase {
       }
     }
     // dpm( $image_with_preview_fids );
+    $form['profile_fieldsets'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('ข้อมูลส่วนบุคคล'),
+      '#collapsible' => TRUE,
+      '#collapsed' => TRUE
+    );
 
     if($uid == $current_user_id){
-      $form['image_with_preview'] = [
+      $form['profile_fieldsets']['image_with_preview'] = [
         '#type' => 'managed_file',
         '#title' => t('Picture profile'),
         '#upload_validators' => [
@@ -101,7 +215,7 @@ class MyProfileForm extends FormBase {
         '#default_value' => $image_with_preview_fids,
       ];
   
-      $form['user'] = array(
+      $form['profile_fieldsets']['user'] = array(
         '#type' => 'textfield',
         '#title' => t('User'),
         '#attributes' => array('placeholder' => t('User'), 'readonly' => 'readonly'),
@@ -109,7 +223,7 @@ class MyProfileForm extends FormBase {
         '#size' => 25,
       );
   
-      $form['email'] = array(
+      $form['profile_fieldsets']['email'] = array(
         '#type' => 'textfield',
         '#title' => t('Email'),
         '#attributes' => array('placeholder' => t('Email'), 'readonly' => 'readonly'),
@@ -117,13 +231,13 @@ class MyProfileForm extends FormBase {
         '#size' => 25,
       );
   
-      $form['send'] = array(
+      $form['profile_fieldsets']['send'] = array(
         '#type' => 'submit',
         '#name' => 'login',
         '#value' => $this->t('Save'),
       );
     }else{
-      $form['user'] = array(
+      $form['profile_fieldsets']['user'] = array(
         '#type' => 'textfield',
         '#title' => t('User'),
         '#attributes' => array('placeholder' => t('User'), 'readonly' => 'readonly'),
@@ -131,8 +245,12 @@ class MyProfileForm extends FormBase {
         '#size' => 25,
       );
     } 
+
+    $form[] = $this->getBackListNode($current_user_id);
+    
     return $form;
   }
+ 
 
   /**
   * {@inheritdoc}
