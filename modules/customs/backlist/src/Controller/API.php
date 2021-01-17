@@ -32,7 +32,7 @@ class API extends ControllerBase {
     $response = array();
     $time1    = microtime(true);
 
-    if ( Utils::verify($request, FALSE) ) {
+    // if ( Utils::verify($request, FALSE) ) {
       $content = json_decode( $request->getContent(), TRUE );
       $type         = trim( $content['type'] );
 
@@ -121,10 +121,10 @@ class API extends ControllerBase {
         $response['message']  = 'Not match type.';
       }
       return new JsonResponse( $response );  
-    }
+    // }
 
-    $response['result']   = FALSE;
-    return new JsonResponse( $response );
+    // $response['result']   = FALSE;
+    // return new JsonResponse( $response );
   }
 
   private function GetFieldNode($node){

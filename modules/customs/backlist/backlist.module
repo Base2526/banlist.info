@@ -160,7 +160,9 @@ function backlist_node_insert(Node $node) {
                                         'reportor'=>$reportor, ));
     */
 
-    $response = new RedirectResponse(Url::fromRoute('report_view.form')->setRouteParameters(array( 'nid'=>$node->id() ))->toString());
+    // 'url' => Url::fromRoute('entity.node.canonical', ['node' => $node->id()], ['absolute' => TRUE]),
+                     
+    $response = new RedirectResponse(Url::fromRoute('entity.node.canonical', ['node' => $node->id()], ['absolute' => TRUE])->toString());
     $response->send();
   }
 }
