@@ -2973,7 +2973,7 @@ class Utils extends ControllerBase {
    
   }
 
-  public function FB(){
+  private static function FB(){
     $banlist = ConfigPages::config('banlist');
     $fb_app_id      = $banlist->get('field_fb_app_id')->getValue();
     $fb_app_secret  = $banlist->get('field_fb_app_secret')->getValue();
@@ -2987,7 +2987,7 @@ class Utils extends ControllerBase {
     return $fb;
   }
 
-  public function FBLogin(){    
+  public static function FBLogin(){    
     $helper = Utils::FB()->getRedirectLoginHelper();
     $permissions = ['email' /*, 'user_likes'*/ ]; // optional
     $loginUrl = $helper->getLoginUrl('https://banlist.info/admin/fb_login/callback', $permissions);
@@ -3178,7 +3178,7 @@ class Utils extends ControllerBase {
     return false;
   }
 
-  public function Google(){
+  private static function Google(){
     $banlist = ConfigPages::config('banlist');
     $field_google_client_credentials      = $banlist->get('field_google_client_credentials')->getValue();
 
@@ -3201,7 +3201,7 @@ class Utils extends ControllerBase {
     return $client;
   }
 
-  public function GoogleLogin(){
+  public static function GoogleLogin(){
     $client = Utils::Google(); // 
     $client->setScopes(array('https://www.googleapis.com/auth/userinfo.email','https://www.googleapis.com/auth/plus.me', 'https://www.googleapis.com/auth/moderator', 'https://www.googleapis.com/auth/userinfo.profile'));
   
