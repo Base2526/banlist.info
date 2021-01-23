@@ -136,11 +136,11 @@ services:
   # wmcached:
   #   image: wodby/memcached:1.4-2.0.0
 
-  # docker-cron:
-  #   build: './docker-cron'
-  #   container_name: "docker-cron"
-  #   restart: always
-
+  cron:
+    build: './cron'
+    container_name: "cron"
+    restart: always
+  
   # redis:
   #   image: redis
   #   container_name: redis
