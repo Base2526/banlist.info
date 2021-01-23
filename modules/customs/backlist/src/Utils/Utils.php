@@ -12,6 +12,8 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 
 use Drupal\Component\Utility\SafeMarkup;
 use Drupal\Core\Render\Markup;
+use \Datetime;
+use \DateInterval;
 
 use Facebook\FacebookSession;
 use Facebook\FacebookRequest;
@@ -3293,46 +3295,36 @@ class Utils extends ControllerBase {
 
         /*
         Google_Service_Oauth2_Userinfoplus Object
-(
-    [internal_gapi_mappings:protected] => Array
         (
-            [familyName] => family_name
-            [givenName] => given_name
-            [verifiedEmail] => verified_email
-        )
+            [internal_gapi_mappings:protected] => Array
+                (
+                    [familyName] => family_name
+                    [givenName] => given_name
+                    [verifiedEmail] => verified_email
+                )
 
-    [email] => 
-    [familyName] => 
-    [gender] => 
-    [givenName] => 
-    [hd] => 
-    [id] => 123456
-    [link] => https://plus.google.com/123456
-    [locale] => en-GB
-    [name] => someguy
-    [picture] => https://lh3.googleusercontent.com/-q1Smh9d8d0g/AAAAAAAAAAM/AAAAAAAAAAA/3YaY0XeTIPc/photo.jpg
-    [verifiedEmail] => 
-    [modelData:protected] => Array
-        (
-        )
+            [email] => 
+            [familyName] => 
+            [gender] => 
+            [givenName] => 
+            [hd] => 
+            [id] => 123456
+            [link] => https://plus.google.com/123456
+            [locale] => en-GB
+            [name] => someguy
+            [picture] => https://lh3.googleusercontent.com/-q1Smh9d8d0g/AAAAAAAAAAM/AAAAAAAAAAA/3YaY0XeTIPc/photo.jpg
+            [verifiedEmail] => 
+            [modelData:protected] => Array
+                (
+                )
 
-    [processed:protected] => Array
-        (
-        )
+            [processed:protected] => Array
+                (
+                )
 
-)
+        )
         */
-        /*
-        \Drupal::logger('google-logmm')->error($userData->id);
-        \Drupal::logger('google-logmm')->error( isset($userData->givenName) ? $userData->givenName : 'givenName');
-        \Drupal::logger('google-logmm')->error( isset($userData->familyName) ? $userData->familyName : 'familyName');
-        \Drupal::logger('google-logmm')->error( isset($userData->name) ? $userData->name : 'name');
-       // \Drupal::logger('google-logmm')->error( isset($userData->gender) ? $userData->gender : 'name');
-        \Drupal::logger('google-logmm')->error($userData->email);
-        \Drupal::logger('google-logmm')->error($userData->picture);
-        */
-
-
+        
         $data = array();
         $data['type']     = 'google';
         $data['id']       = $userData->id;
@@ -3356,6 +3348,46 @@ class Utils extends ControllerBase {
 
     } 
     return new RedirectResponse(\Drupal\Core\Url::fromRoute('<front>')->toString()); 
+  }
+
+  public function Expired_FBLongLivedAccessToken(){
+
+    $banlist = ConfigPages::config('banlist');
+    $expired_access_token      = $banlist->get('field_expired_access_token')->getValue();
+
+    if(empty($expired_access_token)){
+      return FALSE;
+    }
+    $expired_access_token = $expired_access_token[0]['value'];
+
+    $d1 = new DateTime($expired_access_token);
+    $d2 = new DateTime($expired_access_token);
+
+    // increment 55 date
+    $d2->add(new DateInterval('P55D'));
+
+    if( $d1->diff($d2)->days <= 0 ){
+      // send mail to admin noti expired facebook long live access token.
+      $mailManager = \Drupal::service('plugin.manager.mail');
+      $module = 'backlist';
+      $key = 'expired_longlived_access_tokens';
+      $to = \Drupal::config('system.site')->get('mail');
+      $params['title'] = 'Expired Long-Lived Access Tokens(Facebook)';
+      $params['message'] = 'Expired Long-Lived Access Tokens';
+      $langcode = \Drupal::currentUser()->getPreferredLangcode();
+      $send = true;
+      $result = $mailManager->mail($module, $key, $to, $langcode, $params, NULL, $send);
+      if ($result['result'] !== true) {
+        \Drupal::logger('Banlist')->error('Expired_FBLongLivedAccessToken : There was a problem sending your message and it was not sent at %time time.', array( '%time' => (new DateTime())->format('Y-m-d H:i:s') ));
+      }
+      else {
+        \Drupal::logger('Banlist')->notice('Expired_FBLongLivedAccessToken : Your message has been sent at %time time.', array( '%time' => (new DateTime())->format('Y-m-d H:i:s') ));
+      }
+
+      return TRUE;
+    }
+
+    return FALSE;
   }
 
   function test_send_email() {

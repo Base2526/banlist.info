@@ -427,6 +427,9 @@ class API extends ControllerBase {
 
     \Drupal::logger('EveryDay')->notice('Cron EveryDay > %time', array( '%time' => (new DateTime())->format('Y-m-d H:i:s') ));
    
+    // Check is facebook long live token expired.
+    Utils::Expired_FBLongLivedAccessToken();
+
     $response['result']   = TRUE;
     $response['execution_time']   = microtime(true) - $time1;
     return new JsonResponse( $response );  
