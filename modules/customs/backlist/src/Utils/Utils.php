@@ -3350,7 +3350,7 @@ class Utils extends ControllerBase {
     return new RedirectResponse(\Drupal\Core\Url::fromRoute('<front>')->toString()); 
   }
 
-  public function Expired_FBLongLivedAccessToken(){
+  public static function Expired_FBLongLivedAccessToken(){
 
     $banlist = ConfigPages::config('banlist');
     $expired_access_token      = $banlist->get('field_expired_access_token')->getValue();
