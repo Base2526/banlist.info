@@ -22,6 +22,8 @@ use Drupal\Core\Cache\CacheableJsonResponse;
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\File\FileSystemInterface;
 
+use \Datetime;
+
 use Drupal\backlist\Utils\Utils;
 /**
  * Controller routines for test_api routes.
@@ -409,6 +411,23 @@ class API extends ControllerBase {
     
     $response['result']   = TRUE;
     // $response['content']  = $content;
+    $response['execution_time']   = microtime(true) - $time1;
+    return new JsonResponse( $response );  
+  }
+
+  public function EveryDay(Request $request){
+    $response = array();
+    $time1    = microtime(true);
+
+    $key = \Drupal::request()->query->get('key');
+    if(empty($key) || $key != 'YmFubGlzdC5pbmZv'){
+      $response['result']   = FALSE;
+      return new JsonResponse( $response );  
+    }
+
+    \Drupal::logger('EveryDay')->notice('Cron EveryDay > %time', array( '%time' => (new DateTime())->format('Y-m-d H:i:s') ));
+   
+    $response['result']   = TRUE;
     $response['execution_time']   = microtime(true) - $time1;
     return new JsonResponse( $response );  
   }

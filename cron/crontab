@@ -1,0 +1,1 @@
+0 0 * * * root wget https://banlist.info/api/every_day.json?key=YmFubGlzdC5pbmZv
