@@ -19,8 +19,8 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Drupal\Core\Mail\MailManagerInterface;
 use Drupal\Component\Utility\SafeMarkup;
 use Drupal\Component\Utility\Html;
-
 use Drupal\node\Entity\Node;
+use Drupal\Core\Render\Markup;
 
 use Drupal\backlist\Utils\Utils;
 
@@ -54,13 +54,44 @@ function backlist_mail($key, &$message, $params) {
     'langcode' => $message['langcode'],
   );
   switch ($key) {
-  case 'create_article':
+    case 'create_article':{
       $message['format'] = 'text/html';
       $message['headers']['Content-Type'] = SWIFTMAILER_FORMAT_HTML;
       $message['from'] = \Drupal::config('system.site')->get('mail');
       $message['subject'] = t('Article created: @title', array('@title' => $params['node_title']), $options);
       $message['body'][] = $params['message'];
       break;
+    }
+
+    case 'expired_longlived_access_tokens':{
+      $message['format'] = 'text/html';
+      $message['headers']['Content-Type'] = SWIFTMAILER_FORMAT_HTML;
+      $message['from']    = \Drupal::config('system.site')->get('mail');
+      $message['subject'] = t('Warning: @title', array('@title' => $params['title']), $options);
+      $message['body'][]  = Markup::create('<html>
+                                        <head>
+                                            <style>
+                                                body{
+                                                    line-height: 1.5em;
+                                                }
+                                            </style>
+                                        </head>
+                                        <body>
+                                            <div>
+                                                <div>Example add html mail</div>
+                                                <br>
+                                                <div>
+                                                    <p>&emsp; ' . $params['message'] . '</p>
+                                                </div>
+                                                <br>
+                                                <br>
+                                                <div>
+                                                </div>
+                                            </div>
+                                        </body>
+                                    </html>');
+      break;
+    } 
   }
  }
 
