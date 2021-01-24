@@ -93,7 +93,27 @@ function backlist_mail($key, &$message, $params) {
       break;
     } 
   }
- }
+}
+
+/*
+* hook_cron()
+*/
+function backlist_cron(){
+  switch(date('G', time())){
+    // รันทุกๆเที่ยวคืน
+    case 0:{
+      \Drupal::logger('backlist_cron')->notice("YES");
+
+      Utils::Expired_FBLongLivedAccessToken();
+
+      break;
+    }
+    default:{
+      \Drupal::logger('backlist_cron')->notice("NO");
+      break;
+    }
+  }
+}
 
 /**
  * Implements hook_user_login() 
