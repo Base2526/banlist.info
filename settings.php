@@ -720,6 +720,8 @@ $settings['trusted_host_patterns'] = [
      '^.+\.banlist\.info$',
      '^localhost$',
      '^.+\.localhost$',
+     '^d9$',
+     '^.+\.d9$',
 ];
 
 /**
