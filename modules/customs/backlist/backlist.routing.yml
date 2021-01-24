@@ -75,13 +75,37 @@ report_view.form:
   requirements:
     _permission: 'access content'
 
+# AddedBanlist
+api.added_banlist:
+  path: '/api/added_banlist'
+  methods: [POST]
+  defaults: 
+    _controller: '\Drupal\backlist\Controller\API::AddedBanlist'
+  requirements: 
+    _role: 'authenticated+administrator'
+  # requirements:
+  #   _access: 'TRUE'
+  options:
+    _auth: ['basic_auth']
+
 api.check_banlist:
-  path: '/api/check_banlist.json'
+  path: '/api/check_banlist'
   methods: [POST]
   defaults: 
     _controller: '\Drupal\backlist\Controller\API::CheckBanlist'
-  requirements:
-    _permission: 'access content' 
-    # _role: 'authenticated+administrator'
+  requirements: 
+    _role: 'authenticated+administrator'
   options:
     _auth: ['basic_auth']
+
+api.every_day:
+  path: '/api/every_day'
+  methods: [GET]
+  defaults: 
+    _controller: '\Drupal\backlist\Controller\API::EveryDay'
+  # requirements: 
+  #   _role: 'authenticated+administrator'
+  # options:
+  #   _auth: ['basic_auth']
+  requirements:
+    _access: 'TRUE'

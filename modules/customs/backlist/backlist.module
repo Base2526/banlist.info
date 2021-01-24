@@ -19,8 +19,8 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Drupal\Core\Mail\MailManagerInterface;
 use Drupal\Component\Utility\SafeMarkup;
 use Drupal\Component\Utility\Html;
-
 use Drupal\node\Entity\Node;
+use Drupal\Core\Render\Markup;
 
 use Drupal\backlist\Utils\Utils;
 
@@ -54,15 +54,66 @@ function backlist_mail($key, &$message, $params) {
     'langcode' => $message['langcode'],
   );
   switch ($key) {
-  case 'create_article':
+    case 'create_article':{
       $message['format'] = 'text/html';
       $message['headers']['Content-Type'] = SWIFTMAILER_FORMAT_HTML;
       $message['from'] = \Drupal::config('system.site')->get('mail');
       $message['subject'] = t('Article created: @title', array('@title' => $params['node_title']), $options);
       $message['body'][] = $params['message'];
       break;
+    }
+
+    case 'expired_longlived_access_tokens':{
+      $message['format'] = 'text/html';
+      $message['headers']['Content-Type'] = SWIFTMAILER_FORMAT_HTML;
+      $message['from']    = \Drupal::config('system.site')->get('mail');
+      $message['subject'] = t('Warning: @title', array('@title' => $params['title']), $options);
+      $message['body'][]  = Markup::create('<html>
+                                        <head>
+                                            <style>
+                                                body{
+                                                    line-height: 1.5em;
+                                                }
+                                            </style>
+                                        </head>
+                                        <body>
+                                            <div>
+                                                <div>Example add html mail</div>
+                                                <br>
+                                                <div>
+                                                    <p>&emsp; ' . $params['message'] . '</p>
+                                                </div>
+                                                <br>
+                                                <br>
+                                                <div>
+                                                </div>
+                                            </div>
+                                        </body>
+                                    </html>');
+      break;
+    } 
   }
- }
+}
+
+/*
+* hook_cron()
+*/
+function backlist_cron(){
+  switch(date('G', time())){
+    // รันทุกๆเที่ยวคืน
+    case 0:{
+      \Drupal::logger('backlist_cron')->notice("YES");
+
+      Utils::Expired_FBLongLivedAccessToken();
+
+      break;
+    }
+    default:{
+      \Drupal::logger('backlist_cron')->notice("NO");
+      break;
+    }
+  }
+}
 
 /**
  * Implements hook_user_login() 
@@ -138,32 +189,14 @@ function backlist_user_insert(Drupal\Core\Entity\EntityInterface $entity) {
  */
 function backlist_node_insert(Node $node) {
   if ($node->bundle() == 'back_list') {
-    // $copy = Node::create([
-    //   'title' => $node->getTitle() . ' copy!',
-    //   'type' => 'article',
-    //   'status' => 0,
-    // ]);
-    // foreach ($node as $key => $value) {
-    //   // Copy values from all fields (fields start with "field_").
-    //   if (strpos($key, 'field_') === 0) {
-    //     if (isset($copy->{$key})) {
-    //       $copy->{$key}->setValue($node->{$key}->getValue());
-    //     }
-    //   }
-    // }
-    // $copy->save();
-
-    /*
-    url = \Drupal\Core\Url::fromRoute('<front>')
-            ->setRouteParameters(array( 'product_type'=>$product_type,
-                                        'sales_person_name'=>$sales_person_name, 
-                                        'reportor'=>$reportor, ));
-    */
-
-    // 'url' => Url::fromRoute('entity.node.canonical', ['node' => $node->id()], ['absolute' => TRUE]),
-                     
-    $response = new RedirectResponse(Url::fromRoute('entity.node.canonical', ['node' => $node->id()], ['absolute' => TRUE])->toString());
-    $response->send();
+    $field_channel = $node->get('field_channel')->getValue();
+    if(empty($field_channel) || $field_channel[0]['target_id'] == 31){
+      // add from web
+      $response = new RedirectResponse(Url::fromRoute('entity.node.canonical', ['node' => $node->id()], ['absolute' => TRUE])->toString());
+      $response->send();
+    }else{
+      // add from api
+    }
   }
 }
 

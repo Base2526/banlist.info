@@ -1,0 +1,2 @@
+# */1 * * * * root wget "http://d9/api/every_day?key=YmFubGlzdC5pbmZv" >> /var/log/cron.log 2>&1
+*/5 * * * * root wget http://google.com >> /var/log/cron.log 2>&1
