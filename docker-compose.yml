@@ -136,10 +136,13 @@ services:
   # wmcached:
   #   image: wodby/memcached:1.4-2.0.0
 
-  cron:
-    build: './cron'
-    container_name: "cron"
-    restart: always
+  # cron:
+  #   build: './cron'
+  #   container_name: "cron"
+  #   volumes:
+  #     - ./cron/var/log/cron.log:/var/log/cron.log
+  #     - ./cron/var/log/wget.log:/opt/wget.log
+  #   restart: always
   
   # redis:
   #   image: redis
