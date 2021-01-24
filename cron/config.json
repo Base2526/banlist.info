@@ -1,0 +1,7 @@
+[
+    {
+      "comment": "cron with triggered commands",
+      "schedule": "* * * * *",
+      "command": "echo hello"      
+    }
+  ]
