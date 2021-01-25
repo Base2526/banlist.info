@@ -98,14 +98,14 @@ api.check_banlist:
   options:
     _auth: ['basic_auth']
 
-api.every_day:
-  path: '/api/every_day'
-  methods: [GET]
-  defaults: 
-    _controller: '\Drupal\backlist\Controller\API::EveryDay'
-  # requirements: 
-  #   _role: 'authenticated+administrator'
-  # options:
-  #   _auth: ['basic_auth']
-  requirements:
-    _access: 'TRUE'
+# api.every_day:
+#   path: '/api/every_day'
+#   methods: [GET]
+#   defaults: 
+#     _controller: '\Drupal\backlist\Controller\API::EveryDay'
+#   # requirements: 
+#   #   _role: 'authenticated+administrator'
+#   # options:
+#   #   _auth: ['basic_auth']
+#   requirements:
+#     _access: 'TRUE'
