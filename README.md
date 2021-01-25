@@ -37,3 +37,7 @@ https://www.digitalocean.com/community/tutorials/how-to-add-swap-on-centos-7
 
 Login with Google
 https://console.developers.google.com/apis/credentials?project=banlist-info&folder=&organizationId=
+
+
+Drapal 8-9 : Advanced Queue
+https://ericpugh.dev/2020/drupal-advanced-queue-tutorial/
