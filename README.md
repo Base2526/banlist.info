@@ -41,3 +41,12 @@ https://console.developers.google.com/apis/credentials?project=banlist-info&fold
 
 Drapal 8-9 : Advanced Queue
 https://ericpugh.dev/2020/drupal-advanced-queue-tutorial/
+
+
+Excel
+- composer phpoffice/phpspreadsheet
+- Read multi images
+  https://programming.vip/docs/php-reading-pictures-in-excel.html
+
+- Read row & image
+  https://github.com/rajaramtt/phpspreadsheet-Reading-Images-from-an-Excel-File
