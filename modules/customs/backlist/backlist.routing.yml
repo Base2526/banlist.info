@@ -75,6 +75,14 @@ report_view.form:
   requirements:
     _permission: 'access content'
 
+# ImportAndExportForm
+import_and_export.form:
+  path: '/import_and_export'
+  defaults:
+    _form: '\Drupal\backlist\Form\ImportAndExportForm'
+  requirements:
+    _permission: 'access content'
+
 # AddedBanlist
 api.added_banlist:
   path: '/api/added_banlist'
