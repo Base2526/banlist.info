@@ -221,11 +221,13 @@ class ComposerStaticInit3b052f39376a7340db0c219b7e15659f
         array (
             'Composer\\Semver\\' => 16,
             'Composer\\Installers\\' => 20,
+            'Composer\\CaBundle\\' => 18,
             'Complex\\' => 8,
         ),
         'A' => 
         array (
             'Asm89\\Stack\\' => 12,
+            'Abraham\\TwitterOAuth\\' => 21,
         ),
     );
 
@@ -535,6 +537,10 @@ class ComposerStaticInit3b052f39376a7340db0c219b7e15659f
         array (
             0 => __DIR__ . '/..' . '/composer/installers/src/Composer/Installers',
         ),
+        'Composer\\CaBundle\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/composer/ca-bundle/src',
+        ),
         'Complex\\' => 
         array (
             0 => __DIR__ . '/..' . '/markbaker/complex/classes/src',
@@ -542,6 +548,10 @@ class ComposerStaticInit3b052f39376a7340db0c219b7e15659f
         'Asm89\\Stack\\' => 
         array (
             0 => __DIR__ . '/..' . '/asm89/stack-cors/src/Asm89/Stack',
+        ),
+        'Abraham\\TwitterOAuth\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/abraham/twitteroauth/src',
         ),
     );
 

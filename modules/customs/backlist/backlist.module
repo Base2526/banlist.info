@@ -113,6 +113,8 @@ function backlist_cron(){
       break;
     }
   }
+
+  Utils::Cron_Twitter_Post();
 }
 
 /**
