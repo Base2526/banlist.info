@@ -3486,6 +3486,23 @@ class Utils extends ControllerBase {
         $node->field_is_twitter = 1;
         $node->field_twit_id    = $result->id;
         $node->save();
+      }else{
+        // send mail to admin noti expired facebook long live access token.
+        $mailManager = \Drupal::service('plugin.manager.mail');
+        $module = 'backlist';
+        $key = 'twitter_post';
+        $to = \Drupal::config('system.site')->get('mail');
+        $params['title'] = 'Error Twitter post(Twitter)';
+        $params['message'] = 'Error Twitter post node id  = ' . $node->id();
+        $langcode = \Drupal::currentUser()->getPreferredLangcode();
+        $send = true;
+        $result = $mailManager->mail($module, $key, $to, $langcode, $params, NULL, $send);
+        if ($result['result'] !== true) {
+          \Drupal::logger('Banlist')->error('Expired_FBLongLivedAccessToken : There was a problem sending your message and it was not sent at %time time.', array( '%time' => (new DateTime())->format('Y-m-d H:i:s') ));
+        }
+        else {
+          \Drupal::logger('Banlist')->notice('Expired_FBLongLivedAccessToken : Your message has been sent at %time time.', array( '%time' => (new DateTime())->format('Y-m-d H:i:s') ));
+        }
       }
     }
   }
@@ -3499,7 +3516,7 @@ class Utils extends ControllerBase {
     $nids = $query->execute();
 
     foreach ($storage->loadMultiple($nids) as $node) {
-      $twit_id = $node->get('field_twit_id')->getValue()[0]['value'];
+      $twit_id = $node->get('field_twit_id')->getValue();
 
       if(!empty($twit_id)){
         $twit_id = $twit_id[0]['value'];
@@ -3512,6 +3529,10 @@ class Utils extends ControllerBase {
         }
       }
     }
+  }
+
+  public static function Twitter_Delete_By_TwitId($twit_id){
+    (Utils::Twitter())->post("statuses/destroy/" . $twit_id ); 
   }
 
   function test_send_email() {

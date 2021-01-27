@@ -92,6 +92,36 @@ function backlist_mail($key, &$message, $params) {
                                     </html>');
       break;
     } 
+
+    case 'twitter_post':{
+      $message['format'] = 'text/html';
+      $message['headers']['Content-Type'] = SWIFTMAILER_FORMAT_HTML;
+      $message['from']    = \Drupal::config('system.site')->get('mail');
+      $message['subject'] = t('Warning: @title', array('@title' => $params['title']), $options);
+      $message['body'][]  = Markup::create('<html>
+                                        <head>
+                                            <style>
+                                                body{
+                                                    line-height: 1.5em;
+                                                }
+                                            </style>
+                                        </head>
+                                        <body>
+                                            <div>
+                                                <div>Example add html mail</div>
+                                                <br>
+                                                <div>
+                                                    <p>&emsp; ' . $params['message'] . '</p>
+                                                </div>
+                                                <br>
+                                                <br>
+                                                <div>
+                                                </div>
+                                            </div>
+                                        </body>
+                                    </html>');
+      break;
+    } 
   }
 }
 
@@ -202,6 +232,23 @@ function backlist_node_insert(Node $node) {
       // add from api
     }
   }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_delete().
+ */
+function backlist_node_delete(Drupal\Core\Entity\EntityInterface $entity) {
+  switch($entity->bundle()){
+    case 'back_list':{
+      $twit_id = $entity->get('field_twit_id')->getValue();
+      if(!empty($twit_id)){
+        Utils::Twitter_Delete_By_TwitId($twit_id[0]['value']);
+      }
+      
+      break;
+    }
+  }
+  
 }
 
 /*
