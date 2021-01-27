@@ -20,6 +20,8 @@ use Facebook\FacebookRequest;
 use Facebook\GraphUser;
 use Facebook\FacebookRedirectLoginHelper;
 
+use Abraham\TwitterOAuth\TwitterOAuth;
+
 class Utils extends ControllerBase {
 
   public static function consent_template_api($lang){
@@ -3388,6 +3390,128 @@ class Utils extends ControllerBase {
     }
 
     return FALSE;
+  }
+
+  private static function Twitter(){
+    $banlist = ConfigPages::config('banlist');
+
+    $consumer_key     = $banlist->get('field_twitter_consumer_key')->getValue()[0]['value'];
+    $consumer_secret  = $banlist->get('field_twitter_consumer_secret')->getValue()[0]['value'];
+    $access_token     = $banlist->get('field_twitter_access_token')->getValue()[0]['value'];
+    $access_token_secret  = $banlist->get('field_twitter_access_t_secret')->getValue()[0]['value'];
+
+    return new TwitterOAuth($consumer_key, $consumer_secret, $access_token, $access_token_secret);
+  }
+
+  private static function Twitter_Post($text, $images){
+    // Limit 4 image
+    $images = array_slice($images, 0, 4); 
+
+    $tw = Utils::Twitter();
+    $media_ids = array();
+    foreach ($images as $key => $value) {
+      $media = $tw->upload('media/upload', ['media' => $value/*'sites/default/files/01-25-2021_1004pm_6530.jpeg'*/ ]);
+      $media_ids[] = $media->media_id_string;
+    }
+
+    $parameters = [
+      'status' => $text,
+      'media_ids' => implode(',', $media_ids)
+    ];
+    return $tw->post('statuses/update', $parameters);
+  }
+
+  public static function Cron_Twitter_Post(){
+    $storage = \Drupal::entityTypeManager()->getStorage('node');
+    $query = $storage->getQuery();
+    $query->condition('status', \Drupal\node\NodeInterface::PUBLISHED);
+    $query->condition('type', 'back_list');
+    $query->condition('field_is_twitter', 0);
+    $nids = $query->execute();
+
+    foreach ($storage->loadMultiple($nids) as $node) {
+      $title = $node->label();
+
+      // 2. ชื่อบัญชี-นามสกุล ผู้รับเงินโอน
+      $sales_person_name = '';
+      $field_sales_person_name = $node->get('field_sales_person_name')->getValue();
+      if(!empty($field_sales_person_name)){
+          $sales_person_name = $field_sales_person_name[0]['value'];
+      }
+
+      // 3. นามสกุลผู้รับเงินโอน
+      $sales_person_surname = '';
+      $field_sales_person_surname = $node->get('field_sales_person_surname')->getValue();
+      if(!empty($field_sales_person_surname)){
+          $sales_person_surname = $field_sales_person_surname[0]['value'];
+      }
+
+      $details = Utils::truncate(strip_tags($node->get('body')->getValue()[0]['value']), 200, '');
+      
+      // 7. รูปภาพประกอบ
+      $images = array();
+      foreach ($node->get('field_images')->getValue() as $imi=>$imv){
+        $images[] = str_replace(Utils::get_base_url(), "", Utils::get_file_url($imv['target_id']));
+      }
+
+      /*
+      use Drupal\backlist\Utils\Utils;
+
+      $media1 = 'sites/default/files/01-25-2021_1004pm_6530.jpeg';
+      $media2 = 'sites/default/files/01-25-2021_1004pm_7553.jpeg';
+      $media3 = 'sites/default/files/01-25-2021_1004pm_7850.jpeg';
+      $media4 = 'sites/default/files/01-25-2021_1004pm_8801.jpeg';
+
+      // string to Post 
+      $str = 'Test Tweet... ' . PHP_EOL;
+      $str .= '#mytweet' . PHP_EOL;
+      $str .= 'http://www.mywebsite.com' . PHP_EOL;
+      // $str .= '' . hash('sha1', mt_rand(0, 1000000));
+
+      $ims    = array( $media1, $media2, $media3, $media4);
+      $result = Utils::Twitter_Post($str, $ims);
+      dpm($result->id);
+      */
+      // string to Post 
+      $str  = $title . PHP_EOL;
+      $str .= '#'.$sales_person_name . PHP_EOL;
+      $str .= '#'.$sales_person_surname . PHP_EOL;
+      $str .= $details . PHP_EOL;
+      $str .= Utils::get_base_url() . 'node/' . $node->id() . PHP_EOL;
+      // $str .= '' . hash('sha1', mt_rand(0, 1000000));
+
+      $result = Utils::Twitter_Post($str, $images);
+      // dpm($result->id);
+      if(!empty($result->id)){
+        $node->field_is_twitter = 1;
+        $node->field_twit_id    = $result->id;
+        $node->save();
+      }
+    }
+  }
+
+  public static function Cron_Twitter_Delete(){
+    $storage = \Drupal::entityTypeManager()->getStorage('node');
+    $query = $storage->getQuery();
+    $query->condition('status', \Drupal\node\NodeInterface::PUBLISHED);
+    $query->condition('type', 'back_list');
+    $query->condition('field_is_twitter', 0);
+    $nids = $query->execute();
+
+    foreach ($storage->loadMultiple($nids) as $node) {
+      $twit_id = $node->get('field_twit_id')->getValue()[0]['value'];
+
+      if(!empty($twit_id)){
+        $twit_id = $twit_id[0]['value'];
+
+        $statuses = (Utils::Twitter())->post("statuses/destroy/" . $twit_id ); 
+
+        if( !empty($statuses) ){
+          $node->field_twit_id    = "";
+          $node->save();
+        }
+      }
+    }
   }
 
   function test_send_email() {

@@ -50,3 +50,7 @@ Excel
 
 - Read row & image
   https://github.com/rajaramtt/phpspreadsheet-Reading-Images-from-an-Excel-File
+
+Twitter
+ - https://twitteroauth.com/
+ - https://processwire.com/talk/topic/21667-how-to-post-tweets-to-twitter-api-with-twitteroauth/
