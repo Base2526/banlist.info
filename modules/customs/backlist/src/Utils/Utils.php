@@ -3403,7 +3403,7 @@ class Utils extends ControllerBase {
     return new TwitterOAuth($consumer_key, $consumer_secret, $access_token, $access_token_secret);
   }
 
-  public static function Twitter_Post($text, $images){
+  private static function Twitter_Post($text, $images){
     // Limit 4 image
     $images = array_slice($images, 0, 4); 
 
@@ -3486,6 +3486,30 @@ class Utils extends ControllerBase {
         $node->field_is_twitter = 1;
         $node->field_twit_id    = $result->id;
         $node->save();
+      }
+    }
+  }
+
+  public static function Cron_Twitter_Delete(){
+    $storage = \Drupal::entityTypeManager()->getStorage('node');
+    $query = $storage->getQuery();
+    $query->condition('status', \Drupal\node\NodeInterface::PUBLISHED);
+    $query->condition('type', 'back_list');
+    $query->condition('field_is_twitter', 0);
+    $nids = $query->execute();
+
+    foreach ($storage->loadMultiple($nids) as $node) {
+      $twit_id = $node->get('field_twit_id')->getValue()[0]['value'];
+
+      if(!empty($twit_id)){
+        $twit_id = $twit_id[0]['value'];
+
+        $statuses = (Utils::Twitter())->post("statuses/destroy/" . $twit_id ); 
+
+        if( !empty($statuses) ){
+          $node->field_twit_id    = "";
+          $node->save();
+        }
       }
     }
   }

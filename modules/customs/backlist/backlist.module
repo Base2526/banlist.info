@@ -106,6 +106,8 @@ function backlist_cron(){
 
       Utils::Expired_FBLongLivedAccessToken();
 
+      Utils::Cron_Twitter_Delete();
+
       break;
     }
     default:{
