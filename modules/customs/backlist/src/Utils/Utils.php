@@ -3499,7 +3499,7 @@ class Utils extends ControllerBase {
     $nids = $query->execute();
 
     foreach ($storage->loadMultiple($nids) as $node) {
-      $twit_id = $node->get('field_twit_id')->getValue()[0]['value'];
+      $twit_id = $node->get('field_twit_id')->getValue();
 
       if(!empty($twit_id)){
         $twit_id = $twit_id[0]['value'];
@@ -3512,6 +3512,10 @@ class Utils extends ControllerBase {
         }
       }
     }
+  }
+
+  public static function Twitter_Delete_By_TwitId($twit_id){
+    (Utils::Twitter())->post("statuses/destroy/" . $twit_id ); 
   }
 
   function test_send_email() {
