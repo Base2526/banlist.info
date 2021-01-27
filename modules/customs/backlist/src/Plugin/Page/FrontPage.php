@@ -117,7 +117,7 @@ class FrontPage extends ControllerBase {
       }
     }
 
-    $query->condition('status', 1);
+    // $query->condition('status', 1);
     $query->sort('changed' , 'DESC');
     $query->tableSort($header);
 
