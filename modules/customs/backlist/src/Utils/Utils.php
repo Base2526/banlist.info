@@ -9,6 +9,7 @@ use Drupal\user\Entity\User;
 use Drupal\file\Entity\File;
 use Drupal\config_pages\Entity\ConfigPages;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Drupal\Core\File\FileSystemInterface;
 
 use Drupal\Component\Utility\SafeMarkup;
 use Drupal\Core\Render\Markup;
@@ -21,6 +22,13 @@ use Facebook\GraphUser;
 use Facebook\FacebookRedirectLoginHelper;
 
 use Abraham\TwitterOAuth\TwitterOAuth;
+
+use voku\helper\HtmlDomParser;
+use voku\helper\SimpleHtmlDomInterface;
+use voku\helper\SimpleHtmlDomNode;
+use voku\helper\SimpleHtmlDomNodeInterface;
+
+
 
 class Utils extends ControllerBase {
 
@@ -2476,7 +2484,7 @@ class Utils extends ControllerBase {
     $path = 'public://captcha/';
     if(file_prepare_directory($path, FILE_CREATE_DIRECTORY)){
 
-      $file = file_save_data($data, $path . $filename, FILE_EXISTS_REPLACE);
+      $file = file_save_data($data, $path . $filename, FileSystemInterface::EXISTS_REPLACE);
 
       if($file){          
         $result = $file->url();
@@ -3130,7 +3138,7 @@ class Utils extends ControllerBase {
     \Drupal::logger('bigcard')->notice('login_form > uid : %uid, name : %name.', array( '%uid' => $uid ));
     if($uid){
       // Create file object from remote URL.
-      $file = file_save_data(file_get_contents($strPicture), 'public://'. $data['id'] . '_' . date('m-d-Y_hia') .'.png', FILE_EXISTS_REPLACE);
+      $file = file_save_data(file_get_contents($strPicture), 'public://'. $data['id'] . '_' . date('m-d-Y_hia') .'.png', FileSystemInterface::EXISTS_REPLACE);
 
       $user = User::load($uid);
       /*
@@ -3572,5 +3580,431 @@ class Utils extends ControllerBase {
     else {
       \Drupal::messenger()->addStatus(t('Your message has been sent.'));
     }
+  }
+
+  // check url not found ?
+  public static function is_404($url) {
+    // $handle = curl_init($url);
+    // curl_setopt($handle,  CURLOPT_RETURNTRANSFER, TRUE);
+
+    // /* Get the HTML or whatever is linked in $url. */
+    // $response = curl_exec($handle);
+
+    // /* Check for 404 (file not found). */
+    // $httpCode = curl_getinfo($handle, CURLINFO_HTTP_CODE);
+    // curl_close($handle);
+
+    // /* If the document has loaded successfully without any redirection or error */
+    // if ($httpCode >= 200 && $httpCode < 300) {
+    //     return false;
+    // } else {
+    //     return true;
+    // }
+
+    $handle = curl_init($url);
+    curl_setopt($handle,  CURLOPT_RETURNTRANSFER, TRUE);
+
+    /* Get the HTML or whatever is linked in $url. */
+    $response = curl_exec($handle);
+
+    /* Check for 404 (file not found). */
+    $httpCode = curl_getinfo($handle, CURLINFO_HTTP_CODE);
+
+    curl_close($handle);
+    if($httpCode == 404) {
+      /* Handle 404 here. */
+      return true;
+    }
+    return false;
+  }
+  
+  public static function clean($string) {
+    $string = str_replace(' ', '', $string); // Replaces all spaces with hyphens.
+
+    return preg_replace('/[^A-Za-z0-9\-]/', '', $string); // Removes special chars.
+  }
+
+
+  public static function Syc_Blacklistseller($i = NULL, $iend = NULL){
+
+    /*
+      $url = 'https://www.blacklistseller.com/assets/uploads/user_uploads_report/64387_Screenshot_2021-01-27-12-25-03-37.jpg';
+      $file = file_save_data(file_get_contents($url), 'public://'. $data['id'] . '_' . date('m-d-Y_hia') .'.png', FILE_EXISTS_REPLACE);
+      $file->id()
+    */
+
+    /*
+    function clean($string) {
+      $string = str_replace(' ', '', $string); // Replaces all spaces with hyphens.
+
+      return preg_replace('/[^A-Za-z0-9\-]/', '', $string); // Removes special chars.
+    }
+
+    // url to inspect
+    $url = 'https://www.blacklistseller.com/assets/uploads/user_uploads_report/64387_Screenshot_2021-01-27-12-25-03-37.jpg?test=4545';
+    // echo basename($url);
+    $path_parts = pathinfo($url);
+
+    // $ext = pathinfo($url, PATHINFO_EXTENSION);
+
+    // dpm($ext);
+
+    // echo $path_parts['dirname'], "\n";
+    // echo $path_parts['basename'], "\n";
+    // echo $path_parts['extension'], "\n";
+    // echo $path_parts['filename'], "\n"; 
+
+    echo clean($path_parts['filename']) . "\n"; 
+
+    $ext = pathinfo(
+        parse_url($url, PHP_URL_PATH), 
+        PATHINFO_EXTENSION
+    ); 
+
+    echo ($ext);
+
+    */
+
+    
+     /*
+    product_type   : สินค้า/ประเภท
+    transfer_amount: ยอดเงิน
+    person_name    : ชื่อบัญชี ผู้รับเงินโอน
+    person_surname : นามสกุล ผู้รับเงินโอน
+    id_card_number : เลขบัตรประชาชนคนขาย
+    selling_website: เว็บไซด์ประกาศขายของ
+    transfer_date  : วันโอนเงิน
+    details        : รายละเอียดเพิ่มเติม
+
+    merchant_bank_account : บัญชีธนาคารคนขาย
+    // options
+    // 1: ธนาคารกรุงศรีอยุธยา
+    // 2: ธนาคารกรุงเทพ
+    // 3: ธนาคารซีไอเอ็มบี  
+    // 4: ธนาคารออมสิน
+    // 5: ธนาคารอิสลาม
+    // 6: ธนาคารกสิกรไทย
+    // 7: ธนาคารเกียรตินาคิน
+    // 8: ธนาคารกรุงไทย
+    // 9: ธนาคารไทยพาณิชย์
+    // 10: Standard Chartered
+    // 11: ธนาคารธนชาติ
+    // 12: ทิสโก้แบงค์
+    // 13: ธนาคารทหารไทย
+    // 14: ธนาคารยูโอบี
+    // 15: ธนาคารเพื่อการเกษตรและสหกรณ์การเกษตร
+    // 16: True Wallet
+    // 17: พร้อมเพย์ (PromptPay)
+    // 18: ธนาคารอาคารสงเคราะห์
+    // 19: AirPay (แอร์เพย์)
+    // 20: mPay
+    // 21: 123 เซอร์วิส
+    // 22: ธ.ไทยเครดิตเพื่อรายย่อย
+    // 23: ธนาคารแลนด์แอนด์เฮ้าส์
+    // 24: เก็บเงินปลายทาง 
+
+    images                : รูปภาพประกอบ
+    */
+
+   
+
+    $all_banks = array('1'=> 'กรุงศรีอยุธยา', '2'=> 'กรุงเทพ', '3'=> 'ซีไอเอ็มบี',
+                   '4'=> 'ออมสิน', '5'=> 'อิสลาม', '6'=> 'กสิกรไทย',
+                   '7'=> 'เกียรตินาคิน', '8'=> 'กรุงไทย', '9'=> 'ไทยพาณิชย์',
+                   '10'=> 'Standard', '11'=> 'ธนชาติ', '12'=> 'ทิสโก้แบงค์',
+                   '13'=> 'ทหารไทย', '14'=> 'ยูโอบี', '15'=> 'สหกรณ์การเกษตร',
+                   '16'=> 'Wallet', '17'=> 'พร้อมเพย์', '18'=> 'อาคารสงเคราะห์', 
+                   '19'=> 'AirPay', '20'=> 'mPay', '21'=> 'เซอร์วิส', 
+                   '22'=> 'เพื่อรายย่อย', '23'=> 'แลนด์แอนด์เฮ้าส์', '24'=> 'เก็บเงินปลายทาง' );
+
+    if(empty($i) && empty($iend)){
+      $query = \Drupal::entityTypeManager()
+        ->getStorage('node')
+        ->getQuery()
+        ->condition('status', \Drupal\node\NodeInterface::PUBLISHED)
+        ->condition('type', 'back_list')
+        ->condition('field_from_blacklistseller', 1)
+        ->sort('nid', 'DESC')
+        ->range(0, 1);
+
+      $nids = $query->execute();
+
+
+      $i     = 0;
+      $iend  = 1000;
+
+      if(!empty($nids)){
+        $node = Node::load($nids[key($nids)]);
+        $field_id_blacklistseller = $node->get('field_id_blacklistseller')->getValue();
+        if(!empty($field_id_blacklistseller)){
+          $i = $field_id_blacklistseller[0]['value'] + 1;
+          $iend   =  $i + 1000;
+        }
+      }
+    }
+    
+   
+
+    ///////////////
+
+    // dpm("i = " . $i .", iend = ". $iend );
+
+    // return ;
+
+    $datass = array();
+     // 0-10000, 10000-150000, 15000-20000, 
+     // for ($i = 1; $i <= 5; $i++) {
+    for ($i; $i <= $iend; $i++) {
+       \Drupal::logger('Syc_Blacklistseller')->notice($i);
+
+
+       $query = \Drupal::entityTypeManager()
+        ->getStorage('node')
+        ->getQuery()
+        // ->condition('status', \Drupal\node\NodeInterface::PUBLISHED)
+        ->condition('type', 'back_list')
+        ->condition('field_from_blacklistseller', 1)
+        ->condition('field_id_blacklistseller', $i , '=');
+  
+        if(!empty($query->execute())){
+          // เราจะไม่ดึงข้อมูลซํ้ามา
+          continue;
+        }
+       
+
+       $url = 'https://www.blacklistseller.com/report/report_preview/' . $i;
+       $datas = array();
+       if(!Utils::is_404($url)){
+         $html = HtmlDomParser::file_get_html($url);
+
+         $table = $html->find('.table-borderless');
+         foreach ($table->find('tr') as $row) {
+           foreach($row->find('th') as $th) {
+
+             // สินค้าที่สั่งซื้อ
+             if (str_contains($th->plaintext, 'สินค้าที่สั่งซื้อ')){
+               $product_type = empty($row->find('td')[0]) ? '' : $row->find('td')[0]->plaintext;
+
+               $datas['product_type'] = $product_type;
+             }
+             
+
+             // ยอดโอน
+             if (str_contains($th->plaintext, 'ยอดโอน')){
+               $transfer_amount = empty($row->find('td')[0]) ? '' : $row->find('td')[0]->plaintext;
+
+               $datas['transfer_amount'] = $transfer_amount;
+             }
+             
+
+             // ชื่อคนขาย
+ 
+             // person_name    : ชื่อบัญชี ผู้รับเงินโอน
+             // person_surname : นามสกุล ผู้รับเงินโอน
+             
+             if (str_contains($th->plaintext, 'ชื่อคนขาย')){
+
+               $ps = explode(" ", $row->find('td')[0]->find('b')[0]->plaintext);
+               if(count($ps) > 1){
+                 $datas['person_name'] = $ps[0];
+                 $datas['person_surname'] = $ps[1];
+               }
+             }
+             
+             // เลขบัตรประชาชน
+             if (str_contains($th->plaintext, 'เลขบัตรประชาชน')){
+               $id_card_number = empty($row->find('td')[0]->find('b')) ? '' : $row->find('td')[0]->find('b')[0]->plaintext;
+             
+               $datas['id_card_number'] = $id_card_number;
+             }
+             
+             // เพจขายของ
+             if (str_contains($th->plaintext, 'เพจขายของ')){
+               $selling_website = empty($row->find('td')[0]) ? '' : $row->find('td')[0]->plaintext;
+             
+               $datas['selling_website'] = $selling_website;
+             }
+             
+             // วันโอนเงิน
+             if (str_contains($th->plaintext, 'วันโอนเงิน')){
+               $transfer_date = empty($row->find('td')[0]) ? '' : $row->find('td')[0]->plaintext;
+
+               $datas['transfer_date'] = $transfer_date;
+             }
+             
+             // // วันที่ลงประกาศ
+             // if (str_contains($th->plaintext, 'วันที่ลงประกาศ')){
+             //   $td = empty($row->find('td')[0]) ? '' : $row->find('td')[0]->plaintext;
+             //   echo 'วันที่ลงประกาศ= '. $td  . '</br>';
+             // }
+
+
+             //   merchant_bank_account : บัญชีธนาคารคนขาย
+
+             if (str_contains($th->plaintext, 'เลขบัญชี')){
+               // $td = empty($row->find('td')[0]->find('b')) ? '' : $row->find('td')[0]->find('b')[0]->plaintext;
+               // echo 'ชื่อบัญชี= '. $row->find('td')[0]->find('b')[0]->innertext . '</br>';
+               // echo 'เลขบัญชี= '. $row->find('td')[0]->find('b')[0]->find('a')[0]->plaintext . '</br>';
+
+             // $merchant_bank_account['bank_account'] = $row->find('td')[0]->find('b')[0]->innertext;
+             // $merchant_bank_account['bank_wallet']  = $row->find('td')[0]->find('b')[0]->find('a')[0]->plaintext;
+               // dpm($row->find('td')[0]->find('b')[0]->innertext);
+               // dpm(gettype($row->find('td')[0]->find('b')[0]->find('a')[0]->plaintext));
+
+               $bank_wallet = $row->find('td')[0]->find('b')[0]->find('a')[0]->plaintext;
+               $bank_account= $row->find('td')[0]->find('b')[0]->innertext;
+
+               // dpm($bank_wallet);
+               // dpm($bank_account);
+
+               // $all_banks
+               $bank_wallet_key = 0;
+               foreach ($all_banks as $bkey => $bvalue) {
+                 if(str_contains($bank_account, $bvalue)){
+                   // $datas['merchant_bank_account']['bank_wallet']= $bkey;
+
+                   $bank_wallet_key = $bkey;
+                   break;
+                 }
+               }
+
+               // $datas['merchant_bank_account']['bank_account'] = $bank_wallet;
+               $datas['merchant_bank_account'][] = array("bank_wallet"=>$bkey, "bank_account"=>$bank_wallet);
+             }
+           }
+         }
+
+         $details = $html->find('.form-group');
+         foreach ($details as $detail) {
+           foreach($detail->find('label') as $label) {
+             
+             
+             if (str_contains($detail->plaintext, 'รายละเอียดเพิ่มเติม')){
+               // dpm($detail->plaintext);
+               // echo 'รายละเอียดเพิ่มเติม : ' . $detail->find('.col-xs-12')[1]->plaintext . '</br>';
+               
+               $datas['details'] = $detail->find('.col-xs-12')[1]->plaintext;
+             }
+             
+           }
+
+           
+           // col-sm-12
+           $images_fids = array();
+           foreach($detail->find('.col-sm-12') as $li) {
+             // dpm( $itm->find('a')[0]->getAttribute('href') );
+             foreach ($li->find('a') as $lii) {
+               // echo 'href  : '. $j++ . '>  ' . $lii->getAttribute('href') . '</br>';
+             
+               $href = $lii->getAttribute('href');
+
+               if(!Utils::is_404($href)){
+                 $path_parts = pathinfo($href);
+
+                 $ext = pathinfo(
+                     parse_url($href, PHP_URL_PATH), 
+                     PATHINFO_EXTENSION
+                 ); 
+
+                 $filename = \Drupal::service('transliterate_filenames.sanitize_name')->sanitizeFilename($path_parts['filename']);// Utils::clean($path_parts['filename']);
+
+                 $fid = 0;
+                 $path = '/opt/drupal/web/sites/default/files/blacklist_seller/' . $filename .'.'.$ext;
+                 if (file_exists($path)) {
+                   $file = \Drupal::entityTypeManager()->getStorage('file')->loadByProperties(['uri' => 'public://blacklist_seller/' . $filename .'.'.$ext ]);
+
+                   if(empty($file)){
+                     unlink($path);
+                   }else{
+                     $fid = $file[key($file)]->id();
+                   }
+                 }
+                 if(!$fid){
+                   $file = file_save_data(file_get_contents($href), 'public://blacklist_seller/'. $filename .'.'.$ext, FileSystemInterface::EXISTS_REPLACE);
+                 
+                   $fid = $file->id();
+                 }
+
+                 $datas['images_fids'][] = array(
+                   'target_id' => $fid,
+                   'alt' => '',
+                   // 'title' => empty($imv['name']) ? '' : $imv['name']
+                 );
+
+                 // dpm(Utils::get_file_url($fid));
+               }
+             }
+           }
+         }
+         
+         $datas['id_blacklistseller'] = $i;
+
+         Utils::Syc_Blacklistseller_Save($datas);
+         // dpm( $datas );
+         $datass[$i] = $datas;
+
+         unset($html);
+       }
+     }
+
+     dpm( count($datass) );
+
+
+     ///////////////
+  
+
+
+    
+  }
+
+  private static function Syc_Blacklistseller_Save($content){
+
+    // dpm( $content['merchant_bank_account'] );
+    $product_type   = empty($content['product_type']) ? "" : trim( $content['product_type'] );        // สินค้า/ประเภท
+    $transfer_amount= empty($content['transfer_amount']) ? "" : trim( $content['transfer_amount'] );  // ยอดเงิน
+    $person_name    = empty($content['person_name']) ? "" : trim( $content['person_name'] );          // ชื่อบัญชี ผู้รับเงินโอน
+    $person_surname = empty($content['person_surname']) ? "" : trim( $content['person_surname'] );    // นามสกุล ผู้รับเงินโอน
+    $id_card_number = empty($content['id_card_number']) ? "" : trim( $content['id_card_number'] );    // เลขบัตรประชาชนคนขาย
+    $selling_website= empty($content['selling_website']) ? "" : trim( $content['selling_website'] );  // เว็บไซด์ประกาศขายของ
+    $transfer_date  = empty($content['transfer_date']) ? "" : trim( $content['transfer_date'] );      // วันโอนเงิน
+    $details        = empty($content['details']) ? "" : trim( $content['details'] );                  // รายละเอียดเพิ่มเติม
+
+    // บัญชีธนาคารคนขาย
+    $merchant_bank_account_paragraphs =array();
+    foreach ($content['merchant_bank_account'] as $ii=>$vv){
+      $item_merchant = Paragraph::create([
+        'type'                    => 'item_merchant_bank_account',
+        'field_bank_account'      => $vv["bank_account"],
+        'field_bank_wallet'       => $vv["bank_wallet"], 
+      ]);
+      $item_merchant->save();
+      $merchant_bank_account_paragraphs[] = array('target_id'=> $item_merchant->id(), 'target_revision_id' => $item_merchant->getRevisionId());
+    }
+
+    $images_fids                  = $content['images_fids'];            // รูปภาพประกอบ
+
+    $id_blacklistseller = trim($content['id_blacklistseller']); 
+
+    $node = Node::create([
+      'type'                   => 'back_list',
+      'uid'                    => \Drupal::currentUser()->id(),
+      'status'                 => 1,
+      'field_channel'          => 32,                // ถูกสร้างผ่านช่องทาง 31: Web, 32: Api
+
+      'title'                  => $product_type,     // สินค้า/ประเภท
+      'field_transfer_amount'  => str_replace( ',', '', $transfer_amount ), //$transfer_amount,  // ยอดเงิน
+      'field_sales_person_name'=> $person_name,      // ชื่อบัญชี ผู้รับเงินโอน
+      'field_sales_person_surname' => $person_surname, // นามสกุล ผู้รับเงินโอน
+      'field_id_card_number'    => $id_card_number,  // เลขบัตรประชาชนคนขาย 
+      'field_selling_website'   => iconv(mb_detect_encoding($selling_website, mb_detect_order(), true), "UTF-8//TRANSLIT", $selling_website),//$selling_website, // เว็บไซด์ประกาศขายของ
+      'field_transfer_date'     => $transfer_date,   // วันโอนเงิน
+      'body'                    => $details,         // หมายเหตุ
+      'field_merchant_bank_account' => $merchant_bank_account_paragraphs, // บัญชีธนาคารคนขาย
+      'field_images'            => $images_fids,      // รูปภาพประกอบ
+
+      'field_from_blacklistseller' => 1, 
+      'field_id_blacklistseller'   => $id_blacklistseller
+    ]);
+    $node->save();
   }
 }

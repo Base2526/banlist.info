@@ -1,0 +1,203 @@
+use voku\helper\HtmlDomParser;
+use voku\helper\SimpleHtmlDomInterface;
+use voku\helper\SimpleHtmlDomNode;
+use voku\helper\SimpleHtmlDomNodeInterface;
+
+$html = HtmlDomParser::file_get_html('https://www.blacklistseller.com/');
+
+foreach ($html->find('.panel-body') as $e) {
+   // dpm( $e->outertext );
+
+   // dpm($e);
+
+   // hr
+   foreach ($e->find('b') as $li) {
+       foreach ($li->find('a') as $lii) {
+         // echo 'href  ' . $lii->getAttribute('href') . '</br>';
+         // echo 'plaintext  ' . $lii->plaintext . '</br>';
+         // echo 'outertext  ' . $lii->getAttribute('href') . '</br>';
+          //$li->outertext ; // innertext
+
+         if (str_contains($lii->plaintext, 'พบ') && str_contains($lii->plaintext, 'ครั้ง')) {
+            
+         }else {
+            // echo 'plaintext  ' . $lii->plaintext . '</br>';
+         }
+       }
+
+   }
+
+   foreach ($e->find('a') as $li) {
+     // continue;
+     // echo '$i = '. $i++ . '<br />';
+     // echo 'plaintext  ' . $li->plaintext . '</br>';
+     if ( str_contains($li->plaintext, 'ดูรายละเอียด') ) {
+       echo 'plaintext  ' . $li->plaintext . ', href ' . $li->getAttribute('href') .'</br>';
+     }
+   }
+}
+
+//////////////////////////////////////
+
+
+/////////// get data from blacklistseller.com //////////////
+
+use voku\helper\HtmlDomParser;
+use voku\helper\SimpleHtmlDomInterface;
+use voku\helper\SimpleHtmlDomNode;
+use voku\helper\SimpleHtmlDomNodeInterface;
+
+$html = HtmlDomParser::file_get_html('https://www.blacklistseller.com/report/report_preview/64308');
+
+
+$table = $html->find('.table-borderless');
+
+foreach ($table->find('tr') as $row) {
+   // dpm( $row->outertext );
+
+   // dpm($e);
+
+   foreach($row->find('th') as $th) {
+    // echo 'th = ' . $th->outertext  . '</br>';
+    if (str_contains($th->plaintext, 'ชื่อคนขาย')){
+      // echo 'cell = ' . $row->find('td')[0]->outertext  . '</br>';
+
+      $td = $row->find('td')[0]->find('b')[0]->plaintext;
+
+      echo 'ชื่อคนขาย = '. $td  . '</br>';
+    }
+
+    // 
+    if (str_contains($th->plaintext, 'เลขบัตรประชาชน')){
+     $td = empty($row->find('td')[0]->find('b')) ? '' : $row->find('td')[0]->find('b')[0]->plaintext;
+     echo 'เลขบัตรประชาชน= '. $td  . '</br>';
+    }
+
+    if (str_contains($th->plaintext, 'สินค้าที่สั่งซื้อ')){
+     $td = empty($row->find('td')[0]) ? '' : $row->find('td')[0]->plaintext;
+     echo 'สินค้าที่สั่งซื้อ= '. $td  . '</br>';
+    }
+
+    if (str_contains($th->plaintext, 'ยอดโอน')){
+     $td = empty($row->find('td')[0]) ? '' : $row->find('td')[0]->plaintext;
+     echo 'ยอดโอน= '. $td  . '</br>';
+    }
+
+    if (str_contains($th->plaintext, 'เลขบัญชี')){
+     // $td = empty($row->find('td')[0]->find('b')) ? '' : $row->find('td')[0]->find('b')[0]->plaintext;
+     echo 'ชื่อบัญชี= '. $row->find('td')[0]->find('b')[0]->innertext . '</br>';
+     echo 'เลขบัญชี= '. $row->find('td')[0]->find('b')[0]->find('a')[0]->plaintext . '</br>';
+    }
+
+    // เพจขายของ
+    if (str_contains($th->plaintext, 'เพจขายของ')){
+     $td = empty($row->find('td')[0]) ? '' : $row->find('td')[0]->plaintext;
+     echo 'เพจขายของ= '. $td  . '</br>';
+    }
+
+    // วันโอนเงิน
+    if (str_contains($th->plaintext, 'วันโอนเงิน')){
+     $td = empty($row->find('td')[0]) ? '' : $row->find('td')[0]->plaintext;
+     echo 'วันโอนเงิน= '. $td  . '</br>';
+    }
+
+    // วันที่ลงประกาศ
+    if (str_contains($th->plaintext, 'วันที่ลงประกาศ')){
+     $td = empty($row->find('td')[0]) ? '' : $row->find('td')[0]->plaintext;
+     echo 'วันที่ลงประกาศ= '. $td  . '</br>';
+    }
+
+
+
+
+
+
+
+   }
+
+
+   foreach($row->find('td') as $cell) {
+    // echo 'cell = ' . $cell->outertext  . '</br>';
+   }
+
+/*
+   // hr
+   foreach ($e->find('b') as $li) {
+       foreach ($li->find('a') as $lii) {
+         // echo 'href  ' . $lii->getAttribute('href') . '</br>';
+         // echo 'plaintext  ' . $lii->plaintext . '</br>';
+         // echo 'outertext  ' . $lii->getAttribute('href') . '</br>';
+          //$li->outertext ; // innertext
+
+         if (str_contains($lii->plaintext, 'พบ') && str_contains($lii->plaintext, 'ครั้ง')) {
+            
+         }else {
+            // echo 'plaintext  ' . $lii->plaintext . '</br>';
+         }
+       }
+
+   }
+
+   foreach ($e->find('a') as $li) {
+     // continue;
+     // echo '$i = '. $i++ . '<br />';
+     // echo 'plaintext  ' . $li->plaintext . '</br>';
+     if ( str_contains($li->plaintext, 'ดูรายละเอียด') ) {
+       echo 'plaintext  ' . $li->plaintext . ', href ' . $li->getAttribute('href') .'</br>';
+     }
+   }
+*/
+}
+
+
+$details = $html->find('.form-group');
+
+
+$j = 0;
+foreach ($details as $detail) {
+
+   foreach($detail->find('label') as $label) {
+     
+     if (str_contains($detail->plaintext, 'รายละเอียดเพิ่มเติม')){
+       // dpm($detail->plaintext);
+       echo 'รายละเอียดเพิ่มเติม : ' . $detail->find('.col-xs-12')[1]->plaintext . '</br>';
+     }
+   }
+
+    
+   
+   // col-sm-12
+   foreach($detail->find('.col-sm-12') as $li) {
+     // dpm( $itm->find('a')[0]->getAttribute('href') );
+    foreach ($li->find('a') as $lii) {
+      echo 'href  : '. $j++ . '>  ' . $lii->getAttribute('href') . '</br>';
+      // foreach ($lii->find('img') as $liii) {
+      //  echo 'img  ' . $lii->plaintext . '</br>';
+      //}
+      // img
+    }
+   }
+}
+
+
+/////////////// exce call api ///////////////////
+use voku\helper\HtmlDomParser;
+use voku\helper\SimpleHtmlDomInterface;
+use voku\helper\SimpleHtmlDomNode;
+use voku\helper\SimpleHtmlDomNodeInterface;
+use Drupal\backlist\Utils\Utils;
+
+try {
+   for($i = 1; $i++; $i<=64321){
+      
+     $url = 'https://www.blacklistseller.com/report/report_preview/' . $i;
+     if(!Utils::is_404($url)){
+       $html = HtmlDomParser::file_get_html($url);
+
+     }else{
+       echo "$i : " . $i . '</br>';
+     }
+   }
+} catch (Exception $e) {
+    echo 'Caught exception: ',  $e->getMessage(), "\n";
+}
