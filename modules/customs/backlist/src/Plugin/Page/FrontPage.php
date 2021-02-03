@@ -22,6 +22,22 @@ class FrontPage extends ControllerBase {
     return 'front_page';
   }
 
+  private function getCount($name, $surname){
+    $storage = \Drupal::entityTypeManager()->getStorage('node');
+    $query = $storage->getQuery();
+    $query->condition('status', \Drupal\node\NodeInterface::PUBLISHED);
+    $query->condition('type', 'back_list');
+     
+    $and = $query->andConditionGroup();
+    $and->condition('field_sales_person_name', $name, '=');
+    $and->condition('field_sales_person_surname', $surname, '=');
+
+    $query->condition($and);
+
+    return $query->count()->execute();
+    // dpm($num_rows);
+  }
+
   public function page() {
     /*
     $backlists = array();
@@ -87,7 +103,7 @@ class FrontPage extends ControllerBase {
       'bank_account' => $this->t('Bank account'),
       'transfer_amount'   => $this->t('Transfer amount'),     // ยอดเงิน
       'date_post'         => $this->t('Date post'),	  
-      'reportor'          => $this->t('Reportor')
+      // 'reportor'          => $this->t('Reportor')
     ];
 
     $storage = \Drupal::entityTypeManager()->getStorage('node');
@@ -103,19 +119,19 @@ class FrontPage extends ControllerBase {
       $query->condition('field_sales_person_name', $sales_person_name, 'CONTAINS');
     }
 
-    if(!empty($reportor)){
-      $userStorage = \Drupal::entityTypeManager()->getStorage('user');
-      $uids = $userStorage->getQuery()
-              ->condition('status', '1')
-              ->condition('name', $reportor, '=')
-              ->execute();
+    // if(!empty($reportor)){
+    //   $userStorage = \Drupal::entityTypeManager()->getStorage('user');
+    //   $uids = $userStorage->getQuery()
+    //           ->condition('status', '1')
+    //           ->condition('name', $reportor, '=')
+    //           ->execute();
 
-      if(!empty($uids)){
-        $uid = reset($uids);
+    //   if(!empty($uids)){
+    //     $uid = reset($uids);
 
-        $query->condition('uid', $uid);
-      }
-    }
+    //     $query->condition('uid', $uid);
+    //   }
+    // }
 
     // $query->condition('status', 1);
     $query->sort('changed' , 'DESC');
@@ -127,12 +143,16 @@ class FrontPage extends ControllerBase {
 
     // $all_nids = $query->execute();
     $nids = $query->execute();
+
+    // dpm(count($nids));
     
     $date_formatter = \Drupal::service('date.formatter');
     $rows = [];
     foreach ($storage->loadMultiple($nids) as $node) {
       $row = [];
       // $row[] = $node->id();
+
+      // dpm($node->label());
 
       // dpm( $Utils::truncate( ($node->get('body')->getValue()[0]['value']), 10) );
     
@@ -195,7 +215,7 @@ $url_object = Drupal\Core\Url::fromRoute('entity.node.canonical', ['node' => $ni
           ],
           '#links' => [
             [
-              'title' => $sales_person_name . ' ' . $sales_person_surname,
+              'title' => $sales_person_name . ' ' . $sales_person_surname ." (" . $this->getCount($sales_person_name, $sales_person_surname) . ")",
               'url' => Url::fromRoute('filter_by_person.form', ['name'=>$sales_person_name, 'surname'=>$sales_person_surname]),
               'attributes' => [
                 'class' => [
@@ -207,8 +227,15 @@ $url_object = Drupal\Core\Url::fromRoute('entity.node.canonical', ['node' => $ni
         ]
       ];
 
+      
 
-      $row[] = Utils::truncate(strip_tags($node->get('body')->getValue()[0]['value']), 800, '');
+      $body = $node->get('body')->getValue();
+      if(!empty($body)){
+        $row[] = Utils::truncate(strip_tags($body[0]['value']), 800, '');
+      }else{
+        $row[] = '';
+      }
+
       
       $merchant_bank_accounts = array();
       foreach ($node->get('field_merchant_bank_account')->getValue() as $mi=>$mv){
@@ -232,7 +259,7 @@ $url_object = Drupal\Core\Url::fromRoute('entity.node.canonical', ['node' => $ni
           }
           
           
-          $merchant_bank_accounts[] = $merchant_bank_account;
+        $merchant_bank_accounts[] = $merchant_bank_account;
       }
 
       $row[] = ['data' => 
@@ -276,8 +303,9 @@ $url_object = Drupal\Core\Url::fromRoute('entity.node.canonical', ['node' => $ni
       // dpm( $node->getOwnerId() );
       // \Drupal\Core\Url::fromRoute('<front>')
 
-      $ownerId = $node->getOwnerId();
-      if(!empty($ownerId)){
+      // $ownerId = $node->getOwnerId();
+      // if(!empty($ownerId)){
+        /*
         $user = User::load($ownerId);
 
         // $field_display_name = $user->get('field_display_name')->value;
@@ -306,6 +334,7 @@ $url_object = Drupal\Core\Url::fromRoute('entity.node.canonical', ['node' => $ni
             ]
           ]
         ];
+        */
 
         // entity.user.edit_form', ['user' => $this->currentUser()->id()], [], 301);
         // $row[] = theme('image', array('path' => 'https://www.drupal.org/files/styles/drupalorg_user_picture/public/user-pictures/picture-324696-1401239339.png?itok=LMwPjqdb'));
@@ -314,7 +343,7 @@ $url_object = Drupal\Core\Url::fromRoute('entity.node.canonical', ['node' => $ni
         // dpm();
         
         $rows[] = $row;
-      }
+      // }
     }
 	
   //  if($fname == "" && $marks ==""){

@@ -21,6 +21,7 @@ use Drupal\Component\Utility\SafeMarkup;
 use Drupal\Component\Utility\Html;
 use Drupal\node\Entity\Node;
 use Drupal\Core\Render\Markup;
+use Drupal\Core\Entity\EntityInterface;
 
 use Drupal\backlist\Utils\Utils;
 
@@ -146,7 +147,9 @@ function backlist_cron(){
     }
   }
 
-  Utils::Cron_Twitter_Post();
+  // Utils::Cron_Twitter_Post();
+
+  // Utils::Syc_Blacklistseller();
 }
 
 /**
@@ -178,7 +181,7 @@ function backlist_user_login(\Drupal\user\UserInterface $account) {
     }
 }
 
-function backlist_user_insert(Drupal\Core\Entity\EntityInterface $entity) {
+function backlist_user_insert(EntityInterface $entity) {
   switch($entity->bundle()){
     case 'user':{
       // \Drupal::logger('backlist_user_insert')->error( 'bundle    = %bundle,
@@ -234,10 +237,17 @@ function backlist_node_insert(Node $node) {
   }
 }
 
+/*
+* hook_ENTITY_TYPE_update()
+*/
+function backlist_config_pages_update(EntityInterface $entity) {
+  \Drupal::logger('backlist_config_pages_update')->error( "backlist_config_pages_update" );
+}
+
 /**
  * Implements hook_ENTITY_TYPE_delete().
  */
-function backlist_node_delete(Drupal\Core\Entity\EntityInterface $entity) {
+function backlist_node_delete(EntityInterface $entity) {
   switch($entity->bundle()){
     case 'back_list':{
       $twit_id = $entity->get('field_twit_id')->getValue();
@@ -364,7 +374,7 @@ function backlist_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   }  
 }
 
-function backlist_node_view(array &$build, \Drupal\Core\Entity\EntityInterface $entity, \Drupal\Core\Entity\Display\EntityViewDisplayInterface $display, $view_mode) {
+function backlist_node_view(array &$build, EntityInterface $entity, \Drupal\Core\Entity\Display\EntityViewDisplayInterface $display, $view_mode) {
   switch($entity->bundle()){
     case 'back_list':{
       // $build['body'][0]['#text'] = 'this is a new altered content body ';
@@ -415,6 +425,17 @@ function backlist_node_view(array &$build, \Drupal\Core\Entity\EntityInterface $
 
       $build['field_images']['#prefix'] = '<div class="row" id="report-view-slick-lightbox">';
       $build['field_images']['#suffix'] = '</div>';
+
+
+      // ยอดเงิน
+      $transfer_amount = 0;
+      $field_transfer_amount = $entity->get('field_transfer_amount')->getValue();
+      if(!empty($field_transfer_amount)){
+        $transfer_amount = $field_transfer_amount[0]['value'];
+      }
+      // $build['field_transfer_amount'][0]['#markup'] = '3333';
+      // $build['field_transfer_amount']['#title'] = 'test - 999';
+      $build['field_transfer_amount'][0]['#markup'] = number_format($transfer_amount, 2, '.', ',');
 
       // รูปภาพประกอบ
       $images = array();

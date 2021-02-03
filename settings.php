@@ -803,3 +803,10 @@ $databases['default']['default'] = array (
   'driver' => 'pgsql',
 );
 $settings['config_sync_directory'] = 'sites/default/files/config_Wu2o7rY4QGtLsF251RHYX75-Pc_RRupRit5LzdnsRE8FLRPblr-LKsO1C92LL9onCh7UCRB5VA/sync';
+
+
+$settings['container_yamls'][] = 'modules/redis/example.services.yml';  
+$settings['redis.connection']['interface'] = 'PhpRedis'; // Can be "Predis".
+$settings['redis.connection']['host']      = 'redis';  // Your Redis instance hostname.
+$settings['redis.connection']['port']      = '6379';  // Redis port
+$settings['cache']['default'] = 'cache.backend.redis';

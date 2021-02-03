@@ -54,3 +54,45 @@ Excel
 Twitter
  - https://twitteroauth.com/
  - https://processwire.com/talk/topic/21667-how-to-post-tweets-to-twitter-api-with-twitteroauth/
+
+
+Memcaching redis
+ https://chromatichq.com/blog/configuring-redis-caching-drupal-8
+
+
+Count  > https://www.drupal.org/docs/8/api/database-api/dynamic-queries/count-queries
+$time1    = microtime(true); 
+$storage = \Drupal::entityTypeManager()->getStorage('node');
+    $query = $storage->getQuery();
+    $query->condition('status', \Drupal\node\NodeInterface::PUBLISHED);
+    $query->condition('type', 'back_list');
+     
+    $and = $query->andConditionGroup();
+            $and->condition('field_sales_person_name', $name, '=');
+            $and->condition('field_sales_person_surname', $surname, '=');
+        $query->condition($and);
+$num_rows = $query->count()->execute();
+dpm($num_rows);
+
+$execution_time   = microtime(true) - $time1;
+
+dpm( $execution_time  );
+
+
+//////// delete by content type ///////////
+  $query = \Drupal::entityQuery('node')
+    ->condition('type', 'back_list');
+  $nids = $query->execute();
+  // dpm($nids);
+  foreach ($nids as $nid) {
+    \Drupal\node\Entity\Node::load($nid)->delete();
+  }
+
+//////// delete by content type ///////////
+
+
+/// reset node start node = 1
+UPDATE node SET nid = DEFAULT;
+UPDATE node_revision SET nid = DEFAULT;
+UPDATE node_field_data SET nid = DEFAULT;
+UPDATE node_field_revision SET nid = DEFAULT;

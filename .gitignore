@@ -1,1 +1,7 @@
-files/
+files
+vendor
+
+.git
+pgadmin
+var
+web

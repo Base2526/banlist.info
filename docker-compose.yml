@@ -29,6 +29,7 @@ services:
       - ./themes:/opt/drupal/web/themes
       - ./settings.php:/opt/drupal/web/sites/default/settings.php
       - ./services.yml:/opt/drupal/web/sites/default/services.yml
+      - ./settings.local.php:/opt/drupal/web/sites/settings.local.php
     #   - ./drupal8/modules:/var/www/html/sites/default/modules
     #   - ./drupal8/themes:/var/www/html/sites/default/themes
     #   - ./drupal8/info.php:/var/www/html/info.php
@@ -43,7 +44,12 @@ services:
       - ./vendor:/opt/drupal/vendor
       - ./composer.json:/opt/drupal/composer.json
       - ./composer.lock:/opt/drupal/composer.lock
+
+      # Local
       - ./files:/opt/drupal/web/sites/default/files
+
+      # Cloud
+      # - /mnt/volume_sgp1_09/banlist.info/files:/opt/drupal/web/sites/default/files
 
       # SSL
       # - ./000-default.conf:/etc/apache2/sites-available/000-default.conf
@@ -144,13 +150,16 @@ services:
   #     - ./cron/var/log/wget.log:/opt/wget.log
   #   restart: always
   
-  # redis:
-  #   image: redis
-  #   container_name: redis
-  #   volumes:
-  #     - ./redis.conf:/usr/local/etc/redis/redis.conf
-  #   ports:
-  #     - 6379:6379
+  redis:
+    image: redis
+    container_name: redis
+    volumes:
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
+      #- /mnt/volume_sgp1_09/banlist.info/redis/data:/data
+    ports:
+      - 6379:6379
+    entrypoint: redis-server --appendonly yes
+    restart: always
 
   # elasticsearch:
   # elasticsearch:
