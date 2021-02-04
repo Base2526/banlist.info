@@ -4,3 +4,4 @@ vendor
 .git
 pgadmin
 var
+redis
