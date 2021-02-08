@@ -78,6 +78,8 @@ foreach ($nids as $nid) {
        $nnm= Node::load($ni);
 
         if ($nnm) {
+        
+         \Drupal::logger('delete_node_duplicat')->notice($ni);
          // $nnm->delete();
         }
       }
