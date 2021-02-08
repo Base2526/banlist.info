@@ -1,3 +1,4 @@
+use Drupal\node\Entity\Node;
 $query = \Drupal::entityQuery('node')
     ->condition('type', 'back_list');
   $nids = $query->execute();
@@ -5,6 +6,7 @@ $query = \Drupal::entityQuery('node')
 foreach ($nids as $nid) {
 
     $node = Node::load($nid);
+
 
     if(empty($node)){
         continue;
@@ -29,6 +31,7 @@ foreach ($nids as $nid) {
         $surname = $field_sales_person_surname[0]['value'];
     }
 
+
     $selling_website = '';
     $field_selling_website = $node->get('field_selling_website')->getValue();
     if(!empty($field_selling_website)){
@@ -40,6 +43,7 @@ foreach ($nids as $nid) {
     $query->condition('status', \Drupal\node\NodeInterface::PUBLISHED);
     $query->condition('type', 'back_list');
      
+
     $and = $query->andConditionGroup();
 
             if(!empty($title)){
@@ -59,19 +63,23 @@ foreach ($nids as $nid) {
             }
 
             if(!empty($selling_website)){
-                $and->condition('field_selling_website', $selling_website, '=')
+                $and->condition('field_selling_website', $selling_website, '=');
             }
 
     $query->condition($and);
 
+
     $ns = $query->execute();
 
-    $ns = array_diff( $ns, [$nid] );
-    foreach ($ns as $ni) {
-      $nnm= Node::load($ni);
+    if(count($ns) > 1){
 
-      if ($nnm) {
-       //  $nnm->delete();
+      $ns = array_diff( $ns, [$nid] );
+      foreach ($ns as $ni) {
+       $nnm= Node::load($ni);
+
+        if ($nnm) {
+         // $nnm->delete();
+        }
       }
     }
 }
