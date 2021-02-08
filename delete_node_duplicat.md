@@ -13,7 +13,7 @@ foreach ($nids as $nid) {
     $title        = $node->label();
 
     $body = $node->get('body')->getValue();
-    if(empty){
+    if(!empty($body)){
         $body = $body[0]['value'];
     }
     
@@ -65,4 +65,13 @@ foreach ($nids as $nid) {
     $query->condition($and);
 
     $ns = $query->execute();
+
+    $ns = array_diff( $ns, [$nid] );
+    foreach ($ns as $ni) {
+      $nnm= Node::load($ni);
+
+      if ($nnm) {
+       //  $nnm->delete();
+      }
+    }
 }
