@@ -807,6 +807,6 @@ $settings['config_sync_directory'] = 'sites/default/files/config_Wu2o7rY4QGtLsF2
 
 $settings['container_yamls'][] = 'modules/redis/example.services.yml';  
 $settings['redis.connection']['interface'] = 'PhpRedis'; // Can be "Predis".
-$settings['redis.connection']['host']      = 'redis';  // Your Redis instance hostname.
+$settings['redis.connection']['host']      = 'master';  // Your Redis instance hostname.
 $settings['redis.connection']['port']      = '6379';  // Redis port
 $settings['cache']['default'] = 'cache.backend.redis';

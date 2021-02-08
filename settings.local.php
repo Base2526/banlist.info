@@ -164,7 +164,7 @@ if (extension_loaded('redis')) {
     // Set Redis as the default backend for any cache bin not otherwise specified.
     // $settings['cache']['default'] = 'cache.backend.redis';
     $settings['redis.connection']['interface'] = 'PhpRedis'; // Can be "Predis".
-    $settings['redis.connection']['host'] = 'redis';
+    $settings['redis.connection']['host'] = 'master';
     $settings['redis.connection']['port'] = '6379';
     // $settings['redis.connection']['password'] = "mypassword"; // If you are using passwords, otherwise, omit
   
