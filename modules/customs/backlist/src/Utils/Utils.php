@@ -3968,6 +3968,24 @@ class Utils extends ControllerBase {
     $selling_website= empty($content['selling_website']) ? "" : trim( $content['selling_website'] );  // เว็บไซด์ประกาศขายของ
     $transfer_date  = empty($content['transfer_date']) ? "" : trim( $content['transfer_date'] );      // วันโอนเงิน
     $details        = empty($content['details']) ? "" : trim( $content['details'] );                  // รายละเอียดเพิ่มเติม
+	  
+	  
+    if(!empty( $transfer_date )){ 
+      /*
+      use Drupal\node\Entity\Node;
+
+      $nid = 57037;
+      $node = Node::load($nid);
+
+      $time = strtotime('10/16/2003');
+      $node->set('field_transfer_date', date('Y-m-d', $time));
+      // 'field_transfer_date'     => $transfer_date,   // วันโอนเงิน
+
+      $node->save();
+      */
+	    
+      $transfer_date =   date('Y-m-d',  strtotime($transfer_date));
+    }
 
     // บัญชีธนาคารคนขาย
     $merchant_bank_account_paragraphs =array();
