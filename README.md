@@ -96,3 +96,13 @@ UPDATE node SET nid = DEFAULT;
 UPDATE node_revision SET nid = DEFAULT;
 UPDATE node_field_data SET nid = DEFAULT;
 UPDATE node_field_revision SET nid = DEFAULT;
+
+
+/*
+* hook_ENTITY_TYPE_update()
+*/
+// Case update config_pages > 
+function bigcard_config_pages_update(Drupal\Core\Entity\EntityInterface $entity) {
+  // Clear && Rebuild cache from config_page update data.
+  \Drupal::logger('bigcard_config_pages_update')->debug( "bigcard_config_pages_update" );
+}
