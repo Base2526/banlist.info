@@ -103,6 +103,8 @@ UPDATE node_field_revision SET nid = DEFAULT;
 */
 // Case update config_pages > 
 function bigcard_config_pages_update(Drupal\Core\Entity\EntityInterface $entity) {
+  // $entity->getEntityTypeId() is value config_pages
+  // dpm( $entity->getEntityTypeId() );
   // Clear && Rebuild cache from config_page update data.
   \Drupal::logger('bigcard_config_pages_update')->debug( "bigcard_config_pages_update" );
 }
