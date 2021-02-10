@@ -241,6 +241,29 @@ function backlist_node_insert(Node $node) {
 * hook_ENTITY_TYPE_update()
 */
 function backlist_config_pages_update(EntityInterface $entity) {
+  // $entity->getEntityTypeId() is value config_pages
+  // dpm( $entity->getEntityTypeId() );
+  // Clear && Rebuild cache from config_page update data.
+
+  // dpm( $entity->getEntityTypeId() );
+  // dpm( '$entity->bundle()' );
+  // dpm( $entity->bundle() );
+  // dpm( '$entity->label()' );
+  // dpm( $entity->label() );
+
+  switch($entity->bundle()){
+    case 'banlist':{
+      // $consumer_key     = $entity->get('field_twitter_consumer_key')->getValue();
+      // dpm( $consumer_key );
+      break;
+    }
+
+    default:{
+      break;
+    }
+
+  }
+
   \Drupal::logger('backlist_config_pages_update')->error( "backlist_config_pages_update" );
 }
 
@@ -455,75 +478,6 @@ function user_register_form_method(&$form, FormStateInterface $form_state) {
 
 function backlist_page_attachments(array &$attachments) {
   $attachments['#attached']['library'][] = 'backlist/backlist_js';
-}
-
-// function  MODULE_user_login_foo_submit($form, &$form_state) {
-//   // drupal_goto('/path/to/request.php', array('external' => TRUE));
-//   $url = Url::fromRoute('<front>');
-//   $form_state->setRedirectUrl($url); 
-// }
-
-/**
- * @file
- * Contains dn_students.module.
- */
- 
-function get_students($opt,$fname,$marks) {
-  /*
-	$res = array();
-  if($opt == "All"){	
-    $results = db_select('students', 'st')
-    ->extend('\Drupal\Core\Database\Query\PagerSelectExtender')
-    ->limit(15);
-    $results->fields('st');
-    $results->orderBy('st.id','DESC');
-    $res = $results->execute()->fetchAll();
-    $ret = [];
-  }else{
-    $results = db_select('students', 'st')
-    ->extend('\Drupal\Core\Database\Query\PagerSelectExtender')
-    ->limit(15);
-    $results->fields('st');
-    $results->orderBy('st.id','DESC');
-    $results->condition('fname', $fname);
-    $results->condition('marks', $marks);
-    $res = $results->execute()->fetchAll();
-    $ret = [];
-  }
-  foreach ($res as $row) {
-
-    $delete = Url::fromUserInput('/admin/structure/dn_students/students/delete/' . $row->id, array('attributes' => array('onclick' => "return confirm('Are you Sure')")));
-    $edit = Url::fromUserInput('/admin/structure/dn_students/students/edit/' . $row->id);
-    $edit_link = \Drupal::l('edit', $edit);
-    $delete_link = \Drupal::l('delete', $delete);
-
-    $mainLink = t('@linkApprove  @linkReject', array('@linkApprove' => $edit_link, '@linkReject' => $delete_link));
-    
-    $ret[] = [
-      'id' => $row->id,
-      'fname' => $row->fname,
-      'sname' => $row->sname,
-      'age' => $row->age,
-      'marks' => $row->marks,
-      'opt' => $mainLink,
-    ];
-  }
-
-  */
-
-  $ret = array();
-  for($i = 0; $i< 50; $i++ ){
-    $ret[] = [
-      'id' => '$row->id ' . $i,
-      'fname' => '$row->fname ' . $i,
-      'sname' => '$row->sname ' . $i,
-      'age' => '$row->age ' . $i,
-      'marks' => '$row->marks ' . $i,
-      'opt' => '$mainLink ' . $i,
-    ];
-  }
-
-  return $ret;
 }
 
 /*
