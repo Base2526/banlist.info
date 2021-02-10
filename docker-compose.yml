@@ -82,6 +82,8 @@ services:
   postgres:
     image: postgres:10
     container_name: pg_banlist
+    # volumes: 
+    #   - ./postgresql.conf:/etc/postgresql/postgresql.conf
     environment:
       POSTGRES_DB: banlist
       POSTGRES_USER: postgres
