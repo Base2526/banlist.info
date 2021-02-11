@@ -12,6 +12,10 @@ use Drupal\paragraphs\Entity\Paragraph;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
+use Symfony\Component\DependencyInjection\ContainerInterface;
+// use Drupal\Core\Entity\Query\QueryFactory;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+
 use Drupal\user\Entity\User;
 use Drupal\node\Entity\Node;
 use Drupal\taxonomy\Entity\Term;
@@ -31,8 +35,38 @@ use Drupal\backlist\Utils\Utils;
  */
 class API extends ControllerBase {
 
+  /**
+   * Entity query factory.
+   *
+   * @var \Drupal\Core\Entity\Query\QueryFactory
+   */
+  protected $entityTypeManager;
+
+  /**
+   * Constructs a new CustomRestController object.
+
+  * @param \Drupal\Core\Entity\Query\QueryFactory $entityQuery
+  * The entity query factory.
+  */
+  public function __construct(EntityTypeManagerInterface $entityTypeManager) {
+    // $this->entityQuery = $entity_query;
+    $this->entityTypeManager = $entityTypeManager;
+  }
+
+  
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      // $container->get('entity.query')
+      $container->get('entity_type.manager')
+    );
+  }
+
+
   public function CheckBanlist(Request $request){
-    $response = array();
+    $response_array = array();
     $time1    = microtime(true);
 
     // if ( Utils::verify($request, FALSE) ) {
@@ -49,7 +83,9 @@ class API extends ControllerBase {
             if( empty($name) || empty($surname) ){
 
               // $query = \Drupal::entityTypeManager()->getStorage('node')->getQuery();
-              $storage = \Drupal::entityTypeManager()->getStorage('node');
+              // $storage = \Drupal::entityTypeManager()->getStorage('node');
+
+              $storage = $this->entityTypeManager->getStorage('node');
               $query = $storage->getQuery();
               $query->condition('status', \Drupal\node\NodeInterface::PUBLISHED);
               $query->condition('type', 'back_list');
@@ -72,13 +108,15 @@ class API extends ControllerBase {
                 $datas[] = API::GetFieldNode($node);
               }
 
-              $response['result']           = TRUE;
-              $response['execution_time']   = microtime(true) - $time1;
-              $response['count']            = count($datas);
-              $response['datas']            = $datas;
+              
+              $response_array['result']           = TRUE;
+              $response_array['execution_time']   = microtime(true) - $time1;
+              $response_array['count']            = count($datas);
+              $response_array['datas']            = $datas;
+
             }else{
-              $response['result']   = FALSE;
-              $response['message']  = 'Empty name, subname.';
+              $response_array['result']   = FALSE;
+              $response_array['message']  = 'Empty name, subname.';
             }
             break;
           }
@@ -103,27 +141,38 @@ class API extends ControllerBase {
                 }
               }
 
-              $response['result']           = TRUE;
-              $response['execution_time']   = microtime(true) - $time1;
-              $response['count']            = count($datas);
-              $response['datas']            = $datas;
+              $response_array['result']           = TRUE;
+              $response_array['execution_time']   = microtime(true) - $time1;
+              $response_array['count']            = count($datas);
+              $response_array['datas']            = $datas;
             }else{
-              $response['result']   = FALSE;
-              $response['message']  = 'Empty bank account.';
+              $response_array['result']   = FALSE;
+              $response_array['message']  = 'Empty bank account.';
             }
             break;
           }
 
           default:{
-            $response['result']   = FALSE;
-            $response['message']  = 'Not match type.';
+            $response_array['result']   = FALSE;
+            $response_array['message']  = 'Not match type.';
           }
         }
       }else{
-        $response['result']   = FALSE;
-        $response['message']  = 'Not match type.';
+        $response_array['result']   = FALSE;
+        $response_array['message']  = 'Not match type.';
       }
-      return new JsonResponse( $response );  
+      // return new JsonResponse( $response );  
+
+      // Add the node_list cache tag so the endpoint results will update when nodes are
+      // updated.
+      $cache_metadata = new CacheableMetadata();
+      $cache_metadata->setCacheTags(['check_banlist']);
+
+      // Create the JSON response object and add the cache metadata.
+      $response = new CacheableJsonResponse($response_array);
+      $response->addCacheableDependency($cache_metadata);
+
+      return $response;
     // }
 
     // $response['result']   = FALSE;
@@ -132,7 +181,8 @@ class API extends ControllerBase {
 
   private function GetFieldNode($node){
     $data = array();
-    $data['title'] = $node->label();
+    $data['id']     = $node->id();
+    $data['title']  = $node->label();
 
     // 2. ชื่อบัญชี-นามสกุล ผู้รับเงินโอน
     $sales_person_name = '';
@@ -327,22 +377,22 @@ class API extends ControllerBase {
     $details        = trim( $content['details'] );            // รายละเอียดเพิ่มเติม
     $merchant_bank_account   = $content['merchant_bank_account']; // บัญชีธนาคารคนขาย
     $images         = $content['images'];            // รูปภาพประกอบ
-/*
-    { "product_type"   : "product_type 1",
-      "transfer_amount": 500,
-      "person_name"    : "person_name 1",
-      "person_surname" : "person_surname 1",
-      "id_card_number" : 2138123412,
-      "selling_website": "http://banlist.info",
-      "transfer_date"  : "2021-01-19",
-      "details"        : "details 1",
-      "images":[{"type": "type 1", "image":'', "name":"name 1", "extension": "png"}, 
-                {"type": "type 2", "image":"dfasfd", "name":"name 2", "extension": "png"}, 
-                {"type": "type 3", "image":"dfasfd", "name":"name 3", "extension": "png"}],
+    /*
+        { "product_type"   : "product_type 1",
+          "transfer_amount": 500,
+          "person_name"    : "person_name 1",
+          "person_surname" : "person_surname 1",
+          "id_card_number" : 2138123412,
+          "selling_website": "http://banlist.info",
+          "transfer_date"  : "2021-01-19",
+          "details"        : "details 1",
+          "images":[{"type": "type 1", "image":'', "name":"name 1", "extension": "png"}, 
+                    {"type": "type 2", "image":"dfasfd", "name":"name 2", "extension": "png"}, 
+                    {"type": "type 3", "image":"dfasfd", "name":"name 3", "extension": "png"}],
 
-      "merchant_bank_account":[{"bank_account": "1234", "bank_wallet": 15}]
-    }
-*/
+          "merchant_bank_account":[{"bank_account": "1234", "bank_wallet": 15}]
+        }
+    */
     if( empty(trim($product_type))   || 
         empty(trim($person_name))    || 
         empty(trim($person_surname)) ||

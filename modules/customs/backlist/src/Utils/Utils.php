@@ -28,8 +28,6 @@ use voku\helper\SimpleHtmlDomInterface;
 use voku\helper\SimpleHtmlDomNode;
 use voku\helper\SimpleHtmlDomNodeInterface;
 
-
-
 class Utils extends ControllerBase {
 
   public static function consent_template_api($lang){
@@ -3846,8 +3844,8 @@ class Utils extends ControllerBase {
                // echo 'ชื่อบัญชี= '. $row->find('td')[0]->find('b')[0]->innertext . '</br>';
                // echo 'เลขบัญชี= '. $row->find('td')[0]->find('b')[0]->find('a')[0]->plaintext . '</br>';
 
-             // $merchant_bank_account['bank_account'] = $row->find('td')[0]->find('b')[0]->innertext;
-             // $merchant_bank_account['bank_wallet']  = $row->find('td')[0]->find('b')[0]->find('a')[0]->plaintext;
+              // $merchant_bank_account['bank_account'] = $row->find('td')[0]->find('b')[0]->innertext;
+              // $merchant_bank_account['bank_wallet']  = $row->find('td')[0]->find('b')[0]->find('a')[0]->plaintext;
                // dpm($row->find('td')[0]->find('b')[0]->innertext);
                // dpm(gettype($row->find('td')[0]->find('b')[0]->find('a')[0]->plaintext));
 
