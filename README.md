@@ -116,3 +116,8 @@ Postgre change performance
 
 - ดูค่าที่เราปรับเปรียน
   SHOW shared_buffers;
+  
+  
+  
+Axois upload multi
+- https://tuanitpro.com/how-to-upload-multiple-files-react-native/
