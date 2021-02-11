@@ -127,3 +127,6 @@ Axois upload multi
 
 Loading React-Native
  - https://www.npmjs.com/package/react-native-loading-spinner-overlay
+ 
+Lazy Image React-Native 
+ - https://www.npmjs.com/package/react-lazy-load-image-component
