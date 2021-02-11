@@ -145,7 +145,7 @@ class FilterByPersonForm extends FormBase {
         }
         $form['headers']['#suffix'] = '</table>';
 
-        $form['search_results']['#prefix'] = '<div>'.$this->t('Search results') . '<div>'. $this->t('พบทั้งหมด '.count($all_nids).' รายการ').'</div>';
+        $form['search_results']['#prefix'] = '<div>'.$this->t('Search results') . ' : ' . $name . ' ' .  $surname  . '<div>'. $this->t('พบทั้งหมด '.count($all_nids).' รายการ').'</div>';
         return $form;
     }
 
