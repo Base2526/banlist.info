@@ -124,3 +124,6 @@ Postgre change performance
   
 Axois upload multi
 - https://tuanitpro.com/how-to-upload-multiple-files-react-native/
+
+Loading React-Native
+ - https://www.npmjs.com/package/react-native-loading-spinner-overlay
