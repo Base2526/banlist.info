@@ -108,3 +108,11 @@ function bigcard_config_pages_update(Drupal\Core\Entity\EntityInterface $entity)
   // Clear && Rebuild cache from config_page update data.
   \Drupal::logger('bigcard_config_pages_update')->debug( "bigcard_config_pages_update" );
 }
+
+
+Postgre change performance
+- https://www.enterprisedb.com/postgres-tutorials/how-tune-postgresql-memory
+- https://github.com/docker-library/docs/tree/master/postgres
+
+- ดูค่าที่เราปรับเปรียน
+  SHOW shared_buffers;
