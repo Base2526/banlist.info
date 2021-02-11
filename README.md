@@ -10,6 +10,9 @@ cat your_dump.sql | docker exec -i your-db-container psql -Upostgres
 Facebook Login
  - https://www.thaicreate.com/community/php-facebook-login-api-sdk-v5.html
  - https://github.com/facebook/react-native-fbsdk
+ 
+Google Login
+ - https://github.com/react-native-google-signin/google-signin
 
 Theme
 https://www.drupal.org/docs/8/themes/barrio-bootstrap-4-drupal-89-theme/bootstrap-barrio-installation/installation
