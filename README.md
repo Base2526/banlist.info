@@ -130,3 +130,6 @@ Loading React-Native
  
 Lazy Image React-Native 
  - https://www.npmjs.com/package/react-lazy-load-image-component
+ 
+Elasticsearch Drupal 8-9
+ https://www.lullabot.com/articles/indexing-content-from-drupal-8-to-elasticsearch
