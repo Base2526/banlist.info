@@ -65,6 +65,14 @@ class API extends ControllerBase {
   }
 
 
+
+  /*
+   Search for banlist have 3 way
+   1. name, subname
+   2. bank account
+   3. id card or pass port
+   4. websit self
+  */
   public function CheckBanlist(Request $request){
     $response_array = array();
     $time1    = microtime(true);
@@ -148,6 +156,85 @@ class API extends ControllerBase {
             }else{
               $response_array['result']   = FALSE;
               $response_array['message']  = 'Empty bank account.';
+            }
+            break;
+          }
+
+          // id card or pass port
+          case '3':{
+            $id_card      = trim( $content['id_card'] );
+
+            if( !empty($id_card) ){
+
+              // $query = \Drupal::entityTypeManager()->getStorage('node')->getQuery();
+              // $storage = \Drupal::entityTypeManager()->getStorage('node');
+
+              $storage = $this->entityTypeManager->getStorage('node');
+              $query = $storage->getQuery();
+              $query->condition('status', \Drupal\node\NodeInterface::PUBLISHED);
+              $query->condition('type', 'back_list');
+              $query->condition('field_id_card_number', $id_card, 'CONTAINS');
+
+              // $or = $query->orConditionGroup();
+              // if(!empty($name)){
+                // $or->condition('field_id_card_number', $id_card, 'CONTAINS');
+              // }
+              // $query->condition($or);
+
+              // $query->condition('status', 1);
+              $nids = $query->execute();
+
+              $datas = array();
+              foreach ($storage->loadMultiple($nids) as $node) {
+                
+                $datas[] = API::GetFieldNode($node);
+              }
+
+              $response_array['result']           = TRUE;
+              $response_array['execution_time']   = microtime(true) - $time1;
+              $response_array['count']            = count($datas);
+              $response_array['datas']            = $datas;
+
+            }else{
+              $response_array['result']   = FALSE;
+              $response_array['message']  = 'Empty id_card';
+            }
+
+            break;
+          }
+
+          // websit self
+          case '4':{
+
+            $selling_website      = trim( $content['selling_website'] );
+
+            if( !empty($selling_website) ){
+
+              // $query = \Drupal::entityTypeManager()->getStorage('node')->getQuery();
+              // $storage = \Drupal::entityTypeManager()->getStorage('node');
+
+              $storage = $this->entityTypeManager->getStorage('node');
+              $query = $storage->getQuery();
+              $query->condition('status', \Drupal\node\NodeInterface::PUBLISHED);
+              $query->condition('type', 'back_list');
+              $query->condition('field_selling_website', $selling_website, 'CONTAINS');
+
+              $nids = $query->execute();
+
+              $datas = array();
+              foreach ($storage->loadMultiple($nids) as $node) {
+                
+                $datas[] = API::GetFieldNode($node);
+              }
+
+              $response_array['result']           = TRUE;
+              $response_array['execution_time']   = microtime(true) - $time1;
+              $response_array['count']            = count($datas);
+              $response_array['datas']            = $datas;
+
+            }else{
+              $response_array['result']   = FALSE;
+              $response_array['message']  = 'Empty selling_website';
             }
             break;
           }
@@ -243,6 +330,22 @@ class API extends ControllerBase {
 
     $data['transfer_amount']  = $transfer_amount;
     $data['link']  = Utils::get_base_url() . 'node/' . $node->id();
+
+    // id card or pass port
+    $id_card = '';
+    $field_id_card_number = $node->get('field_id_card_number')->getValue();
+    if(!empty($field_id_card_number)){
+      $id_card = $field_id_card_number[0]['value'];
+    } 
+    $data['id_card'] = $id_card;
+
+    // field_selling_website
+    $selling_website = '';
+    $field_selling_website = $node->get('field_selling_website')->getValue();
+    if(!empty($field_selling_website)){
+      $selling_website = $field_selling_website[0]['value'];
+    } 
+    $data['selling_website'] = $selling_website;
 
     return $data;
   }
