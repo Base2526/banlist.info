@@ -134,3 +134,4 @@ Lazy Image React-Native
 Elasticsearch Drupal 8-9
  - https://www.lullabot.com/articles/indexing-content-from-drupal-8-to-elasticsearch
  - https://medium.com/@ashutoshsngh67/intergration-of-elasticsearch-with-drupal-8-26d2ed56a47c
+ - https://www.drupal.org/docs/8/modules/search-api/developer-documentation/executing-a-search-in-code
