@@ -5,3 +5,15 @@ vendor
 pgadmin
 var
 redis
+
+apps/bl/node_modules
+apps/bl/ios/Pods
+apps/bl/android/app/build
+apps/bl/android/app/.idea
+apps/bl/android/app/.gradle
+
+apps/bl.bak/node_modules
+apps/bl.bak/ios/Pods
+apps/bl.bak/android/app/build
+apps/bl.bak/android/app/.idea
+apps/bl.bak/android/app/.gradle
