@@ -122,7 +122,11 @@ class ResultScreen extends Component {
                 };
   }
 
-  componentDidMount() {}
+  componentDidMount() {
+    // this.props.navigation.dangerouslyGetParent().setOptions({
+    //   tabBarVisible: false
+    // });
+  }
 
   handleSearch= () => {
     console.log(this.state.name);
