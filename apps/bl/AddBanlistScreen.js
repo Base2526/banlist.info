@@ -40,7 +40,11 @@ class AddBanlistScreen extends Component {
     this.state = {name: "", surname: "", bank_account: ""};
   }
 
-  componentDidMount() {}
+  componentDidMount() {
+    // this.props.navigation.dangerouslyGetParent().setOptions({
+    //   tabBarVisible: false
+    // });
+  }
 
   handleSearch= () => {
     console.log(this.state.name);

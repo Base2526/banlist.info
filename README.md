@@ -96,3 +96,8 @@ UPDATE node SET nid = DEFAULT;
 UPDATE node_revision SET nid = DEFAULT;
 UPDATE node_field_data SET nid = DEFAULT;
 UPDATE node_field_revision SET nid = DEFAULT;
+
+
+
+Redux
+ - https://code.tutsplus.com/tutorials/using-redux-in-a-react-native-app--cms-36001

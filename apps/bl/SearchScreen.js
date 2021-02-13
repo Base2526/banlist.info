@@ -58,53 +58,10 @@ class SearchScreen extends Component {
     this.handleSearch = this.handleSearch.bind(this);
   }
 
-  componentDidMount() {
-    /*
-    let username = 'admin';
-    let password = 'Somkid058848391';
-    const token = Buffer.from(`${username}:${password}`, 'utf8').toString('base64')
-    */
-
-    /*
-    console.log(API_URL);
-    axios.post(`${API_URL}/api/check_banlist?_format=json`, {
-      type: '1',
-      name: 'กิตติธัช',
-      surname: ''
-    }, {
-      headers: { 
-        'Authorization': `Basic ${API_TOKEN}` 
-      }
-    })
-    .then(function (response) {
-      let results = response.data
-      console.log()
-      if(results.result){
-        // true
-        console.log('true');
-        // console.log(results);
-
-        let {execution_time, datas, count} = results;
-        console.log(execution_time);
-        console.log(count);
-        // console.log(datas);
-
-      }else{
-        // false
-        console.log('false');
-      }
-    })
-    .catch(function (error) {
-      console.log(error);
-    });
-    */
-
-    // setInterval(() => {
-    //   this.setState({
-    //     spinner: !this.state.spinner
-    //   });
-    // }, 3000);
-
+  componentDidMount(){
+    // this.props.navigation.dangerouslyGetParent().setOptions({
+    //   tabBarVisible: false
+    // });
   }
 
   handleSearch= () => {

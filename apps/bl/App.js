@@ -6,7 +6,7 @@
  * @flow strict-local
  */
 
-import React, {Component}  from 'react';
+import React, {Component, useLayoutEffect}  from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -29,7 +29,7 @@ import {
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const axios = require('axios');
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, getFocusedRouteNameFromRoute } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -47,12 +47,26 @@ const Tab = createBottomTabNavigator();
 
 const HomeStack = createStackNavigator();
 
+/*
+const HomeStack = createStackNavigator({
+  Home: { screen: HomeScreen, navigationOptions: { title: 'Home' } },
+  Nested: {
+    screen: NestedScreen,
+    navigationOptions: { title: 'Nested' },
+  },
+});
+*/
+
 function HomeStackScreen({navigation, route}) {
-  if(route.state && route.state.index > 0){
-    navigation.setOptions({tabBarVisible: false})
-  }else{
-    navigation.setOptions({tabBarVisible: true})
-  }
+  useLayoutEffect(() => {
+    const routeName = getFocusedRouteNameFromRoute(route);
+    if ( routeName === "result" || routeName === "add_banlist" ){
+        navigation.setOptions({tabBarVisible: false});
+    }else {
+        navigation.setOptions({tabBarVisible: true});
+    }
+  }, [navigation, route]);
+  
   return (
     <HomeStack.Navigator>
         <HomeStack.Screen
@@ -78,17 +92,18 @@ function HomeStackScreen({navigation, route}) {
 }
 
 function MeStackScreen({navigation, route}) {
-  if(route.state && route.state.index > 0){
-    navigation.setOptions({tabBarVisible: false})
-  }else{
-    navigation.setOptions({tabBarVisible: true})
-  }
+  // if(route.state && route.state.index > 0){
+  //   navigation.setOptions({tabBarVisible: false})
+  // }else{
+  //   navigation.setOptions({tabBarVisible: true})
+  // }
   return (
     <HomeStack.Navigator>
         <HomeStack.Screen 
           name="me" 
           component={MeScreen} 
-          options={{ title: 'Me' }}
+          options={{ title: 'Me', tabBarVisible: false, }}
+          
         />
     </HomeStack.Navigator>
   );
@@ -101,7 +116,7 @@ class App extends Component {
     this.state = {name: "", surname: "", bank_account: ""};
   }
 
-  componentDidMount() {}
+  // componentDidMount() {}
 
   handleSearch= () => {
     console.log(this.state.name);
