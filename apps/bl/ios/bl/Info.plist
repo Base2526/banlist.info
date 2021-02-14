@@ -103,9 +103,19 @@
     </dict>
   </array>
   <key>FacebookAppID</key>
-  <string>{your-app-id}</string>
+  <string>792332228296675</string>
   <key>FacebookDisplayName</key>
-  <string>{your-app-name}</string>
+  <string>Banlist.info</string>
+  
+  <key>CFBundleURLTypes</key>
+  <array>
+      <dict>
+          <key>CFBundleURLSchemes</key>
+          <array>
+              <string>fb792332228296675</string>
+          </array>
+      </dict>
+  </array>
   <key>LSApplicationQueriesSchemes</key>
   <array>
     <string>fbapi</string>
@@ -113,5 +123,11 @@
     <string>fbauth2</string>
     <string>fbshareextension</string>
   </array>
+  
+  <key>FacebookAutoLogAppEventsEnabled</key>
+  <string>TRUE</string>
+  <key>FacebookAdvertiserIDCollectionEnabled</key>
+  <string>TRUE</string>
+  
 </dict>
 </plist>

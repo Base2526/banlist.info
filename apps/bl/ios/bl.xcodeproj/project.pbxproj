@@ -20,6 +20,7 @@
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		87384DA825D421A800A27128 /* libRNGestureHandler.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 87384DA725D421A800A27128 /* libRNGestureHandler.a */; };
 		87384DD425D43D6D00A27128 /* libRNVectorIcons.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 87384DD325D43D6D00A27128 /* libRNVectorIcons.a */; };
+		879DEA4F25D9771E00030E0A /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 879DEA4E25D9771E00030E0A /* File.swift */; };
 		CF6ED287DE3AB581D1033FE7 /* libPods-bl-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FF30E31E037E9E5C461DEB46 /* libPods-bl-tvOS.a */; };
 		E7108BF9B9E6977F8133AB1F /* libPods-bl-tvOSTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDBCDA845A0E1F8FE8BA089E /* libPods-bl-tvOSTests.a */; };
 /* End PBXBuildFile section */
@@ -63,6 +64,8 @@
 		87384DA725D421A800A27128 /* libRNGestureHandler.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libRNGestureHandler.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		87384DD325D43D6D00A27128 /* libRNVectorIcons.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libRNVectorIcons.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		879DE88E25D77B0500030E0A /* libRNDateTimePicker.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libRNDateTimePicker.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		879DEA4D25D9771E00030E0A /* bl-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "bl-Bridging-Header.h"; sourceTree = "<group>"; };
+		879DEA4E25D9771E00030E0A /* File.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
 		8BF118C90EF36C06D8452168 /* libPods-bl.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-bl.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A879A5E6834E0D6A155F8A8B /* Pods-bl.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-bl.debug.xcconfig"; path = "Target Support Files/Pods-bl/Pods-bl.debug.xcconfig"; sourceTree = "<group>"; };
 		CDBCDA845A0E1F8FE8BA089E /* libPods-bl-tvOSTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-bl-tvOSTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -139,6 +142,8 @@
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */,
 				13B07FB71A68108700A75B9A /* main.m */,
+				879DEA4E25D9771E00030E0A /* File.swift */,
+				879DEA4D25D9771E00030E0A /* bl-Bridging-Header.h */,
 			);
 			name = bl;
 			sourceTree = "<group>";
@@ -303,7 +308,7 @@
 						TestTargetID = 13B07F861A680F5B00A75B9A;
 					};
 					13B07F861A680F5B00A75B9A = {
-						LastSwiftMigration = 1120;
+						LastSwiftMigration = 1240;
 					};
 					2D02E47A1E0B4A5D006451C7 = {
 						CreatedOnToolsVersion = 8.2.1;
@@ -658,6 +663,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
+				879DEA4F25D9771E00030E0A /* File.swift in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -699,6 +705,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 3A969C099F15A5A0C8EA1E1C /* Pods-bl-blTests.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -722,6 +729,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 303D19901651B491A8B7D265 /* Pods-bl-blTests.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
 				INFOPLIST_FILE = blTests/Info.plist;
@@ -755,6 +763,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.bl;
 				PRODUCT_NAME = bl;
+				SWIFT_OBJC_BRIDGING_HEADER = "bl-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -777,6 +786,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.bl;
 				PRODUCT_NAME = bl;
+				SWIFT_OBJC_BRIDGING_HEADER = "bl-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};

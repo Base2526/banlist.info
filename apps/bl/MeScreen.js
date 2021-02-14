@@ -37,6 +37,14 @@ import {API_URL, API_TOKEN} from "@env"
 
 import {GoogleSignin, GoogleSigninButton, statusCodes} from '@react-native-community/google-signin';
 
+import {
+  LoginButton,
+  AccessToken,
+  GraphRequest,
+  GraphRequestManager,
+  LoginManager
+} from 'react-native-fbsdk';
+
 class MeScreen extends Component {
   constructor(props) {
     super(props);
@@ -50,6 +58,7 @@ class MeScreen extends Component {
       forceCodeForRefreshToken: true, // [Android] related to `serverAuthCode`, read the docs link below *.
       iosClientId: '693724870615-sctm232nea5uoce5us2l5le0mj7bi77p.apps.googleusercontent.com', // [iOS] optional, if you want to specify the client ID of type iOS (otherwise, it is taken from GoogleService-Info.plist)
     });
+    
     this.isSignedIn()
   }
 
@@ -97,7 +106,24 @@ class MeScreen extends Component {
   }
 
   handleLoginWithFacebook= () =>{
-    console.log('handleLoginWithFacebook')
+    // console.log('handleLoginWithFacebook')
+
+    // Attempt a login using the Facebook login dialog asking for default permissions.
+    LoginManager.logInWithPermissions(["public_profile"]).then(
+      function(result) {
+        if (result.isCancelled) {
+          console.log("Login cancelled");
+        } else {
+          console.log(
+            "Login success with permissions: " +
+              result.grantedPermissions.toString()
+          );
+        }
+      },
+      function(error) {
+        console.log("Login fail with error: " + error);
+      }
+    );
   }
 
   handleLoginWithGoogle= () =>{
@@ -123,6 +149,27 @@ class MeScreen extends Component {
       }
     }
   }
+
+  getInfoFromToken = token => {
+    const PROFILE_REQUEST_PARAMS = {
+      fields: {
+        string: 'id, name,  first_name, last_name',
+      },
+    };
+    const profileRequest = new GraphRequest(
+      '/me',
+      {token, parameters: PROFILE_REQUEST_PARAMS},
+      (error, result) => {
+        if (error) {
+          console.log('login info has error: ' + error);
+        } else {
+          this.setState({userInfo: result});
+          console.log('result:', result);
+        }
+      },
+    );
+    new GraphRequestManager().addRequest(profileRequest).start();
+  };
 
   render(){
     return (<View style={styles.container}>
