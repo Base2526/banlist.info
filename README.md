@@ -10,6 +10,7 @@ cat your_dump.sql | docker exec -i your-db-container psql -Upostgres
 Facebook Login
  - https://www.thaicreate.com/community/php-facebook-login-api-sdk-v5.html
  - https://github.com/facebook/react-native-fbsdk
+ - https://medium.com/@mehrankhandev/integrating-fbsdk-facebook-login-in-react-native-7b7600ce74a7
  
 Google Login
  - https://github.com/react-native-google-signin/google-signin
