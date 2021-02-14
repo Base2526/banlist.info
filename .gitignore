@@ -6,5 +6,10 @@ pgadmin
 var
 redis
 
-dump_09-02-2021_09_36_30.sql
-dump_10-02-2021_07_14_57_before_update_create.sql
+apps/bl/node_modules
+apps/bl/ios/Pods
+apps/bl/android/app/build
+apps/bl/android/app/.idea
+apps/bl/android/app/.gradle
+
+apps/bl.bak
