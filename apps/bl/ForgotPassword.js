@@ -35,6 +35,8 @@ var Buffer = require('buffer/').Buffer
 
 import {API_URL, API_TOKEN} from "@env"
 
+import Spinner from 'react-native-loading-spinner-overlay';
+
 // import { StyleSheet, Text, View, FlatList, Image, TouchableOpacity } from 'react-native';
 
 class ForgotPassword extends Component {
