@@ -45,6 +45,8 @@ import {
   LoginManager
 } from 'react-native-fbsdk';
 
+import Spinner from 'react-native-loading-spinner-overlay';
+
 class MeScreen extends Component {
   constructor(props) {
     super(props);
