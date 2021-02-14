@@ -6,7 +6,7 @@
  * @flow strict-local
  */
 
-import React, {Component} from 'react';
+import React, {Component, useEffect, useState} from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -35,22 +35,7 @@ var Buffer = require('buffer/').Buffer
 
 import {API_URL, API_TOKEN} from "@env"
 
-// import { StyleSheet, Text, View, FlatList, Image, TouchableOpacity } from 'react-native';
-
-function Item({ item }) {
-  return (
-    <View style={styles.listItem}>
-      <Image source={{uri:item.photo}}  style={{width:60, height:60,borderRadius:30}} />
-      <View style={{alignItems:"center",flex:1}}>
-        <Text style={{fontWeight:"bold"}}>{item.name}</Text>
-        <Text>{item.position}</Text>
-      </View>
-      <TouchableOpacity style={{height:50,width:50, justifyContent:"center",alignItems:"center"}}>
-        <Text style={{color:"green"}}>Call</Text>
-      </TouchableOpacity>
-    </View>
-  );
-}
+import {GoogleSignin, GoogleSigninButton, statusCodes} from '@react-native-community/google-signin';
 
 class MeScreen extends Component {
   constructor(props) {
@@ -58,7 +43,40 @@ class MeScreen extends Component {
     this.state = {};
   }
 
-  componentDidMount() {}
+  componentDidMount() {
+    GoogleSignin.configure({
+      webClientId: '693724870615-2hkmknke3sj6puo9c88nk67ouuu9m8l1.apps.googleusercontent.com',
+      offlineAccess: true, // if you want to access Google API on behalf of the user FROM YOUR SERVER
+      forceCodeForRefreshToken: true, // [Android] related to `serverAuthCode`, read the docs link below *.
+      iosClientId: '693724870615-sctm232nea5uoce5us2l5le0mj7bi77p.apps.googleusercontent.com', // [iOS] optional, if you want to specify the client ID of type iOS (otherwise, it is taken from GoogleService-Info.plist)
+    });
+    this.isSignedIn()
+  }
+
+  isSignedIn = async () => {
+    const isSignedIn = await GoogleSignin.isSignedIn();
+    if (!!isSignedIn) {
+      this.getCurrentUserInfo()
+    } else {
+      console.log('Please Login')
+    }
+  };
+
+  getCurrentUserInfo = async () => {
+    try {
+      const userInfo = await GoogleSignin.signInSilently();
+      // setUser(userInfo);
+      console.log(userInfo);
+    } catch (error) {
+      if (error.code === statusCodes.SIGN_IN_REQUIRED) {
+        // alert('User has not signed in yet');
+        console.log('User has not signed in yet');
+      } else {
+        // alert("Something went wrong. Unable to get user's info");
+        console.log("Something went wrong. Unable to get user's info");
+      }
+    }
+  }
 
   handleSearch= () => {
     console.log(this.state.name);
@@ -85,10 +103,29 @@ class MeScreen extends Component {
   handleLoginWithGoogle= () =>{
     console.log('handleLoginWithGoogle')
   }
-  
+
+  signInOnGoogle = async () => {
+    try {
+      await GoogleSignin.hasPlayServices();
+      const userInfo = await GoogleSignin.signIn();
+      console.log(userInfo)
+      // setUser(userInfo)
+    } catch (error) {
+      console.log('Message', error.message);
+      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+        console.log('User Cancelled the Login Flow');
+      } else if (error.code === statusCodes.IN_PROGRESS) {
+        console.log('Signing In');
+      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        console.log('Play Services Not Available or Outdated');
+      } else {
+        console.log('Some Other Error Happened');
+      }
+    }
+  }
+
   render(){
-    return (
-            <View style={styles.container}>
+    return (<View style={styles.container}>
               <Text>Email</Text>
               <TextInput
                 style={{height: 40,
@@ -127,9 +164,10 @@ class MeScreen extends Component {
                 onPress={this.handleLoginWithFacebook}>
                 <Text>Login with facebook</Text>
               </TouchableOpacity>
+
               <TouchableOpacity
                 style={styles.button}
-                onPress={this.handleLoginWithGoogle}>
+                onPress={this.signInOnGoogle}>
                 <Text>Login with google</Text>
               </TouchableOpacity>
             </View>)
