@@ -87,7 +87,7 @@ class AddBanlistScreen extends Component {
   // https://stackoverflow.com/questions/45407581/how-to-dynamically-add-a-text-input-in-react-native/45407976
   addTextInput = (key) => {
     let textInput = this.state.textInput;
-    textInput.push( <View>
+    textInput.push( <View key={{key}}>
                       <View style={{ flexDirection:"row", marginTop:10}}>
                         <Text>เลขบัญชี</Text> 
                         <Button style={{backgroundColor:"#FF2400"}} title='-' onPress={()=>this.handleDelete(key)} />
@@ -144,6 +144,7 @@ class AddBanlistScreen extends Component {
   onDoUploadPress() {
     const { localPhotos } = this.state;
     if (localPhotos && localPhotos.length > 0) {
+      /*
       let formData = new FormData();
       localPhotos.forEach((image) => {
         const file = {
@@ -162,6 +163,10 @@ class AddBanlistScreen extends Component {
         .catch(error => {
           alert(JSON.stringify(error));
         });
+        */
+
+      console.log('onDoUploadPress')
+      console.log(localPhotos)
     } else {
       alert('No photo selected');
     }
@@ -221,11 +226,16 @@ class AddBanlistScreen extends Component {
   renderSelectPhotoControl = localPhotos => {
     return (
       <View style={styles.sectionContainer}>
-        <Text style={styles.sectionTitle}>Select photos</Text>
+        
         <ScrollView style={styles.photoList} horizontal={true}>
           {this.renderListPhotos(localPhotos)}
           <TouchableOpacity onPress={this.onPressAddPhotoBtn.bind(this)}>
-            <View style={[styles.addButton, styles.photo]}>
+            <View style={{alignItems: 'center',
+                          justifyContent: 'center',
+                          backgroundColor: '#3399cc',
+                          width: 40,
+                          height: 40,
+                          borderRadius: 5}}>
               <Text style={styles.addButtonText}>+</Text>
             </View>
           </TouchableOpacity>
@@ -237,6 +247,7 @@ class AddBanlistScreen extends Component {
   
   render(){
     return (
+      <SafeAreaView>
             <KeyboardAwareScrollView>
             <View style={styles.container}>
               <Text>Title</Text>
@@ -319,11 +330,17 @@ class AddBanlistScreen extends Component {
               <TextInput
                 style={{height: 40,
                         borderWidth: .5,
-                        height: 150}}
-                multiline={true}
+                        height: 150,
+                        textAlignVertical: 'top'}}
+                // multiline={true}
+                multiline numberOfLines={10}
                 ref= {(el) => { this.detail = el; }}
                 onChangeText={(detail) => this.setState({detail})}
-                value={this.state.detail}/>
+                value={this.state.detail}
+                underlineColorAndroid={'transparent'}
+                autoCorrect={true} 
+                // autoFocus={true}
+                autoCapitalize={'sentences'}/>
 
               <View style={{ flexDirection:"row", marginTop:10}}>
                 <Text>บัญชีธนาคารคนขาย</Text>
@@ -335,19 +352,20 @@ class AddBanlistScreen extends Component {
               })}
 
               {/*  */}
-              <SafeAreaView>
+              
               <ScrollView
                 contentInsetAdjustmentBehavior="automatic"
                 style={styles.scrollView}>
                 {/* <Header /> */}
                 {/* <Image style={{ width: 143, height: 30 }} source={{ uri: 'https://tuanitpro.com/wp-content/uploads/2015/04/logo.png' }} /> */}
                 <View style={styles.body}>
+                  <Text style={styles.sectionTitle}>รูปภาพประกอบ</Text>
                   {this.renderSelectPhotoControl(this.state.localPhotos)}
-                  <View style={styles.sectionContainer}>
-                    <TouchableOpacity onPress={this.onDoUploadPress}>
-                      <Text style={styles.sectionTitle}>Upload now</Text>
-                    </TouchableOpacity>
-                  </View>
+                  {/* <View style={styles.sectionContainer}> */}
+                    {/* <TouchableOpacity style={styles.button} onPress={this.onDoUploadPress}>
+                      <Text>Upload now</Text>
+                    </TouchableOpacity> */}
+                  {/* </View> */}
                   {/* <View style={styles.sectionContainer}>
                     <Text style={styles.sectionTitle}>Logs</Text>
                     <TextInput multiline numberOfLines={10} style={{ height: 250, borderColor: 'gray', borderWidth: 1 }}
@@ -375,10 +393,9 @@ class AddBanlistScreen extends Component {
                 cancelButtonIndex={2}
                 destructiveButtonIndex={1}
                 onPress={index => {
-                  console.log('ActionSheetSelectPhoto');
                   this.onActionSelectPhotoDone(index);
                 }}/>
-              </SafeAreaView>
+    
 
               <TouchableOpacity
                 style={styles.button}
@@ -386,7 +403,8 @@ class AddBanlistScreen extends Component {
                 <Text>ADD</Text>
               </TouchableOpacity>
             </View>
-          </KeyboardAwareScrollView>)
+          </KeyboardAwareScrollView>
+          </SafeAreaView>)
   }
 }
 
@@ -394,25 +412,26 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     // justifyContent: "center",
-    paddingHorizontal: 10
+    paddingHorizontal: 10,
+    backgroundColor: Colors.white,
   },
-//   scrollView: {
-//     backgroundColor: Colors.lighter,
-//   },
+  scrollView: {
+    backgroundColor: Colors.lighter,
+  },
   engine: {
     position: 'absolute',
     right: 0,
   },
-//   body: {
-//     backgroundColor: Colors.white,
-//   },
+  body: {
+    backgroundColor: Colors.white,
+  },
   sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
+    marginTop: 20,
+    paddingHorizontal: 10,
   },
   sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
+    fontSize: 16,
+    // fontWeight: '600',
     // color: Colors.black,
   },
   sectionDescription: {
@@ -437,6 +456,30 @@ const styles = StyleSheet.create({
     backgroundColor: "#DDDDDD",
     marginTop: 10,
     padding: 10
+  },
+
+  photo: {
+    marginRight: 10,
+    width: 70,
+    height: 70,
+    borderRadius: 10
+  },
+
+  photoList: {
+    height: 70,
+    marginTop: 15,
+    marginBottom: 15,
+    marginRight: 10
+  },
+  addButtonText: {
+    color: Colors.white,
+    fontWeight: 'bold',
+    fontSize: 30
+  },
+  addButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#3399cc'
   },
 });
 
