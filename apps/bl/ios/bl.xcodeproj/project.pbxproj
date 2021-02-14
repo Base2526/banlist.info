@@ -62,6 +62,7 @@
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = bl/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		87384DA725D421A800A27128 /* libRNGestureHandler.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libRNGestureHandler.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		87384DD325D43D6D00A27128 /* libRNVectorIcons.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libRNVectorIcons.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		879DE88E25D77B0500030E0A /* libRNDateTimePicker.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libRNDateTimePicker.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		8BF118C90EF36C06D8452168 /* libPods-bl.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-bl.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A879A5E6834E0D6A155F8A8B /* Pods-bl.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-bl.debug.xcconfig"; path = "Target Support Files/Pods-bl/Pods-bl.debug.xcconfig"; sourceTree = "<group>"; };
 		CDBCDA845A0E1F8FE8BA089E /* libPods-bl-tvOSTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-bl-tvOSTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -145,6 +146,7 @@
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				879DE88E25D77B0500030E0A /* libRNDateTimePicker.a */,
 				87384DD325D43D6D00A27128 /* libRNVectorIcons.a */,
 				87384DA725D421A800A27128 /* libRNGestureHandler.a */,
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,

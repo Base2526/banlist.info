@@ -55,70 +55,7 @@ function Item({ item }) {
 class MeScreen extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-                  data:[
-                    {
-                        "name": "Miyah Myles",
-                        "email": "miyah.myles@gmail.com",
-                        "position": "Data Entry Clerk",
-                        "photo": "https:\/\/images.unsplash.com\/photo-1494790108377-be9c29b29330?ixlib=rb-0.3.5&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=200&fit=max&s=707b9c33066bf8808c934c8ab394dff6"
-                    },
-                    {
-                        "name": "June Cha",
-                        "email": "june.cha@gmail.com",
-                        "position": "Sales Manager",
-                        "photo": "https:\/\/randomuser.me\/api\/portraits\/women\/44.jpg"
-                    },
-                    {
-                        "name": "Iida Niskanen",
-                        "email": "iida.niskanen@gmail.com",
-                        "position": "Sales Manager",
-                        "photo": "https:\/\/randomuser.me\/api\/portraits\/women\/68.jpg"
-                    },
-                    {
-                        "name": "Renee Sims",
-                        "email": "renee.sims@gmail.com",
-                        "position": "Medical Assistant",
-                        "photo": "https:\/\/randomuser.me\/api\/portraits\/women\/65.jpg"
-                    },
-                    {
-                        "name": "Jonathan Nu\u00f1ez",
-                        "email": "jonathan.nu\u00f1ez@gmail.com",
-                        "position": "Clerical",
-                        "photo": "https:\/\/randomuser.me\/api\/portraits\/men\/43.jpg"
-                    },
-                    {
-                        "name": "Sasha Ho",
-                        "email": "sasha.ho@gmail.com",
-                        "position": "Administrative Assistant",
-                        "photo": "https:\/\/images.pexels.com\/photos\/415829\/pexels-photo-415829.jpeg?h=350&auto=compress&cs=tinysrgb"
-                    },
-                    {
-                        "name": "Abdullah Hadley",
-                        "email": "abdullah.hadley@gmail.com",
-                        "position": "Marketing",
-                        "photo": "https:\/\/images.unsplash.com\/photo-1507003211169-0a1dd7228f2d?ixlib=rb-0.3.5&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=200&fit=max&s=a72ca28288878f8404a795f39642a46f"
-                    },
-                    {
-                        "name": "Thomas Stock",
-                        "email": "thomas.stock@gmail.com",
-                        "position": "Product Designer",
-                        "photo": "https:\/\/tinyfac.es\/data\/avatars\/B0298C36-9751-48EF-BE15-80FB9CD11143-500w.jpeg"
-                    },
-                    {
-                        "name": "Veeti Seppanen",
-                        "email": "veeti.seppanen@gmail.com",
-                        "position": "Product Designer",
-                        "photo": "https:\/\/randomuser.me\/api\/portraits\/men\/97.jpg"
-                    },
-                    {
-                        "name": "Bonnie Riley",
-                        "email": "bonnie.riley@gmail.com",
-                        "position": "Marketing",
-                        "photo": "https:\/\/randomuser.me\/api\/portraits\/women\/26.jpg"
-                    }
-                ]
-                };
+    this.state = {};
   }
 
   componentDidMount() {}
@@ -129,29 +66,72 @@ class MeScreen extends Component {
     console.log(this.state.bank_account);
   }
 
-  // item({ item }) {
-  //   return (
-  //     <View style={styles.listItem}>
-  //       <Text style={styles.title}>{item.name}</Text>
-  //     </View>
-  //   );
-  // }
+  handleLogin= () =>{
+    console.log('handleLogin')
+  }
 
+  handleForgotPassword= () =>{
+    console.log('handleForgotPassword')
+  }
+
+  handleSignUp= () =>{
+    console.log('handleSignUp')
+  }
+
+  handleLoginWithFacebook= () =>{
+    console.log('handleLoginWithFacebook')
+  }
+
+  handleLoginWithGoogle= () =>{
+    console.log('handleLoginWithGoogle')
+  }
+  
   render(){
     return (
             <View style={styles.container}>
-              {/* <FlatList
-                data={this.state.data}
-                renderItem={({ item }) => <Text>{item}</Text>}
-                keyExtractor={item => item}
-                /> */}
+              <Text>Email</Text>
+              <TextInput
+                style={{height: 40,
+                        borderWidth: .5,}}
+                ref= {(el) => { this.name = el; }}
+                onChangeText={(name) => this.setState({name})}
+                value={this.state.name}/>
+              <Text>Password</Text>
+              <TextInput
+                style={{height: 40, 
+                        borderWidth: .5,}}
+                ref= {(el) => { this.surname = el; }}
+                onChangeText={(surname) => this.setState({surname})}
+                value={this.state.surname}/>
+              <TouchableOpacity
+                style={styles.button}
+                onPress={this.handleLogin}>
+                <Text>Login</Text>
+              </TouchableOpacity>
 
-              <FlatList
-                style={{flex:1}}
-                data={this.state.data}
-                renderItem={({ item }) => <Item item={item}/>}
-                keyExtractor={item => item.email}
-              />
+              <View style={{ flexDirection:"row",}}>
+                <TouchableOpacity
+                  style={{margin:5}}
+                  onPress={this.handleForgotPassword}>
+                  <Text>Forgot Password</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={{margin:5}}
+                  onPress={this.handleSignUp}>
+                  <Text>Sign up</Text>
+                </TouchableOpacity>
+              </View>
+
+              <TouchableOpacity
+                style={styles.button}
+                onPress={this.handleLoginWithFacebook}>
+                <Text>Login with facebook</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.button}
+                onPress={this.handleLoginWithGoogle}>
+                <Text>Login with google</Text>
+              </TouchableOpacity>
             </View>)
   }
 }
@@ -159,8 +139,9 @@ class MeScreen extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    paddingHorizontal: 10
+    // justifyContent: "center",
+    paddingHorizontal: 10,
+    margin: 10
   },
 //   scrollView: {
 //     backgroundColor: Colors.lighter,
@@ -201,7 +182,8 @@ const styles = StyleSheet.create({
   button: {
     alignItems: "center",
     backgroundColor: "#DDDDDD",
-    padding: 10
+    padding: 10,
+    marginTop: 10
   },
   listItem:{
     margin:10,
