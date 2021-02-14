@@ -39,6 +39,8 @@ import ResultScreen from './ResultScreen';
 import AddBanlistScreen from './AddBanlistScreen';
 
 import MeScreen from './MeScreen'
+import ForgotPassword from './ForgotPassword'
+import SignUp from './SignUp'
 
 import {API_URL, API_TOKEN} from "@env"
 
@@ -66,7 +68,7 @@ function HomeStackScreen({navigation, route}) {
         navigation.setOptions({tabBarVisible: true});
     }
   }, [navigation, route]);
-  
+
   return (
     <HomeStack.Navigator>
         <HomeStack.Screen
@@ -97,6 +99,16 @@ function MeStackScreen({navigation, route}) {
   // }else{
   //   navigation.setOptions({tabBarVisible: true})
   // }
+
+  useLayoutEffect(() => {
+    const routeName = getFocusedRouteNameFromRoute(route);
+    if ( routeName === "forgot_password" || routeName === "sign_up" ){
+        navigation.setOptions({tabBarVisible: false});
+    }else {
+        navigation.setOptions({tabBarVisible: true});
+    }
+  }, [navigation, route]);
+
   return (
     <HomeStack.Navigator>
         <HomeStack.Screen 
@@ -104,6 +116,16 @@ function MeStackScreen({navigation, route}) {
           component={MeScreen} 
           options={{ title: 'Me', tabBarVisible: false, }}
           
+        />
+        <HomeStack.Screen 
+          name="forgot_password" 
+          component={ForgotPassword} 
+          options={{ title: 'Add Banlist' }}
+        />
+        <HomeStack.Screen 
+          name="sign_up" 
+          component={SignUp} 
+          options={{ title: 'Sign Up' }}
         />
     </HomeStack.Navigator>
   );

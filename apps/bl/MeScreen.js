@@ -48,7 +48,7 @@ import {
 class MeScreen extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {name: '', password: '', };
   }
 
   componentDidMount() {
@@ -94,15 +94,22 @@ class MeScreen extends Component {
   }
 
   handleLogin= () =>{
-    console.log('handleLogin')
+    // console.log('handleLogin') 
+
+    console.log(this.state.name);
+    console.log(this.state.password);
   }
 
   handleForgotPassword= () =>{
-    console.log('handleForgotPassword')
+    // console.log('handleForgotPassword')
+
+    const { navigation } = this.props;
+    navigation.navigate('forgot_password');
   }
 
   handleSignUp= () =>{
-    console.log('handleSignUp')
+    const { navigation } = this.props;
+    navigation.navigate('sign_up');
   }
 
   handleLoginWithFacebook= () =>{
@@ -182,11 +189,12 @@ class MeScreen extends Component {
                 value={this.state.name}/>
               <Text>Password</Text>
               <TextInput
+                secureTextEntry={true}
                 style={{height: 40, 
                         borderWidth: .5,}}
-                ref= {(el) => { this.surname = el; }}
-                onChangeText={(surname) => this.setState({surname})}
-                value={this.state.surname}/>
+                ref= {(el) => { this.password = el; }}
+                onChangeText={(password) => this.setState({password})}
+                value={this.state.password}/>
               <TouchableOpacity
                 style={styles.button}
                 onPress={this.handleLogin}>
