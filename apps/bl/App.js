@@ -34,6 +34,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
+import SplashScreen from 'react-native-splash-screen'
+
 import SearchScreen from './SearchScreen';
 import ResultScreen from './ResultScreen';
 import AddBanlistScreen from './AddBanlistScreen';
@@ -138,7 +140,9 @@ class App extends Component {
     this.state = {name: "", surname: "", bank_account: ""};
   }
 
-  // componentDidMount() {}
+  componentDidMount() {
+    SplashScreen.hide();
+  }
 
   handleSearch= () => {
     console.log(this.state.name);
