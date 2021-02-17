@@ -20,7 +20,7 @@
     "react": "16.13.1",
     "react-native": "0.63.4",
     "react-native-action-button": "file:./modules/react-native-action-button",
-    "react-native-actionsheet": "^2.4.2",
+    "react-native-actionsheet": "file:./modules/react-native-actionsheet",
     "react-native-dotenv": "^2.5.3",
     "react-native-dropdown-picker": "^3.8.0",
     "react-native-fbsdk": "^3.0.0",
