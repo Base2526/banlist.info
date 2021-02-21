@@ -106,6 +106,28 @@ api.check_banlist:
   options:
     _auth: ['basic_auth']
 
+# search
+api.search:
+  path: '/api/search'
+  methods: [POST]
+  defaults: 
+    _controller: '\Drupal\backlist\Controller\API::SearchApi'
+  requirements: 
+    _role: 'authenticated+administrator'
+  options:
+    _auth: ['basic_auth']
+
+# fetch
+api.fetch:
+  path: '/api/fetch'
+  methods: [POST]
+  defaults: 
+    _controller: '\Drupal\backlist\Controller\API::FetchApi'
+  requirements: 
+    _role: 'authenticated+administrator'
+  options:
+    _auth: ['basic_auth']
+
 # api.every_day:
 #   path: '/api/every_day'
 #   methods: [GET]

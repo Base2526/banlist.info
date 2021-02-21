@@ -28,6 +28,8 @@ use Drupal\Core\File\FileSystemInterface;
 
 use \Datetime;
 
+use Drupal\search_api\Entity\Index;
+
 use Drupal\backlist\Utils\Utils;
 /**
  * Controller routines for test_api routes.
@@ -320,8 +322,8 @@ class API extends ControllerBase {
     // รูปภาพประกอบ
     $images = array();
     foreach ($node->get('field_images')->getValue() as $imi=>$imv){
-        // dpm( Utils::get_file_uri($imv['target_id']) );
-        $images[] = Utils::get_file_url($imv['target_id']);
+      // dpm( Utils::get_file_uri($imv['target_id']) );
+      $images[] = Utils::get_file_url($imv['target_id']);
     }
     $data['images']  = $images;
 
@@ -587,4 +589,164 @@ class API extends ControllerBase {
   //   $response['execution_time']   = microtime(true) - $time1;
   //   return new JsonResponse( $response );  
   // }
+
+  public function SearchApi(Request $request){
+    $response_array = array();
+    $time1          = microtime(true);
+
+    $content = json_decode( $request->getContent(), TRUE );
+    $key_word= trim( $content['key_word'] );
+
+    if(!empty($key_word)){
+
+      $index = Index::load('content_back_list');
+      $query = $index->query();
+
+      // Change the parse mode for the search.
+      $parse_mode = \Drupal::service('plugin.manager.search_api.parse_mode')->createInstance('direct');
+      $parse_mode->setConjunction('OR');
+      $query->setParseMode($parse_mode);
+
+      $query->addCondition('type', 'back_list');
+
+      // Set fulltext search keywords and fields.
+      $query->keys($key_word);
+      // $query->setFulltextFields(['title']);
+
+
+      // Set additional conditions.
+      //$query->addCondition('status', 1);
+
+      // Restrict the search to specific languages.
+      // $query->setLanguages(['th', 'en']);
+
+      // Execute the search.
+      $results = $query->execute();
+
+      $count = count($results->getResultItems());
+      // echo "Result count: { $count }\n";
+
+      // $ids = implode(', ', array_keys($results->getResultItems()));
+      // echo "Returned IDs: $ids.\n";
+
+      $datas = array();
+      foreach ($results as $result) {
+
+        $item = array();
+        $nid    = $result->getField('nid')->getValues();
+        $title  = $result->getField('title')->getValues();
+        $body   = $result->getField('body')->getValues();
+        $transfer_amount = $result->getField('field_transfer_amount')->getValues();  
+        
+        $name = $result->getField('field_sales_person_name')->getValues();
+        $surname = $result->getField('field_sales_person_surname')->getValues();
+
+        // รูปภาพประกอบ
+        $images = array();
+        foreach ($result->getField('field_images')->getValues() as $imi=>$imv){
+          try {
+            $images[] = Utils::get_file_url($imv) ;
+          } catch (\Throwable $e) {
+            \Drupal::logger('SearchApi')->notice($e->__toString());
+          }
+        }
+
+        $item = array('id'      => $nid, 
+                      'name'    => $name, 
+                      'surname' => $surname, 
+                      'title'   => $title,
+                      'detail'  => $body,
+                      'transfer_amount' => $transfer_amount,
+                      'images'  => $images );
+
+        $datas[] = $item;
+        
+      }
+      // dpm($output);
+
+      $response_array['result']           = TRUE;
+      $response_array['execution_time']   = microtime(true) - $time1;
+      $response_array['count']            = $count;//count($response_array);
+      $response_array['datas']            = $datas;
+    }else{
+      $response_array['result']   = FALSE;
+      $response_array['message']  = 'Empty key_word.';
+      $response_array['content']  = $content;
+    }
+
+    // Add the node_list cache tag so the endpoint results will update when nodes are
+    // updated.
+    $cache_metadata = new CacheableMetadata();
+    $cache_metadata->setCacheTags(['search_api']);
+
+    // Create the JSON response object and add the cache metadata.
+    $response = new CacheableJsonResponse($response_array);
+    $response->addCacheableDependency($cache_metadata);
+
+    return $response;
+  }
+
+  public function FetchApi(Request $request){
+    $response_array = array();
+    $time1          = microtime(true);
+
+    $content = json_decode( $request->getContent(), TRUE );
+    $nid_last= trim( $content['nid_last'] );
+
+    // if(!empty($nid_last)){
+
+      // $storage = \Drupal::entityTypeManager()->getStorage('node');
+
+      $storage = $this->entityTypeManager->getStorage('node');
+      $query = $storage->getQuery();
+      $query->condition('status', \Drupal\node\NodeInterface::PUBLISHED);
+      $query->condition('type', 'back_list');
+
+      if($nid_last){
+        $query->condition('nid', $nid_last, '<');
+      }
+
+      $query->sort('nid', 'DESC');
+      $query->range(0, 30);
+      // $query->condition('field_id_card_number', $id_card, 'CONTAINS');
+
+      // $or = $query->orConditionGroup();
+      // if(!empty($name)){
+      // $or->condition('field_id_card_number', $id_card, 'CONTAINS');
+      // }
+      // $query->condition($or);
+
+      // $query->condition('status', 1);
+      $nids = $query->execute();
+
+      $datas = array();
+      foreach ($storage->loadMultiple($nids) as $node) {
+        $datas[] = API::GetFieldNode($node);
+      }
+
+      $response_array['result']           = TRUE;
+      $response_array['execution_time']   = microtime(true) - $time1;
+      $response_array['count']            = count($datas);
+      $response_array['datas']            = $datas;
+
+      // $response_array['result']           = TRUE;
+      // $response_array['execution_time']   = microtime(true) - $time1;
+      // $response_array['count']            = $count;//count($response_array);
+      // $response_array['datas']            = $datas;
+    // }else{
+    //   $response_array['result']   = FALSE;
+    //   $response_array['message']  = 'Empty offset.';
+    // }
+
+    // Add the node_list cache tag so the endpoint results will update when nodes are
+    // updated.
+    $cache_metadata = new CacheableMetadata();
+    $cache_metadata->setCacheTags(['fetch_api']);
+
+    // Create the JSON response object and add the cache metadata.
+    $response = new CacheableJsonResponse($response_array);
+    $response->addCacheableDependency($cache_metadata);
+
+    return $response;
+  }
 }
