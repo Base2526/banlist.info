@@ -14,6 +14,11 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 
 import Toast, {DURATION} from 'react-native-easy-toast'
 
+import { NumberFormat } from './Utils'
+
+// https://reactnativecode.com/popup-menu-overflow-menu-in-react-navigation/
+import Menu, {MenuItem, MenuDivider} from 'react-native-material-menu';
+
 const formatData = (data, numColumns) => {
     const numberOfFullRows = Math.floor(data.length / numColumns);
 
@@ -40,6 +45,7 @@ export default class DetailScreen extends React.Component {
         const { route, navigation } = this.props;
 
         let _this = this
+        let _menu = null;
         navigation.setOptions({
             headerRight: () => (
                 <View style={{flexDirection:'row'}}>
@@ -50,12 +56,35 @@ export default class DetailScreen extends React.Component {
                         }}>
                         <MaterialIcons name="star" size={28} color={'grey'}  />
                     </TouchableOpacity>
-                    <TouchableOpacity 
-                        style={{ marginHorizontal: 10 }}
-                        onPress={()=>{
-                        }}>
-                        <MaterialIcons name="more-vert" size={28} color={'grey'}  />
-                    </TouchableOpacity>
+                        <View style={{marginRight: 5}}>
+                            <Menu
+                            ref={(ref) => (_menu = ref)}
+                            button={
+                                <TouchableOpacity 
+                                    style={{ marginHorizontal: 10 }}
+                                    onPress={()=>{
+                                        _menu.show()
+                                }}>
+                                <MaterialIcons name="more-vert" size={28} color={'grey'}  />
+                                </TouchableOpacity>
+                            }>
+                            <MenuItem onPress={() => {
+                                _menu.hide();
+                                _this.toast.show('report');
+                            }}>
+                                Report
+                            </MenuItem>
+                    
+                            {/* <MenuItem >Disabled Menu Item 2</MenuItem>
+                    
+                            <MenuDivider />
+                    
+                            <MenuItem onPress={() => {Alert.alert('PopUp Menu Button Clicked...')}}>
+                                Menu Item 3
+                            </MenuItem> */}
+                    
+                            </Menu>
+                        </View>
                 </View>
               )
         })
@@ -106,23 +135,29 @@ export default class DetailScreen extends React.Component {
         if(!data){
             return <View />
         }
+        
+        let transfer_amount = data.transfer_amount
+        if(typeof(data.transfer_amount) === 'string'){
+            transfer_amount =parseFloat(data.transfer_amount.replace(/,/g, ''))
+        }
+
         return(
             <View style={{flex:1, padding:10}} >
                 <View style={{flexDirection:'row'}}>
-                <Text style={{fontWeight:"bold"}}>ชื่อ-นามสกุล :</Text>
-                <Text>{data.name} {data.surname}</Text>
+                    <Text style={{fontWeight:"bold"}}>ชื่อ-นามสกุล :</Text>
+                    <Text>{data.name} {data.surname}</Text>
                 </View>
                 <View style={{flexDirection:'row'}}>
-                <Text style={{fontWeight:"bold"}}>สินค้า/ประเภท :</Text>
-                <Text>{data.title}</Text>
+                    <Text style={{fontWeight:"bold"}}>สินค้า/ประเภท :</Text>
+                    <Text>{data.title}</Text>
                 </View>
                 <View style={{flexDirection:'row'}}>
-                <Text style={{fontWeight:"bold"}}>ยอดเงิน :</Text>
-                <Text>{data.transfer_amount}</Text>
+                    <Text style={{fontWeight:"bold"}}>ยอดเงิน :</Text>
+                    <Text>{NumberFormat(Number(transfer_amount))}</Text>
                 </View>
                 <View style={{flexDirection:'column'}}>
-                <Text style={{fontWeight:"bold"}}>รายละเอียดเพิ่มเติม :</Text>
-                <Text>{data.detail}</Text>
+                    <Text style={{fontWeight:"bold"}}>รายละเอียดเพิ่มเติม :</Text>
+                    <Text>{data.detail}</Text>
                 </View>
             </View>
         )
@@ -142,7 +177,6 @@ export default class DetailScreen extends React.Component {
     }
         
     render() {
-
         let {images, init_index} = this.state
 
         return (<SafeAreaView style={styles.container} onLayout={this.onLayout}>
@@ -151,7 +185,7 @@ export default class DetailScreen extends React.Component {
                         transparent={true}
                         onRequestClose={() => this.setState({ modalVisible: false })}>
                         <ImageViewer 
-                            imageUrls={this.state.images}
+                            imageUrls={images.filter(function(item){return item.empty !== true;})}
                             index={init_index}
                             // renderHeader={this.renderHeaderImageViewer}
                             // renderFooter={this.renderFooterImageViewer}

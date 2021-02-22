@@ -35,6 +35,11 @@ import ImagePicker from 'react-native-image-crop-picker';
 import ActionSheet from 'react-native-actionsheet';
 
 import DateTimePicker from '@react-native-community/datetimepicker';
+import Moment from 'moment';
+
+import Spinner from 'react-native-loading-spinner-overlay';
+
+import Toast, {DURATION} from 'react-native-easy-toast'
 
 const axios = require('axios');
 var Buffer = require('buffer/').Buffer
@@ -47,10 +52,13 @@ class AddBanlistScreen extends Component {
     this.state = {title: "", 
                   name: "", 
                   surname: "", 
+                  id_card_number: "",
+                  selling_website: "",
+                  detail: "",
                   bank_account: "",
                   date:"2016-05-15",
                 
-                
+                  transfer_amount: "",
                 
                   textInput : [],
                 
@@ -84,13 +92,8 @@ class AddBanlistScreen extends Component {
                     22: 'ธ.ไทยเครดิตเพื่อรายย่อย',
                     23: 'ธนาคารแลนด์แอนด์เฮ้าส์',
                     24: 'เก็บเงินปลายทาง' 
-                  }};
-
-
-    
-    
-    console.log()
-    
+                  },
+                  spinner: false};  
   
     // const [date, setDate] = useState(new Date(1598051730000));
     // const [mode, setMode] = useState('date');
@@ -106,15 +109,137 @@ class AddBanlistScreen extends Component {
   }
 
   componentDidMount() {
-    // this.props.navigation.dangerouslyGetParent().setOptions({
-    //   tabBarVisible: false
-    // });
+    Moment.locale('en');
+
+    const { route, navigation } = this.props;
+    let _this = this
+    navigation.setOptions({
+      headerRight: () => (
+          <View style={{flexDirection:'row'}}>
+              <TouchableOpacity 
+                  style={{ marginHorizontal: 10 }}
+                  onPress={()=>{
+                    _this.handleAdd()
+                  }}>
+                  <Text style={{ fontSize:18 }}>ADD</Text>
+              </TouchableOpacity>
+          </View>
+        )
+  })
+  }
+
+  getNavigationParams() {
+    return this.props.navigation.state.params || {}
   }
 
   handleAdd= () => {
-    console.log(this.state.name);
-    console.log(this.state.surname);
-    console.log(this.state.bank_account);
+    // console.log(this.state.name);
+    // console.log(this.state.surname);
+    // console.log(this.state.bank_account);
+
+    /*
+    $product_type   = trim( $content['product_type'] );       // สินค้า/ประเภท
+    $transfer_amount= trim( $content['transfer_amount'] );    // ยอดเงิน
+    $person_name    = trim( $content['person_name'] );        // ชื่อบัญชี ผู้รับเงินโอน
+    $person_surname = trim( $content['person_surname'] );     // นามสกุล ผู้รับเงินโอน
+    $id_card_number = trim( $content['id_card_number'] );     // เลขบัตรประชาชนคนขาย
+    $selling_website= trim( $content['selling_website'] );    // เว็บไซด์ประกาศขายของ
+    $transfer_date  = trim( $content['transfer_date'] );      // วันโอนเงิน
+    $details        = trim( $content['details'] );            // รายละเอียดเพิ่มเติม
+    $merchant_bank_account   = $content['merchant_bank_account']; // บัญชีธนาคารคนขาย
+    $images         = $content['images'];            // รูปภาพประกอบ
+    */
+
+    
+
+    let { title, 
+          transfer_amount, 
+          name, 
+          surname, 
+          id_card_number, 
+          selling_website,
+          currentDateTimePicker,
+          detail} = this.state
+
+    
+
+    let _this = this
+    // this.setState({spinner: true})
+
+    //_this.props.navigation.goBack() ;   
+    
+    // const { navigation, route } = this.props;
+    // navigation.goBack();
+    // route.params.onSelect({ selected: true });
+    // this.props.navigation.state.params.onSelect(status);
+    // console.log(this.props.navigation.setParams({abc:'tes'}))
+
+    const { navigation } = this.props;
+    navigation.goBack();
+    navigation.state.params.onSelect({ selected: true });
+
+   
+    return;
+
+    console.log(title, transfer_amount, name, surname, id_card_number, selling_website, currentDateTimePicker)
+
+    axios.post(`${API_URL}/api/added_banlist?_format=json`, {
+      product_type: title,
+      transfer_amount,
+      person_name: name,
+      person_surname: surname,
+      id_card_number,
+      selling_website,
+      transfer_date: currentDateTimePicker,
+      details: detail
+    }, {
+      headers: { 
+        'Authorization': `Basic ${API_TOKEN}` 
+      }
+    })
+    .then(function (response) {
+      let results = response.data
+      // console.log()
+      if(results.result){
+        // true
+        console.log('true');
+        console.log(results);
+
+        // let {execution_time, datas, count} = results;
+        // console.log(execution_time);
+        // console.log(count);
+        // console.log(datas);
+
+        // if(datas && datas.length > 0){
+        //   _this.setState({spinner: false, execution_time, datas, count});
+        // }else{
+
+        _this.setState({spinner: false})
+        //   alert('Empty result.');
+        // }
+
+
+
+        _this.toast.show('เพิ่มรายงานเรียบร้อย');
+
+        _this.props.navigation.pop();        
+      }else{
+        // false
+        console.log('false');
+
+        _this.setState({spinner: false})
+
+        _this.toast.show('ไม่สามารถเพิ่มรายงาน');
+      }
+    })
+    .catch(function (error) {
+
+      _this.setState({spinner: false})
+
+      _this.toast.show('ไม่สามารถเพิ่มรายงาน');
+
+      console.log(error);
+    });
   }
 
   handleDelete=(key)=>{
@@ -277,47 +402,65 @@ class AddBanlistScreen extends Component {
   };
   // Upload image
 
-  // onDateTimePickerChange
-
   onDateTimePickerChange = (event, selectedDate) => {
-    const currentDate = selectedDate// || date;
-    // setShow(Platform.OS === 'ios');
-    // setDate(currentDate);
-    console.log('onDateTimePickerChange')
-    console.log(currentDate)
-
-    this.setState({currentDateTimePicker: currentDate})
-
-    // this.setState({showDateTimePicker:Platform.OS === 'ios'})
+    console.log(selectedDate)
+    if(event.type == 'set'){
+      this.setState({currentDateTimePicker: selectedDate, showDateTimePicker:false})
+    }else{
+      this.setState({showDateTimePicker:false})
+    }
   };
 
   handleDatepicker = () =>{
-    // showMode('date');
+    console.log('handleDatepicker');
     this.setState({showDateTimePicker:true})
   }
   
   render(){
+
+    console.log(this.state.currentDateTimePicker)
     return (
       <SafeAreaView >
         <KeyboardAwareScrollView contentContainerStyle={{ flexGrow: 1 }} enableOnAndroid={true}>
+          <Spinner visible={this.state.spinner} textContent={'Loading...'} textStyle={styles.spinnerTextStyle}/>  
+          
+          <Toast
+            ref={(toast) => this.toast = toast}
+            position='bottom'
+            positionValue={200}
+            fadeInDuration={750}
+            fadeOutDuration={1000}
+            opacity={0.8}/>
+
           <View style={styles.container}>
-          <Text>Title</Text>
+          <View style={{flexDirection:'row'}}>
+            <Text>Title </Text>
+            <Text style={{color:'#ab1111', fontSize:20}}>*</Text>
+          </View>
           <TextInput
             style={{height: 40,
                     borderWidth: .5,}}
             ref= {(el) => { this.title = el; }}
             onChangeText={(title) => this.setState({title})}
             value={this.state.title}/>
-
-          <Text>Amount</Text>
+          <View style={{flexDirection:'row'}}>
+            <Text>Amount</Text>
+            <Text style={{color:'#ab1111', fontSize:20}}>*</Text>
+          </View>
+         
           <TextInput
             style={{height: 40,
                     borderWidth: .5,}}
-            ref= {(el) => { this.amount = el; }}
-            onChangeText={(amount) => this.setState({amount})}
-            value={this.state.amount}/>
+            ref= {(el) => { this.transfer_amount = el; }}
+            onChangeText={(transfer_amount) => this.setState({transfer_amount})}
+            value={this.state.transfer_amount}
+            numeric
+            keyboardType={'numeric'}/>
 
-          <Text>Name</Text>
+          <View style={{flexDirection:'row'}}>
+            <Text>Name</Text>
+            <Text style={{color:'#ab1111', fontSize:20}}>*</Text>
+          </View>
           <TextInput
             style={{height: 40,
                     borderWidth: .5,}}
@@ -325,7 +468,10 @@ class AddBanlistScreen extends Component {
             onChangeText={(name) => this.setState({name})}
             value={this.state.name}/>
 
-          <Text>Subname</Text>
+          <View style={{flexDirection:'row'}}>
+            <Text>Subname</Text>
+            <Text style={{color:'#ab1111', fontSize:20}}>*</Text>
+          </View>
           <TextInput
             style={{height: 40, 
                     borderWidth: .5,}}
@@ -339,37 +485,46 @@ class AddBanlistScreen extends Component {
                     borderWidth: .5,}}
             ref= {(el) => { this.id_card_number = el; }}
             onChangeText={(id_card_number) => this.setState({id_card_number})}
-            value={this.state.id_card_number}/>
+            value={this.state.id_card_number}
+            numeric
+            keyboardType={'numeric'}/>
 
           <Text>Selling website</Text>
           <TextInput
-            style={{height: 40,
-                    borderWidth: .5,}}
+            style={{borderWidth: .5,
+                    height: 80,
+                    textAlignVertical: 'top'}}
+            multiline numberOfLines={10}
             ref= {(el) => { this.selling_website = el; }}
             onChangeText={(selling_website) => this.setState({selling_website})}
             value={this.state.selling_website}/>
 
-          <Text>Date tranfer</Text>
+          <View style={{flexDirection:'row'}}>
+            <Text>Date tranfer</Text>
+            <Text style={{color:'#ab1111', fontSize:20}}>*</Text>
+          </View>
           <TouchableOpacity
             style={styles.button}
             onPress={this.handleDatepicker}>
-            <Text>Show date picker</Text>
+            <Text>Show date picker : {Moment(this.state.currentDateTimePicker).format('DD-MMMM,YYYY')}</Text>
           </TouchableOpacity>
-          {/* {this.state.showDateTimePicker && 
+          {this.state.showDateTimePicker && 
           <DateTimePicker
             testID="dateTimePicker"
             value={this.state.currentDateTimePicker}
             mode={'date'}
             is24Hour={true}
-            display="spinner"
+            display= {Platform.OS === 'ios' ? "inline" : "spinner"}
             onChange={this.onDateTimePickerChange}
           />}
-           */}
           
-          <Text>Detail</Text>
+        
+          <View style={{flexDirection:'row'}}>
+            <Text>Detail</Text>
+            <Text style={{color:'#ab1111', fontSize:20}}>*</Text>
+          </View>
           <TextInput
-            style={{height: 40,
-                    borderWidth: .5,
+            style={{borderWidth: .5,
                     height: 150,
                     textAlignVertical: 'top'}}
             // multiline={true}
@@ -414,8 +569,6 @@ class AddBanlistScreen extends Component {
               </View> */}
             </View>
           </ScrollView>
-          {/*  */}
-
           <ActionSheet
             ref={o => (this.ActionSheet = o)}
             title={'Confirm delete photo'}
@@ -436,11 +589,11 @@ class AddBanlistScreen extends Component {
               this.onActionSelectPhotoDone(index);
             }}/>
 
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={styles.button}
             onPress={this.handleAdd}>
             <Text>ADD</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
         </KeyboardAwareScrollView>
       </SafeAreaView>)
@@ -520,6 +673,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: '#3399cc'
   },
+  spinnerTextStyle: {
+    color: '#FFF'
+  }
 });
 
 export default AddBanlistScreen;

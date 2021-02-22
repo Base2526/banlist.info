@@ -39,7 +39,9 @@ class HomeScreen extends Component {
       this.state = {
                   data:[],
                   loading: false,
-                  nid_last: 0
+                  nid_last: 0,
+
+                  selected: false
                   };
   }
 
@@ -50,6 +52,11 @@ class HomeScreen extends Component {
 
     this.renderItem = this.renderItem.bind(this)
   }
+
+  onSelect = data => {
+
+    console.log('onSelect');
+  };
 
   handleSearch= () => {
       console.log(this.state.name);
