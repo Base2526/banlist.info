@@ -597,6 +597,8 @@ class API extends ControllerBase {
     $content = json_decode( $request->getContent(), TRUE );
     $key_word= trim( $content['key_word'] );
 
+    $offset= trim( $content['offset'] );
+
     if(!empty($key_word)){
 
       $index = Index::load('content_back_list');
@@ -611,7 +613,13 @@ class API extends ControllerBase {
 
       // Set fulltext search keywords and fields.
       $query->keys($key_word);
-      // $query->setFulltextFields(['title']);
+      $query->setFulltextFields([ 'title', 
+                                  'body', 
+                                  'field_sales_person_name', 
+                                  'field_sales_person_surname',
+                                  'field_transfer_amount',
+                                  'field_id_card_number',
+                                  'field_selling_website' ]);
 
 
       // Set additional conditions.
@@ -619,6 +627,22 @@ class API extends ControllerBase {
 
       // Restrict the search to specific languages.
       // $query->setLanguages(['th', 'en']);
+
+
+      $pagging = 10; 
+
+      $start = 0;
+      $end   = $pagging;
+      if(empty($offset)){
+       
+      }else{
+        if($offset > 0){
+          $start = ($pagging * $offset) + 1;
+          $end   = $pagging * ($offset + 1);
+        }
+      }
+
+      $query->range($start, $end);
 
       // Execute the search.
       $results = $query->execute();
