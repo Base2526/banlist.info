@@ -66,7 +66,49 @@ class API extends ControllerBase {
     );
   }
 
+  public function Login(Request $request){
+    $response_array = array();
+    $time1    = microtime(true);
 
+    $content = json_decode( $request->getContent(), TRUE );
+    // $type         = trim( $content['type'] );
+
+    $response_array['result']           = TRUE;
+    $response_array['execution_time']   = microtime(true) - $time1;
+    // $response_array['count']            = count($datas);
+    // $response_array['datas']            = $datas;
+    return $response_array;
+  }
+
+  public function Register(Request $request){
+    $response_array = array();
+    $time1    = microtime(true);
+
+    $content = json_decode( $request->getContent(), TRUE );
+    // $type         = trim( $content['type'] );
+
+    $response_array['result']           = TRUE;
+    $response_array['execution_time']   = microtime(true) - $time1;
+    // $response_array['count']            = count($datas);
+    // $response_array['datas']            = $datas;
+
+    return $response_array;
+  }
+
+  public function ForgotPassword(Request $request){
+    $response_array = array();
+    $time1    = microtime(true);
+
+    $content = json_decode( $request->getContent(), TRUE );
+    // $type         = trim( $content['type'] );
+
+    $response_array['result']           = TRUE;
+    $response_array['execution_time']   = microtime(true) - $time1;
+    // $response_array['count']            = count($datas);
+    // $response_array['datas']            = $datas;
+
+    return $response_array;
+  }
 
   /*
    Search for banlist have 3 way

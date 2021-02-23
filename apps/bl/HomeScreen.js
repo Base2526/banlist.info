@@ -18,13 +18,15 @@ import {
   TextInput,
   ActivityIndicator,
   FlatList,
-  Image 
+  Image ,
 } from 'react-native';
 
 import ActionButton from 'react-native-action-button';
 
 const axios = require('axios');
 var Buffer = require('buffer/').Buffer
+
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import {API_URL, API_TOKEN} from "@env"
 
@@ -51,6 +53,17 @@ class HomeScreen extends Component {
     this.getData()
 
     this.renderItem = this.renderItem.bind(this)
+
+    this.saveData()
+  }
+
+  saveData = async () => {
+    try {
+      await AsyncStorage.setItem('save_age', '1000')
+      console.log('Data successfully saved')
+    } catch (e) {
+      console.log('Failed to save the data to the storage')
+    }
   }
 
   onSelect = data => {
