@@ -144,11 +144,11 @@ api.register:
   requirements:
     _permission: 'access content'
 
-api.forgot_password:
-  path: '/api/forgot_password'
+api.reset_password:
+  path: '/api/reset_password'
   methods: [POST]
   defaults: 
-    _controller: '\Drupal\backlist\Controller\API::ForgotPassword'
+    _controller: '\Drupal\backlist\Controller\API::ResetPassword'
   requirements:
     _permission: 'access content'
 
