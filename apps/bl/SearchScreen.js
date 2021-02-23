@@ -54,7 +54,10 @@ class SearchScreen extends Component {
                   
                   execution_time:'', 
                   count:'',
-                  datas:[], }
+                  datas:[], 
+                  offset: 0,
+                
+                  loading: false}
 
     this.handleSearch = this.handleSearch.bind(this)
   }
@@ -64,58 +67,23 @@ class SearchScreen extends Component {
   }
 
   handleSearch= () => {
-    // console.log(this.state.name);
-    // console.log(this.state.surname);
-    // console.log(this.state.bank_account);
-
-    // onPress={() => navigation.navigate('result')}
-
-    // (useNavigation()).navigate('result');
-
-    // const { navigation } = this.props;
-    // navigation.navigate('result');
-
-    // console.log('handleSearch > ' + this.state.find_id);
-
-    /*
-        this.state = {name: "", 
-                  surname: "", 
-                  id_card: "",
-                  bank_account: "", 
-                  ref_web: "",
-                  find_id: '1'};
-    */
-
-    // switch(this.state.find_id){
-    //   case '1':{
-    //     console.log('find_id = ' + this.state.find_id +", name = "+this.state.name+", surname = "+this.state.surname);
-    //     break;
-    //   }
-    //   case '2':{
-    //     console.log('find_id = ' + this.state.find_id +", id_card = "+this.state.id_card);
-    //     break;
-    //   }
-    //   case '3':{
-    //     console.log('find_id = ' + this.state.find_id +", bank_account = "+this.state.bank_account);
-    //     break;
-    //   }
-    //   case '4':{
-    //     console.log('find_id = ' + this.state.find_id +", ref_web = "+this.state.ref_web);
-    //     break;
-    //   }
-    // }
-
-    let {key_word} = this.state
+  
+    let {key_word, offset} = this.state
     console.log(key_word)
 
     let _this = this;
     if(key_word.trim() == ""){
       alert('Empty key word.');
     }else{
-      _this.setState({spinner: true, datas:[]})
-
+      if(!offset){
+        _this.setState({spinner: true, datas:[]})
+      }else{
+        _this.setState({loading: true})
+      }
+      
       axios.post(`${API_URL}/api/search?_format=json`, {
         key_word,
+        offset
       }, {
         headers: { 
           'Authorization': `Basic ${API_TOKEN}` 
@@ -135,10 +103,11 @@ class SearchScreen extends Component {
           // console.log(datas);
 
           if(datas && datas.length > 0){
-            _this.setState({spinner: false, execution_time, datas, count});
+
+            _this.setState({spinner: false, execution_time, datas:[ ..._this.state.datas, ...datas], count, loading: false});
           }else{
 
-            _this.setState({spinner: false})
+            _this.setState({spinner: false, loading: false})
             alert('Empty result.');
           }
           
@@ -146,12 +115,12 @@ class SearchScreen extends Component {
           // false
           console.log('false');
 
-          _this.setState({spinner: false})
+          _this.setState({spinner: false, loading: false})
         }
       })
       .catch(function (error) {
 
-        _this.setState({spinner: false})
+        _this.setState({spinner: false, loading: false})
 
         console.log(error);
       });
@@ -198,6 +167,34 @@ class SearchScreen extends Component {
       );
   }
 
+  renderFooter = () => {
+    let {loading, offset} = this.state
+    return (
+      //Footer View with Load More button
+      <TouchableOpacity
+          activeOpacity={0.9}
+          onPress={()=>{
+
+            // this.setState({offset: offset+1})
+            this.setState({
+              offset: offset+1
+            },() => {
+              this.handleSearch();
+            });
+          }}
+          >
+          <View style={{backgroundColor:'#fff', alignItems: 'center', padding:10, margin:5}}> 
+            <View style={{flexDirection:'row'}}>
+              <Text>Load More</Text>
+              {loading ? (
+                <ActivityIndicator color="black" style={{marginLeft: 8}} />
+              ) : null}
+            </View>
+          </View>
+      </TouchableOpacity>
+    );
+  };
+
   render(){
     const { navigation } = this.props;
 
@@ -212,7 +209,9 @@ class SearchScreen extends Component {
                 style={{flex:1}}
                 data={datas}
                 renderItem={({ item }) => this.renderItem(item)}
-                keyExtractor={item => item.toString()}
+  
+                ListFooterComponent={this.renderFooter()}
+                keyExtractor={(item, index) => String(index)}
             />
           </View>
     }

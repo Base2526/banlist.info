@@ -29,6 +29,8 @@ import {
 //   ReloadInstructions,
 // } from 'react-native/Libraries/NewAppScreen';
 
+import Spinner from 'react-native-loading-spinner-overlay';
+import Toast, {DURATION} from 'react-native-easy-toast'
 
 const axios = require('axios');
 var Buffer = require('buffer/').Buffer
@@ -45,12 +47,17 @@ import {
   LoginManager
 } from 'react-native-fbsdk';
 
-import Spinner from 'react-native-loading-spinner-overlay';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+import { ValidateEmail } from './Utils'
 
 class MeScreen extends Component {
   constructor(props) {
     super(props);
-    this.state = {name: '', password: '', };
+    this.state = {name: '', 
+                  password: '', 
+                
+                  spinner: false, };
   }
 
   componentDidMount() {
@@ -62,6 +69,18 @@ class MeScreen extends Component {
     });
     
     this.isSignedIn()
+
+    this.readData()
+  }
+
+  readData = async () => {
+    try {
+      const userAge = await AsyncStorage.getItem('save_age')
+  
+      console.log(userAge)
+    } catch (e) {
+      console.log('Failed to fetch the data from storage')
+    }
   }
 
   isSignedIn = async () => {
@@ -96,10 +115,60 @@ class MeScreen extends Component {
   }
 
   handleLogin= () =>{
-    // console.log('handleLogin') 
+    let {name, password} = this.state
+    if(name.trim() == "" && password.trim() == ""){
+      this.toast.show('Name && Password empty');
+    }else if(name.trim() == ""){
+      this.toast.show('Name empty');
+    }else if(password.trim() == ""){
+      this.toast.show('Password empty');
+    }else if(!ValidateEmail(name)){
+      this.toast.show('Email Field is Invalid');
+    }else{
+      this.setState({spinner: true});
 
-    console.log(this.state.name);
-    console.log(this.state.password);
+
+      let _this =this
+
+      axios.post(`${API_URL}/api/login?_format=json`, {
+        name, password
+      } /*, {
+        headers: { 
+          'Authorization': `Basic ${API_TOKEN}` 
+        }
+      }*/)
+      .then(function (response) {
+        let results = response.data
+        // console.log()
+        if(results.result){
+          // true
+          console.log('true');
+          // console.log(results);
+  
+          let {execution_time, datas, count} = results;
+          // console.log(execution_time);
+          // console.log(count);
+          // console.log(datas);
+
+          // if(datas && datas.length > 0){
+
+          //   _this.setState({spinner: false, execution_time, datas:[ ..._this.state.datas, ...datas], count, loading: false});
+          // }else{
+
+          //   _this.setState({spinner: false, loading: false})
+          //   alert('Empty result.');
+          // }
+
+          _this.setState({spinner: false})
+          
+        }else{
+          _this.setState({spinner: false})
+        }
+      })
+      .catch(function (error) {
+        _this.setState({spinner: false})
+      });
+    }
   }
 
   handleForgotPassword= () =>{
@@ -182,6 +251,23 @@ class MeScreen extends Component {
 
   render(){
     return (<View style={styles.container}>
+
+              <Spinner
+                visible={this.state.spinner}
+                textContent={'Loading...'}
+                textStyle={styles.spinnerTextStyle}/> 
+
+              <Toast
+                ref={(toast) => this.toast = toast}
+                // style={{backgroundColor:'red'}}
+                position='top'
+                positionValue={200}
+                fadeInDuration={750}
+                fadeOutDuration={1000}
+                opacity={0.8}
+                // textStyle={{color:'red'}}
+                /> 
+
               <Text>Email</Text>
               <TextInput
                 style={{height: 40,
@@ -289,6 +375,9 @@ const styles = StyleSheet.create({
     alignSelf:"center",
     flexDirection:"row",
     borderRadius:5
+  },
+  spinnerTextStyle: {
+    color: '#FFF'
   }
 });
 

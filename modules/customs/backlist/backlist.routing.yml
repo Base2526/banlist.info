@@ -128,6 +128,30 @@ api.fetch:
   options:
     _auth: ['basic_auth']
 
+api.login:
+  path: '/api/login'
+  methods: [POST]
+  defaults: 
+    _controller: '\Drupal\backlist\Controller\API::Login'
+  requirements:
+    _permission: 'access content'
+
+api.register:
+  path: '/api/register'
+  methods: [POST]
+  defaults: 
+    _controller: '\Drupal\backlist\Controller\API::Register'
+  requirements:
+    _permission: 'access content'
+
+api.forgot_password:
+  path: '/api/forgot_password'
+  methods: [POST]
+  defaults: 
+    _controller: '\Drupal\backlist\Controller\API::ForgotPassword'
+  requirements:
+    _permission: 'access content'
+
 # api.every_day:
 #   path: '/api/every_day'
 #   methods: [GET]
