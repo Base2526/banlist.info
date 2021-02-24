@@ -7,6 +7,9 @@ Restore:
 cat your_dump.sql | docker exec -i your-db-container psql -Upostgres
 
 
+psql  -d banlist -U postgres -f dump_22-02-2021_10_56_27.sql
+
+
 Facebook Login
  - https://www.thaicreate.com/community/php-facebook-login-api-sdk-v5.html
  - https://github.com/facebook/react-native-fbsdk
@@ -140,3 +143,8 @@ Elasticsearch Drupal 8-9
 
 Redux
  - https://code.tutsplus.com/tutorials/using-redux-in-a-react-native-app--cms-36001
+
+
+
+React-native การแสดง สวยๆๆ น่าสนใจ
+ - https://github.com/IjzerenHein/react-native-shared-element

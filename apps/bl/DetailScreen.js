@@ -14,6 +14,8 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 
 import Toast, {DURATION} from 'react-native-easy-toast'
 
+import Share from 'react-native-share';
+
 import { NumberFormat } from './Utils'
 
 // https://reactnativecode.com/popup-menu-overflow-menu-in-react-navigation/
@@ -68,21 +70,27 @@ export default class DetailScreen extends React.Component {
                                 <MaterialIcons name="more-vert" size={28} color={'grey'}  />
                                 </TouchableOpacity>
                             }>
+
+                            <MenuItem onPress={() => {
+                                // _menu.hide();
+                                // _this.toast.show('Share');
+
+                                // Share.open(options)
+                                // .then((res) => {
+                                //     console.log(res);
+                                // })
+                                // .catch((err) => {
+                                //     err && console.log(err);
+                                // });
+                            }}>
+                                Share
+                            </MenuItem>
                             <MenuItem onPress={() => {
                                 _menu.hide();
                                 _this.toast.show('report');
                             }}>
                                 Report
                             </MenuItem>
-                    
-                            {/* <MenuItem >Disabled Menu Item 2</MenuItem>
-                    
-                            <MenuDivider />
-                    
-                            <MenuItem onPress={() => {Alert.alert('PopUp Menu Button Clicked...')}}>
-                                Menu Item 3
-                            </MenuItem> */}
-                    
                             </Menu>
                         </View>
                 </View>

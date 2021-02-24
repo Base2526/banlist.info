@@ -10,6 +10,7 @@ services:
       - 443:443
     environment:
       - DB_HOST=postgres
+      # - DB_HOST=139.59.235.247
       - DB_NAME=banlist
       - DB_USER_NAME=postgres
       - DB_PASSWORD=postgres
@@ -82,7 +83,8 @@ services:
   postgres:
     image: postgres:10
     container_name: pg_banlist
-    # volumes: 
+    volumes: 
+      - ./:/home
     #   - ./postgresql.conf:/etc/postgresql/postgresql.conf
     environment:
       POSTGRES_DB: banlist
