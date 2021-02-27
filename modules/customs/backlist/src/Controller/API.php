@@ -468,7 +468,7 @@ class API extends ControllerBase {
       // $response['result']   = FALSE;
       // return new JsonResponse( $response );
     } catch (\Throwable $e) {
-      \Drupal::logger('ResetPassword')->notice($e->__toString());
+      \Drupal::logger('CheckBanlist')->notice($e->__toString());
 
       $response_array['result']   = FALSE;
       $response_array['message']  = $e->__toString();
@@ -778,7 +778,7 @@ class API extends ControllerBase {
       $response_array['execution_time']   = microtime(true) - $time1;
       return new JsonResponse( $response );  
     } catch (\Throwable $e) {
-      \Drupal::logger('ResetPassword')->notice($e->__toString());
+      \Drupal::logger('AddedBanlist')->notice($e->__toString());
 
       $response_array['result']   = FALSE;
       $response_array['message']  = $e->__toString();
@@ -830,13 +830,7 @@ class API extends ControllerBase {
 
         // Set fulltext search keywords and fields.
         $query->keys($key_word);
-        $query->setFulltextFields([ 'title', 
-                                    'body', 
-                                    'field_sales_person_name', 
-                                    'field_sales_person_surname',
-                                    'field_transfer_amount',
-                                    'field_id_card_number',
-                                    'field_selling_website' ]);
+        // $query->setFulltextFields([ 'body']);
 
 
         // Set additional conditions.
@@ -873,23 +867,55 @@ class API extends ControllerBase {
         $datas = array();
         foreach ($results as $result) {
 
+          // $title[0]->getText()
           $item = array();
-          $nid    = $result->getField('nid')->getValues();
-          $title  = $result->getField('title')->getValues();
-          $body   = $result->getField('body')->getValues();
-          $transfer_amount = $result->getField('field_transfer_amount')->getValues();  
           
-          $name = $result->getField('field_sales_person_name')->getValues();
-          $surname = $result->getField('field_sales_person_surname')->getValues();
+          $nid = 0;
+          $result_nid    = $result->getField('nid')->getValues();
+          if(!empty($result_nid)){
+            $nid = $result_nid[0];
+          }
+
+          $title  = '';
+          $result_title  = $result->getField('title')->getValues();
+          if(!empty($result_title)){
+            $title = $result_title[0]->getText();
+          }
+
+          $body   = '';
+          $result_body   = $result->getField('body')->getValues();
+          if(!empty($result_body)){
+            $body = $result_body[0]->getText();
+          }
+
+          $transfer_amount = 0;
+          $result_transfer_amount = $result->getField('field_transfer_amount')->getValues();  
+          if(!empty($result_transfer_amount)){
+            $transfer_amount = $result_transfer_amount[0];
+          }
+
+          $name = '';
+          $result_name = $result->getField('field_sales_person_name')->getValues();
+          if(!empty($result_name)){
+            $name = $result_name[0]->getText();
+          }
+
+          $surname = '';
+          $result_surname = $result->getField('field_sales_person_surname')->getValues();
+          if(!empty($result_surname)){
+            $surname = $result_surname[0]->getText();
+          }
 
           // รูปภาพประกอบ
           $images = array();
-          foreach ($result->getField('field_images')->getValues() as $imi=>$imv){
-            try {
+          try {
+            foreach ($result->getField('field_images')->getValues() as $imi=>$imv){
               $images[] = Utils::get_file_url($imv) ;
-            } catch (\Throwable $e) {
-              \Drupal::logger('SearchApi')->notice($e->__toString());
+
+              \Drupal::logger('SearchApi')->notice($imv);
             }
+          } catch (\Throwable $e) {
+            \Drupal::logger('SearchApi')->notice($e->__toString());
           }
 
           $item = array('id'      => $nid, 
@@ -926,7 +952,7 @@ class API extends ControllerBase {
 
       return $response;
     } catch (\Throwable $e) {
-      \Drupal::logger('ResetPassword')->notice($e->__toString());
+      \Drupal::logger('SearchApi')->notice($e->__toString());
 
       $response_array['result']   = FALSE;
       $response_array['message']  = $e->__toString();
@@ -998,7 +1024,7 @@ class API extends ControllerBase {
 
       return $response;
     } catch (\Throwable $e) {
-      \Drupal::logger('ResetPassword')->notice($e->__toString());
+      \Drupal::logger('FetchApi')->notice($e->__toString());
 
       $response_array['result']   = FALSE;
       $response_array['message']  = $e->__toString();

@@ -104,6 +104,7 @@ class SearchScreen extends Component {
 
           if(datas && datas.length > 0){
 
+            console.log(datas)
             _this.setState({spinner: false, execution_time, datas:[ ..._this.state.datas, ...datas], count, loading: false});
           }else{
 
@@ -113,7 +114,7 @@ class SearchScreen extends Component {
           
         }else{
           // false
-          console.log('false');
+          console.log(results);
 
           _this.setState({spinner: false, loading: false})
         }

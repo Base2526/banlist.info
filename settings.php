@@ -305,7 +305,7 @@ $settings['hash_salt'] = '8A94uMMDrFGJxy5SgltZ3vOOaPYfxS0PiU4Qao02PYEpU4z71e2zLo
  * After finishing the upgrade, be sure to open this file again and change the
  * TRUE back to a FALSE!
  */
-$settings['update_free_access'] = FALSE;
+$settings['update_free_access'] = TRUE;
 
 /**
  * Fallback to HTTP for Update Manager.
@@ -804,9 +804,15 @@ $databases['default']['default'] = array (
 );
 $settings['config_sync_directory'] = 'sites/default/files/config_Wu2o7rY4QGtLsF251RHYX75-Pc_RRupRit5LzdnsRE8FLRPblr-LKsO1C92LL9onCh7UCRB5VA/sync';
 
-
+// if (extension_loaded('redis')) {
 // $settings['container_yamls'][] = 'modules/redis/example.services.yml';  
 // $settings['redis.connection']['interface'] = 'PhpRedis'; // Can be "Predis".
-// $settings['redis.connection']['host']      = 'master';  // Your Redis instance hostname.
+// $settings['redis.connection']['host']      = '139.59.235.247';  // Your Redis instance hostname.
 // $settings['redis.connection']['port']      = '6379';  // Redis port
 // $settings['cache']['default'] = 'cache.backend.redis';
+// }
+
+
+// $conf['error_level'] = 1;
+
+$config['system.logging']['error_level'] = 'verbose';

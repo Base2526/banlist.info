@@ -56,7 +56,7 @@ export default class DetailScreen extends React.Component {
                         onPress={()=>{
                             _this.toast.show('favorite');
                         }}>
-                        <MaterialIcons name="star" size={28} color={'grey'}  />
+                        <MaterialIcons name="star" size={25} color={'grey'}  />
                     </TouchableOpacity>
                         <View style={{marginRight: 5}}>
                             <Menu
@@ -67,12 +67,12 @@ export default class DetailScreen extends React.Component {
                                     onPress={()=>{
                                         _menu.show()
                                 }}>
-                                <MaterialIcons name="more-vert" size={28} color={'grey'}  />
+                                <MaterialIcons name="more-vert" size={25} color={'grey'}  />
                                 </TouchableOpacity>
                             }>
 
                             <MenuItem onPress={() => {
-                                // _menu.hide();
+                                _menu.hide();
                                 // _this.toast.show('Share');
 
                                 // Share.open(options)
@@ -82,14 +82,48 @@ export default class DetailScreen extends React.Component {
                                 // .catch((err) => {
                                 //     err && console.log(err);
                                 // });
+
+
+                                const shareOptions = {
+                                    title: 'Share Banlist',
+                                    // email: 'email@example.com',
+                                    // social: Share.Social.EMAIL,
+                                    // failOnCancel: false,
+                                    // urls: [images.image1, images.image2],
+                                    url: route.params.data.link,
+                                    failOnCancel: false,
+                                };
+
+                                  Share.open(shareOptions)
+                                    .then((res) => {
+                                        console.log(res);
+                                    })
+                                    .catch((err) => {
+                                        err && console.log(err);
+                                    });
+                              
+                                //   try {
+                                //     const ShareResponse = await Share.open(shareOptions);
+                                //     setResult(JSON.stringify(ShareResponse, null, 2));
+                                //   } catch (error) {
+                                //     console.log('Error =>', error);
+                                //     setResult('error: '.concat(getErrorString(error)));
+                                //   }
                             }}>
-                                Share
+                                <View style={{flexDirection:'row', alignItems: 'center',}}>
+                                    <MaterialIcons style={{paddingRight:10}} name="share" size={20} color={'grey'}  />
+                                    <Text>Share</Text>
+                                </View>
                             </MenuItem>
                             <MenuItem onPress={() => {
                                 _menu.hide();
                                 _this.toast.show('report');
                             }}>
-                                Report
+                                
+                                <View style={{flexDirection:'row', alignItems: 'center',}}>
+                                    <MaterialIcons style={{paddingRight:10}} name="report" size={20} color={'grey'}  />
+                                    <Text>Report</Text>
+                                </View>
                             </MenuItem>
                             </Menu>
                         </View>
