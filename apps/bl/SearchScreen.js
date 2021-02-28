@@ -155,6 +155,10 @@ class SearchScreen extends Component {
               <Text style={{fontWeight:"bold"}}>ยอดเงิน :</Text>
               <Text>{NumberFormat(Number(item.transfer_amount))}</Text>
             </View>
+            <View style={{flexDirection:'row'}}>
+                    <Text style={{fontWeight:"bold"}}>วันโอนเงิน :</Text>
+                    <Text>{item.transfer_date ==='' ? '-' : item.transfer_date}</Text>
+                </View>
             <View style={{flexDirection:'column'}}>
               <Text style={{fontWeight:"bold"}}>รายละเอียดเพิ่มเติม :</Text>
               <Text>{item.detail}</Text>

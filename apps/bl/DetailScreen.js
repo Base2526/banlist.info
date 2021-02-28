@@ -163,7 +163,7 @@ export default class DetailScreen extends React.Component {
                         this.setState({modalVisible: true, init_index: index})
                     }}>
                     <Image
-                        style={{width:80, height:80, resizeMode: 'cover',}}
+                        style={{width:80, height:80, resizeMode: 'cover', borderRadius: 15,}}
                         source={{
                             uri: item.url,
                         }}/>
@@ -196,6 +196,10 @@ export default class DetailScreen extends React.Component {
                 <View style={{flexDirection:'row'}}>
                     <Text style={{fontWeight:"bold"}}>ยอดเงิน :</Text>
                     <Text>{NumberFormat(Number(transfer_amount))}</Text>
+                </View>
+                <View style={{flexDirection:'row'}}>
+                    <Text style={{fontWeight:"bold"}}>วันโอนเงิน :</Text>
+                    <Text>{data.transfer_date ==='' ? '-' : data.transfer_date}</Text>
                 </View>
                 <View style={{flexDirection:'column'}}>
                     <Text style={{fontWeight:"bold"}}>รายละเอียดเพิ่มเติม :</Text>
@@ -267,6 +271,7 @@ const styles = StyleSheet.create({
   },
   item: {
     // backgroundColor: '#4D243D',
+    
     alignItems: 'center',
     justifyContent: 'center',
     flex: 1,

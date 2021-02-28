@@ -8,6 +8,7 @@ services:
     #   - ./postgresql.conf:/etc/postgresql/postgresql.conf
     volumes:
       - ./postgresql:/var/lib/postgresql
+      - ./postgresql.conf:/etc/postgresql/postgresql.conf
     environment:
       POSTGRES_DB: banlist
       POSTGRES_USER: postgres
