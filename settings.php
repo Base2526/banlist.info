@@ -541,7 +541,7 @@ $settings['update_free_access'] = FALSE;
  *
  * @see \Drupal\Component\FileSystem\FileSystem::getOsTemporaryDirectory()
  */
-# $settings['file_temp_path'] = '/tmp';
+$settings['file_temp_path'] = '/tmp';
 
 /**
  * Session write interval:
@@ -714,6 +714,15 @@ $settings['container_yamls'][] = $app_root . '/' . $site_path . '/services.yml';
  * will allow the site to run off of all variants of example.com and
  * example.org, with all subdomains included.
  */
+ 
+$settings['trusted_host_patterns'] = [
+     '^banlist\.info$',
+     '^.+\.banlist\.info$',
+     '^localhost$',
+     '^.+\.localhost$',
+     '^d9$',
+     '^.+\.d9$',
+];
 
 /**
  * The default list of directories that will be ignored by Drupal's file API.
@@ -793,4 +802,17 @@ $databases['default']['default'] = array (
   'namespace' => 'Drupal\\Core\\Database\\Driver\\pgsql',
   'driver' => 'pgsql',
 );
-# $settings['config_sync_directory'] = 'sites/default/files/config_Wu2o7rY4QGtLsF251RHYX75-Pc_RRupRit5LzdnsRE8FLRPblr-LKsO1C92LL9onCh7UCRB5VA/sync';
+$settings['config_sync_directory'] = 'sites/default/files/config_Wu2o7rY4QGtLsF251RHYX75-Pc_RRupRit5LzdnsRE8FLRPblr-LKsO1C92LL9onCh7UCRB5VA/sync';
+
+// if (extension_loaded('redis')) {
+// $settings['container_yamls'][] = 'modules/redis/example.services.yml';  
+// $settings['redis.connection']['interface'] = 'PhpRedis'; // Can be "Predis".
+// $settings['redis.connection']['host']      = '139.59.235.247';  // Your Redis instance hostname.
+// $settings['redis.connection']['port']      = '6379';  // Redis port
+// $settings['cache']['default'] = 'cache.backend.redis';
+// }
+
+
+// $conf['error_level'] = 1;
+
+$config['system.logging']['error_level'] = 'verbose';

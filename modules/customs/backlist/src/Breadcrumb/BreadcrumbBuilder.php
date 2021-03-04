@@ -28,7 +28,17 @@ class BreadcrumbBuilder implements BreadcrumbBuilderInterface {
         switch($route_match->getRouteName()){
             case 'node.add':
             case 'frontpage':
-            // case 'new_member.step3':
+            case 'entity.node.canonical':
+            case 'entity.node.edit_form':
+            case 'user.login':
+            case 'user.pass':
+            case 'user.register':
+            case 'profile.form':
+            case 'forum.index':
+            case 'report_view.form':
+            case 'filter_by_person.form':
+            case 'entity.user.canonical':
+            
             // case 'new_member.step4':
             // case 'what_is_bigcard.form': 
             // case 'exclusive.form':
@@ -86,7 +96,7 @@ class BreadcrumbBuilder implements BreadcrumbBuilderInterface {
                 switch($node_type->id()){
                     case 'back_list':{
                         $breadcrumb->setLinks([ Link::createFromRoute(t('Home'), '<front>'),
-                                        Link::createFromRoute(t('Add back list'), '<none>'),]);
+                                        Link::createFromRoute(t('Create Ban list'), '<none>'),]);
                     break;
                     }
                 }
@@ -94,9 +104,127 @@ class BreadcrumbBuilder implements BreadcrumbBuilderInterface {
             }
             
             case 'frontpage':{
-                dpm('Breadcrumb : frontpage');
+                // dpm('Breadcrumb : frontpage');
                 break;
             }
+
+            case 'entity.node.canonical':{
+                $node         = $route_match->getParameter('node');
+                $content_type = $node->bundle();
+
+                if(strcmp($content_type, 'back_list') == 0){
+                    // $from = \Drupal::service('current_route_match')->getParameter('from');
+                    // dpm( $from );
+                    // $from = explode("&", urldecode( $from ));
+                    // $breadcrumb->setLinks([ Link::createFromRoute(t('Home'), '<front>'),
+                    //                         Link::fromTextAndUrl(t('Search results'), Url::fromRoute('filter_by_person.form', array('name' => $from[0], 'surname' => $from[1] ))),
+                    //                         Link::createFromRoute(t($node->label()), '<none>'),
+                    //                         ]);
+
+                    $breadcrumb->setLinks([ Link::createFromRoute(t('Home'), '<front>'),
+                                            Link::createFromRoute(t($node->label()), '<none>'),]);
+
+                    // kint( \Drupal::service('current_route_match')->getParameter('from') );
+                }else if(strcmp($content_type, 'article') == 0){
+                    switch($node->id()){
+                        case 2:{
+                            $breadcrumb->setLinks([ Link::createFromRoute(t('Home'), '<front>'),
+                                                    Link::createFromRoute(t('Terms of service'), '<none>'),]);
+                        break;
+                        }
+    
+                        case 3:{
+                            $breadcrumb->setLinks([ Link::createFromRoute(t('Home'), '<front>'),
+                                                    Link::createFromRoute(t('About us'), '<none>'),]);
+                        break;
+                        }
+                    }
+                }
+                
+                break;
+            }
+
+            case 'entity.node.edit_form':{
+                $node   = $route_match->getParameter('node');
+                $content_type = $node->bundle();
+                if(strcmp($content_type, 'back_list') == 0){
+                    $breadcrumb->setLinks([ Link::createFromRoute(t('Home'), '<front>'),
+                                            Link::fromTextAndUrl(t('My Profile'), Url::fromRoute('profile.form', array('uid' => \Drupal::currentUser()->id() ))),
+                                            Link::createFromRoute(t('Edit') .' '. t($node->label()), '<none>'),]);
+
+                    break;
+                }
+            }
+
+            case 'user.login':{
+                $breadcrumb->setLinks([ Link::createFromRoute(t('Home'), '<front>'),
+                                        Link::createFromRoute(t('Login'), '<none>'),]);
+                break;
+            }
+
+            case 'user.pass':{
+                $breadcrumb->setLinks([ Link::createFromRoute(t('Home'), '<front>'),
+                                        Link::createFromRoute(t('Login'), 'user.login'),
+                                        Link::createFromRoute(t('Forgot password'), '<none>'),]);
+                break;
+            }
+                
+            case 'user.register':{
+                $breadcrumb->setLinks([ Link::createFromRoute(t('Home'), '<front>'),
+                                        Link::createFromRoute(t('Login'), 'user.login'),
+                                        Link::createFromRoute(t('Register'), '<none>'),]);
+                break;
+            }
+
+            case 'profile.form':{
+                $breadcrumb->setLinks([ Link::createFromRoute(t('Home'), '<front>'),
+                                        Link::createFromRoute(t('Profile'), '<none>'),]);
+                break;
+            }
+
+            case 'forum.index':{
+                $breadcrumb->setLinks([ Link::createFromRoute(t('Home'), '<front>'),
+                                        Link::createFromRoute(t('Forums'), '<none>'),]);
+                break;
+            }
+
+            case 'report_view.form':{
+                $nid = $route_match->getParameter('nid');
+                $from = $route_match->getParameter('from');
+
+                // dpm($from);
+
+                $node = Node::load($nid);
+                if($from == 'frontpage'){
+                    if(!empty($node)){
+                        $breadcrumb->setLinks([ Link::createFromRoute(t('Home'), '<front>'),
+                                                Link::createFromRoute(t($node->label()), '<none>'),]);
+                    }
+                }else{
+
+                    $from = explode("&", urldecode( $from ));
+                    $breadcrumb->setLinks([ Link::createFromRoute(t('Home'), '<front>'),
+                                            Link::fromTextAndUrl(t('Search results'), Url::fromRoute('filter_by_person.form', array('name' => $from[0], 'surname' => $from[1] ))),
+                                            Link::createFromRoute(t($node->label()), '<none>'),
+                                            ]);
+                }
+               
+
+                break;
+            }
+
+            case 'filter_by_person.form':{
+                $breadcrumb->setLinks([ Link::createFromRoute(t('Home'), '<front>'),
+                                        Link::createFromRoute(t('Search results'), '<none>'),]);
+                break;
+            }
+
+            case 'entity.user.canonical':{
+                $breadcrumb->setLinks([ Link::createFromRoute(t('Home'), '<front>'),
+                                        Link::createFromRoute(t('Profile'), '<none>'),]);
+                break;
+            }
+            
             /*
             case 'new_member.step3':
             case 'new_member.step4': {

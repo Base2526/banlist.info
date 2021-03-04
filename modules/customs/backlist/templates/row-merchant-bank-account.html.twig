@@ -1,0 +1,6 @@
+<ul>
+    {# {{ dump(items) }} #}
+    {% for item in items %}
+        <li>{{item.bank_account}}: {{item.bank_wallet}}</li>
+    {% endfor %}
+</ul>
