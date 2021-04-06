@@ -2,15 +2,15 @@ version: "3"
 services:
   banlist:
     build: '.'
-    container_name: ${PROJECT_NAME}
+    container_name: BANLIST
     ports:
       - 80:80
       - 443:443
     environment:
-      - DB_HOST=${DB_HOST}
-      - DB_NAME=${DB_NAME}
-      - DB_USER_NAME=${DB_USER_NAME}
-      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_HOST=postgres
+      - DB_NAME=banlist
+      - DB_USER_NAME=postgres
+      - DB_PASSWORD=postgres
     volumes:
       - ./modules:/opt/drupal/web/sites/default/modules
       - ./libraries:/opt/drupal/web/sites/default/libraries
@@ -25,18 +25,41 @@ services:
       - ./composer.lock:/opt/drupal/composer.lock
 
       # Local
-      # - ./files:/opt/drupal/web/sites/default/files
+      - ./files:/opt/drupal/web/sites/default/files
 
       # Cloud
-      - ${SHARE_DRIVE}
+      # - ${SHARE_DRIVE}
 
       # SSL
       # - ./000-default.conf:/etc/apache2/sites-available/000-default.conf
       # - ./.well-known/acme-challenge:/opt/drupal/.well-known/acme-challenge
-      - ./etc/letsencrypt/live/banlist.info:/etc/letsencrypt/live/banlist.info
-      - ./letsencrypt.conf:/etc/apache2/conf-available/letsencrypt.conf
-      - ./ssl-params.conf:/etc/apache2/conf-available/ssl-params.conf
+      # - ./etc/letsencrypt/live/banlist.info:/etc/letsencrypt/live/banlist.info
+      # - ./letsencrypt.conf:/etc/apache2/conf-available/letsencrypt.conf
+      # - ./ssl-params.conf:/etc/apache2/conf-available/ssl-params.conf
 
       # google
-      - ./google4a78161938c3c95a.html:/opt/drupal/web/google4a78161938c3c95a.html
+      # - ./google4a78161938c3c95a.html:/opt/drupal/web/google4a78161938c3c95a.html
     restart: always
+
+    postgres:
+      image: postgres:10
+      container_name: pg_d8
+        # volumes: 
+        #   - ./postgresql.conf:/etc/postgresql/postgresql.conf
+      environment:
+        POSTGRES_DB: banlist
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: postgres
+      restart: always
+    pgadmin:
+      image: dpage/pgadmin4:3.6
+      container_name: pgadmin_d8
+      ports:
+        - 7100:80
+      volumes:
+        - ./pgadmin:/var/lib/pgadmin/storage
+      environment:
+        PGADMIN_DEFAULT_EMAIL: postgres
+        PGADMIN_DEFAULT_PASSWORD: postgres
+      hostname: pgadmin4
+      restart: always
