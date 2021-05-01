@@ -22,6 +22,16 @@ search.form:
   requirements:
     _access: 'TRUE'
 
+# WebSearchForm
+websearch.form:
+  path: '/websearch_form'
+  # path: '/printing_view_form/create/{nid}'
+  defaults:
+    _form: '\Drupal\backlist\Form\WebSearchForm'
+  requirements:
+    _access: 'TRUE'
+
+
 filter_by_person.form:
   path: '/filter_by_person/{name}/{surname}'
   defaults:
@@ -75,6 +85,22 @@ report_view.form:
   requirements:
     _permission: 'access content'
 
+web_search.form:
+  path: '/web_search_pages'
+  defaults:
+    # _form: '\Drupal\backlist\Form\WebSearchPage'
+    _controller: '\Drupal\backlist\Plugin\Page\WebSearchPage::page'
+  requirements:
+    _access: 'TRUE'
+
+# frontpage:
+#   path: '/frontpage'
+#   defaults:
+#     _controller: '\Drupal\backlist\Plugin\Page\FrontPage::page'
+#     # _form: '\Drupal\backlist\Form\SearchForm'
+#   requirements:
+#     _access: 'TRUE'
+
 # ImportAndExportForm
 import_and_export.form:
   path: '/import_and_export'
@@ -101,6 +127,16 @@ api.check_banlist:
   methods: [POST]
   defaults: 
     _controller: '\Drupal\backlist\Controller\API::CheckBanlist'
+  requirements: 
+    _role: 'authenticated+administrator'
+  options:
+    _auth: ['basic_auth']
+
+api.syc_nodejs:
+  path: '/api/syc_nodejs'
+  methods: [POST]
+  defaults: 
+    _controller: '\Drupal\backlist\Controller\API::SycNodeJs'
   requirements: 
     _role: 'authenticated+administrator'
   options:
@@ -136,6 +172,15 @@ api.login:
   requirements:
     _permission: 'access content'
 
+# LoginWithSocial
+# api.login_with_social:
+#   path: '/api/login_with_social'
+#   methods: [POST]
+#   defaults: 
+#     _controller: '\Drupal\backlist\Controller\API::LoginWithSocial'
+#   requirements:
+#     _permission: 'access content'
+
 api.register:
   path: '/api/register'
   methods: [POST]
@@ -151,6 +196,17 @@ api.reset_password:
     _controller: '\Drupal\backlist\Controller\API::ResetPassword'
   requirements:
     _permission: 'access content'
+
+# fetch_profile
+api.fetch_profile:
+  path: '/api/fetch_profile'
+  methods: [POST]
+  defaults: 
+    _controller: '\Drupal\backlist\Controller\API::FetchProfile'
+  requirements: 
+    _role: 'authenticated+administrator'
+  options:
+    _auth: ['basic_auth']
 
 api.update_profile:
   path: '/api/update_profile'
@@ -173,3 +229,68 @@ api.update_profile:
 #   #   _auth: ['basic_auth']
 #   requirements:
 #     _access: 'TRUE'
+
+# modal_form_controller.form:
+#   path: '/admin/config/consent_modal_form_controller/{type}'
+#   defaults:
+#     _title: 'Modal Form'
+#     type: NULL
+#     _controller: '\Drupal\backlist\Controller\ModalFormController::openModalForm'
+#   # requirements:
+#   #   _permission: 'administer site configuration'
+#   #   # _permission: 'access content'
+#   # options:
+#   #   _admin_route: TRUE
+#   requirements:
+#     _role: 'anonymous+bigcard_administrator+administrator+authenticated'
+
+# search
+api.report:
+  path: '/api/report'
+  methods: [POST]
+  defaults: 
+    _controller: '\Drupal\backlist\Controller\API::Report'
+  requirements: 
+    _role: 'authenticated+administrator'
+  options:
+    _auth: ['basic_auth']
+
+api.fetch_mypost:
+  path: '/api/fetch_mypost'
+  methods: [POST]
+  defaults: 
+    _controller: '\Drupal\backlist\Controller\API::FetchMyPost'
+  requirements: 
+    _role: 'authenticated+administrator'
+  options:
+    _auth: ['basic_auth']
+
+api.fetch_post_by_id:
+  path: '/api/fetch_post_by_id'
+  methods: [POST]
+  defaults: 
+    _controller: '\Drupal\backlist\Controller\API::FetchPostById'
+  requirements: 
+    _role: 'authenticated+administrator'
+  options:
+    _auth: ['basic_auth']
+
+api.fetch_profile_by_id:
+  path: '/api/fetch_profile_by_id'
+  methods: [POST]
+  defaults: 
+    _controller: '\Drupal\backlist\Controller\API::FetchProfileById'
+  requirements: 
+    _role: 'authenticated+administrator'
+  options:
+    _auth: ['basic_auth']
+
+api.delete_my_app:
+  path: '/api/delete_my_app'
+  methods: [POST]
+  defaults: 
+    _controller: '\Drupal\backlist\Controller\API::DeleteMyApp'
+  requirements: 
+    _role: 'authenticated+administrator'
+  options:
+    _auth: ['basic_auth']

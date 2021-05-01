@@ -28,6 +28,9 @@ use voku\helper\SimpleHtmlDomInterface;
 use voku\helper\SimpleHtmlDomNode;
 use voku\helper\SimpleHtmlDomNodeInterface;
 
+use Drupal\image\Entity\ImageStyle;
+use Drupal\search_api\Entity\Index;
+
 class Utils extends ControllerBase {
 
   public static function consent_template_api($lang){
@@ -2401,6 +2404,24 @@ class Utils extends ControllerBase {
     return false;
 	}
 
+  // https://gist.github.com/slivorezka/925dff0369e8eddc7e4ffa4801ab0240
+  public static function ImageStyle_BN($fid, $image_style = 'thumbnail'){
+    try {
+      // Load file.
+      $file = \Drupal::entityTypeManager()->getStorage('file')->load($fid);// File::load($fid);
+      // Get origin image URI.
+      $image_uri = $file->getFileUri();
+      return preg_replace("/^https:/i", "http:",  ImageStyle::load($image_style)->buildUrl($image_uri) );
+
+      // $path = ImageStyle::load($image_style)->buildUrl($image_uri);
+      // $type = pathinfo($path, PATHINFO_EXTENSION);
+      // $data = file_get_contents($path);
+      // return 'data:image/' . $type . ';base64,' . base64_encode($data);
+    } catch (\Throwable $e) {
+      \Drupal::logger('ImageStyle_BN')->notice('%e, %fid', array('%e'=>$e->__toString(), '%fid'=> serialize($fid)  ) );
+    }
+  }
+
   public static function get_file_url($target_id){   
     $file = \Drupal::entityTypeManager()->getStorage('file')->load($target_id);
     $url = file_create_url($file->getFileUri());
@@ -3947,9 +3968,6 @@ class Utils extends ControllerBase {
 
      ///////////////
   
-
-
-    
   }
 
   private static function Syc_Blacklistseller_Save($content){
@@ -4019,5 +4037,538 @@ class Utils extends ControllerBase {
       'field_id_blacklistseller'   => $id_blacklistseller
     ]);
     $node->save();
+  }
+
+  public static function node_login($unique_id){
+
+    $global       = ConfigPages::config('banlist');
+    $node_server  = '';
+    if(isset( $global )){
+      $node_server =  $global->get('field_node_server')->value;
+    }
+
+    $data_obj = [
+      "uid" => \Drupal::currentUser()->id(),
+      "unique_id" => $unique_id
+    ];
+    $ch = curl_init();
+    curl_setopt_array($ch, array(
+      CURLOPT_URL => $node_server . "/api/login",
+      CURLOPT_RETURNTRANSFER => true,
+      CURLOPT_HEADER => true,
+      //CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+      CURLOPT_CUSTOMREQUEST => "POST",
+      CURLOPT_POSTFIELDS => json_encode($data_obj),
+      CURLOPT_HTTPHEADER => array(
+        // "Authorization: Basic " . $basic_auth,
+        "Accept: application/json",
+        "Content-Type: application/json",
+      ),
+    ));
+
+    $response = curl_exec($ch);
+    // dpm($response);
+    // \Drupal::logger('Login : response')->notice( serialize($response) );
+    $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    // dpm($httpcode);
+    // \Drupal::logger('Login : httpcode')->notice( serialize($httpcode) );
+
+    // \Drupal::logger('Login : response')->notice( serialize($response) );
+    $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    // dpm($httpcode);
+    // \Drupal::logger('Login : httpcode')->notice( serialize($httpcode) );
+
+    if($httpcode == 200){
+      // $response = json_decode($response);
+      $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+      $header = substr($response, 0, $header_size);
+      $body = substr($response, $header_size);
+      $body = json_decode($body);
+
+      if($body->result){
+        return $body->followUps;
+      }
+    }
+
+    curl_close($ch);
+
+    return array();
+  }
+
+  // fetch____follow_up
+  public static function node_fetch____follow_up(){
+
+    $global       = ConfigPages::config('banlist');
+    $node_server  = '';
+    if(isset( $global )){
+      $node_server =  $global->get('field_node_server')->value;
+    }
+
+    $data_obj = [
+      "uid" => \Drupal::currentUser()->id()
+    ];
+    $ch = curl_init();
+    curl_setopt_array($ch, array(
+      CURLOPT_URL => $node_server . "/api/fetch____follow_up",
+      CURLOPT_RETURNTRANSFER => true,
+      CURLOPT_HEADER => true,
+      //CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+      CURLOPT_CUSTOMREQUEST => "POST",
+      CURLOPT_POSTFIELDS => json_encode($data_obj),
+      CURLOPT_HTTPHEADER => array(
+        // "Authorization: Basic " . $basic_auth,
+        "Accept: application/json",
+        "Content-Type: application/json",
+      ),
+    ));
+
+    $response = curl_exec($ch);
+    // dpm($response);
+    // \Drupal::logger('Login : response')->notice( serialize($response) );
+    $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    // dpm($httpcode);
+    // \Drupal::logger('Login : httpcode')->notice( serialize($httpcode) );
+
+    // \Drupal::logger('Login : response')->notice( serialize($response) );
+    $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    // dpm($httpcode);
+    // \Drupal::logger('Login : httpcode')->notice( serialize($httpcode) );
+
+    if($httpcode == 200){
+      // $response = json_decode($response);
+      $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+      $header = substr($response, 0, $header_size);
+      $body = substr($response, $header_size);
+      $body = json_decode($body);
+
+      if($body->result){
+        return $body->followUps;
+      }
+    }
+
+    curl_close($ch);
+
+    return array();
+  }
+
+  public static function node_follower_post($posts){
+
+    $global       = ConfigPages::config('banlist');
+    $node_server  = '';
+    if(isset( $global )){
+      $node_server =  $global->get('field_node_server')->value;
+    }
+
+    $data_obj = [
+      "posts" => $posts
+    ];
+    $ch = curl_init();
+    curl_setopt_array($ch, array(
+      CURLOPT_URL => $node_server . "/api/follower_post",
+      CURLOPT_RETURNTRANSFER => true,
+      CURLOPT_HEADER => true,
+      //CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+      CURLOPT_CUSTOMREQUEST => "POST",
+      CURLOPT_POSTFIELDS => json_encode($data_obj),
+      CURLOPT_HTTPHEADER => array(
+        // "Authorization: Basic " . $basic_auth,
+        "Accept: application/json",
+        "Content-Type: application/json",
+      ),
+    ));
+
+    $response = curl_exec($ch);
+    // dpm($response);
+    // \Drupal::logger('Login : response')->notice( serialize($response) );
+    $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    // dpm($httpcode);
+    // \Drupal::logger('Login : httpcode')->notice( serialize($httpcode) );
+
+    // \Drupal::logger('Login : response')->notice( serialize($response) );
+    $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    // dpm($httpcode);
+    // \Drupal::logger('Login : httpcode')->notice( serialize($httpcode) );
+
+    if($httpcode == 200){
+      // $response = json_decode($response);
+      $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+      $header = substr($response, 0, $header_size);
+      $body = substr($response, $header_size);
+      $body = json_decode($body);
+
+      if($body->result){
+        return $body->follower_post;
+      }
+    }
+
+    curl_close($ch);
+
+    return array();
+  }
+
+  public static function node_my_apps($uid){
+
+    $global       = ConfigPages::config('banlist');
+    $node_server  = '';
+    if(isset( $global )){
+      $node_server =  $global->get('field_node_server')->value;
+    }
+
+    $data_obj = [
+      "uid" => $uid
+    ];
+    $ch = curl_init();
+    curl_setopt_array($ch, array(
+      CURLOPT_URL => $node_server . "/api/my_apps",
+      CURLOPT_RETURNTRANSFER => true,
+      CURLOPT_HEADER => true,
+      //CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+      CURLOPT_CUSTOMREQUEST => "POST",
+      CURLOPT_POSTFIELDS => json_encode($data_obj),
+      CURLOPT_HTTPHEADER => array(
+        // "Authorization: Basic " . $basic_auth,
+        "Accept: application/json",
+        "Content-Type: application/json",
+      ),
+    ));
+
+    $response = curl_exec($ch);
+    $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    if($httpcode == 200){
+      return true;
+    }
+
+    return false;
+  }
+
+  // /api/fetch_notification
+  public static function node_fetch_notification(){
+
+    $global       = ConfigPages::config('banlist');
+    $node_server  = '';
+    if(isset( $global )){
+      $node_server =  $global->get('field_node_server')->value;
+    }
+
+    $data_obj = [
+      "uid" => \Drupal::currentUser()->id()
+    ];
+    $ch = curl_init();
+    curl_setopt_array($ch, array(
+      CURLOPT_URL => $node_server . "/api/fetch_notification",
+      CURLOPT_RETURNTRANSFER => true,
+      CURLOPT_HEADER => true,
+      //CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+      CURLOPT_CUSTOMREQUEST => "POST",
+      CURLOPT_POSTFIELDS => json_encode($data_obj),
+      CURLOPT_HTTPHEADER => array(
+        // "Authorization: Basic " . $basic_auth,
+        "Accept: application/json",
+        "Content-Type: application/json",
+      ),
+    ));
+
+    $response = curl_exec($ch);
+    // dpm($response);
+    // \Drupal::logger('Login : response')->notice( serialize($response) );
+    $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    // dpm($httpcode);
+    // \Drupal::logger('Login : httpcode')->notice( serialize($httpcode) );
+
+    // \Drupal::logger('Login : response')->notice( serialize($response) );
+    $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    // dpm($httpcode);
+    // \Drupal::logger('Login : httpcode')->notice( serialize($httpcode) );
+
+    // \Drupal::logger('node_fetch_notification : httpcode')->notice( serialize($httpcode) );
+
+    if($httpcode == 200){
+      // $response = json_decode($response);
+      $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+      $header = substr($response, 0, $header_size);
+      $body = substr($response, $header_size);
+      $body = json_decode($body);
+
+      // \Drupal::logger('node_fetch_notification : body')->notice( serialize($body->notification) );
+
+      if($body->result){
+        return $body->notification;
+      }
+    }
+
+    curl_close($ch);
+
+    return array();
+  }
+
+  public static function search_api($key_word, $offset, $type, $fulltextFields = [ 'title', 'field_sales_person_name', 'field_sales_person_surname', 'body', 'field_selling_website']){
+    $response_array = array();
+    $time1          = microtime(true);
+
+    if(!empty($key_word)){
+
+      // \Drupal::logger('SearchApi')->notice( 'offset = %offset, type = %type, key_word = %key_word', 
+      //                                       array('%offset'=>$offset, '%type'=>$type, '%key_word'=>$key_word));
+
+      $index = Index::load('content_back_list');
+      $query = $index->query();
+
+      // Change the parse mode for the search.
+      $parse_mode = \Drupal::service('plugin.manager.search_api.parse_mode')->createInstance('direct');
+      $parse_mode->setConjunction('OR');
+      $query->setParseMode($parse_mode);
+
+      $query->addCondition('type', 'back_list');
+
+      /*
+      $query->addCondition('field_sales_person_name', 'ทัศนีย์');
+      $query->addCondition('field_sales_person_surname', 'แย้มกลาง');
+      */
+
+      /*
+      type : 
+         default : all
+         1 : title
+         2 : name
+         3 : surname
+         4 : detail
+         5 : name & surname
+
+
+         8 : by nids ex. nids = array(1,2,3,4)
+      */
+
+      switch($type){
+        case 0:{
+          $query->sort('nid', 'DESC');
+
+          break;
+        }
+
+        case 1:{
+          $query->addCondition('title', $key_word);
+          break;
+        }
+
+        case 2:{
+          $query->addCondition('field_sales_person_name', $key_word);
+          break;
+        }
+
+        case 3:{
+          $query->addCondition('field_sales_person_surname', $key_word);
+          break;
+        }
+
+        case 4:{
+          $query->addCondition('body', $key_word);
+          break;
+        }
+
+        case 5:{
+          $ky = explode("&", $key_word);
+          if(count($ky) > 1){
+            $query->addCondition('field_sales_person_name', $ky[0]);
+            $query->addCondition('field_sales_person_surname', $ky[1]);
+          }else{
+            $query->addCondition('field_sales_person_name', $ky[0]);
+          }
+
+          break;
+        }
+
+        case 8:{
+          $key_word = json_decode($key_word);
+          // \Drupal::logger('SearchApi, case 8')->notice($key_word);
+          $query->addCondition('nid', $key_word, "IN");
+          break;
+        }
+
+        default:{
+          // Set fulltext search keywords and fields.
+          // $field_sales_person_name = 'field_sales_person_name';
+          // $field_sales_person_surname = 'field_sales_person_surname';
+          // if (in_array($field_sales_person_name, $fulltextFields) && in_array($field_sales_person_surname, $fulltextFields)){            
+          //   $fulltextFields = array_diff( $fulltextFields, [$field_sales_person_name, $field_sales_person_surname] );
+          
+          //   if (!in_array("banlist_book_bank_field", $fulltextFields)){
+          //     $fulltextFields[] = 'banlist_book_bank_field';
+          //   }
+          // }
+
+          $query->keys($key_word);
+          $query->setFulltextFields($fulltextFields);
+
+          break;
+        }
+
+      }
+
+      // Set additional conditions.
+      $query->addCondition('status', 1);
+
+      // Restrict the search to specific languages.
+      // $query->setLanguages(['th', 'en']);
+
+      $pagging = 30; 
+
+      $start = 0;
+      $end   = $pagging;
+      if(empty($offset)){
+      
+      }else{
+        if($offset > 0){
+          $start = ($pagging * $offset) + 1;
+          // $end   = $pagging * ($offset + 1);
+        }
+      }
+
+      $query->range($start, $end);
+
+      // Execute the search.
+      $results = $query->execute();
+
+      $count = count($results->getResultItems());
+      // echo "Result count: { $count }\n";
+
+      // $ids = implode(', ', array_keys($results->getResultItems()));
+      // echo "Returned IDs: $ids.\n";
+
+      // get all result
+      $all_result_count = $query->execute()->getResultCount();
+
+      $datas = array();
+      foreach ($results as $result) {
+        $item = array();
+
+        $owner_id = 0;
+        $result_uid    = $result->getField('uid')->getValues();
+        if(!empty($result_uid)){
+          $owner_id = $result_uid[0];
+        }
+        
+        $nid = 0;
+        $result_nid    = $result->getField('nid')->getValues();
+        if(!empty($result_nid)){
+          $nid = $result_nid[0];
+        }
+
+        $title  = '';
+        $result_title  = $result->getField('title')->getValues();
+        if(!empty($result_title)){
+          $title = $result_title[0];// ->getText();
+        }
+
+        $body   = '';
+        $result_body   = $result->getField('body')->getValues();
+        if(!empty($result_body)){
+          $body = $result_body[0];//->getText();
+        }
+
+        // เลขบัตรประชาชนคนขาย field_id_card_number
+        $id_card_number = 0;
+        $result_id_card_number = $result->getField('field_id_card_number')->getValues();  
+        if(!empty($result_id_card_number)){
+          $id_card_number = $result_id_card_number[0];
+        }
+
+        $transfer_amount = 0;
+        $result_transfer_amount = $result->getField('field_transfer_amount')->getValues();  
+        if(!empty($result_transfer_amount)){
+          $transfer_amount = $result_transfer_amount[0];
+        }
+
+        $name = '';
+        $result_name = $result->getField('field_sales_person_name')->getValues();
+        if(!empty($result_name)){
+          $name = $result_name[0];// ->getText();
+        }
+
+        $surname = '';
+        $result_surname = $result->getField('field_sales_person_surname')->getValues();
+        if(!empty($result_surname)){
+          $surname = $result_surname[0];// ->getText();
+        }
+
+        $name_surname = '';
+        $banlist_name_surname_field = $result->getField('banlist_name_surname_field')->getValues();
+        if(!empty($banlist_name_surname_field)){
+          $name_surname = $banlist_name_surname_field[0];// ->getText();
+        }
+
+        // รูปภาพประกอบ
+        $images = array();
+        try {
+          foreach ($result->getField('field_images')->getValues() as $imi=>$imv){
+            // $images[] = Utils::get_file_url($imv) ;
+            $images['medium'][]    = array('fid'=>$imv, 'url'=> Utils::ImageStyle_BN($imv, 'bn_medium')) ;
+            $images['thumbnail'][] = array('fid'=>$imv, 'url'=> Utils::ImageStyle_BN($imv, 'bn_thumbnail')) ;
+
+            // \Drupal::logger('SearchApi')->notice($imv);
+          }
+        } catch (\Throwable $e) {
+          \Drupal::logger('SearchApi images : ')->notice($e->__toString());
+        }
+
+        // field_transfer_date
+        $transfer_date = '';
+        $field_transfer_date = $result->getField('field_transfer_date')->getValues();
+        
+        if(!empty($field_transfer_date)){
+          $transfer_date = $field_transfer_date[0];
+          // \Drupal::logger('SearchApi transfer_date')->notice( $transfer_date );
+          // foreach ($transfer_date as $key => $value){
+          //   \Drupal::logger('SearchApi transfer_date')->notice( 'key : ' . $key . ' value : ' . $value );
+          // }
+          
+        }
+
+        // field_merchant_bank_account
+        // $banlist_book_bank_field = $result->getField('banlist_book_bank_field')->getValues();
+        // dpm($banlist_book_bank_field);
+
+        // Book bank
+        $book_banks = array();
+        try {
+          foreach ($result->getField('banlist_book_bank_field')->getValues() as $book_bank){
+            $book_banks[] = $book_bank;
+          }
+        } catch (\Throwable $e) {
+          \Drupal::logger('SearchApi banlist_book_bank_field : ')->notice($e->__toString());
+        }
+
+        $item = array('owner_id'=> $owner_id,
+                      'id'      => $nid, 
+                      'name'    => $name, 
+                      'surname' => $surname, 
+                      'name_surname' => $name_surname,
+                      'title'   => $title,
+                      'detail'  => $body,
+                      'transfer_amount' => $transfer_amount,
+                      'images'  => $images,
+                      'transfer_date' => empty($transfer_date) ? '' : date('Y-m-d', strtotime($transfer_date)),
+                      'book_banks' => $book_banks,
+                      'id_card_number' =>$id_card_number );
+
+        
+        $datas[] = $item;
+        
+      }
+      // dpm($output);
+
+      $response_array['result']           = TRUE;
+      $response_array['execution_time']   = microtime(true) - $time1;
+      $response_array['count']            = $count;//count($response_array);
+      $response_array['datas']            = $datas;
+      $response_array['all_result_count'] = $all_result_count;
+    }else{
+      $response_array['result']   = FALSE;
+      $response_array['message']  = 'Empty key_word.';
+      // $response_array['content']  = $content;
+    }
+
+    return $response_array;
   }
 }
