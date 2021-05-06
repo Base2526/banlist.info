@@ -503,3 +503,9 @@ $image = file_get_contents($url);
 if ($image !== false){
    dpm('data:image/jpg;base64,'.base64_encode($image));
 }
+
+
+React js
+- ListView & Pagination
+https://www.digitalocean.com/community/tutorials/how-to-build-custom-pagination-with-react
+https://codesandbox.io/s/l29rokm9rm?file=/src/App.js:65-78
