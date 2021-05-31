@@ -1,6 +1,23 @@
-FROM drupal:9.0
+# FROM drupal:9.0
+FROM drupal:8.9.16-fpm
 
 # WORKDIR /var/www/html
+
+RUN apt-get update && \
+    apt-get upgrade -y && \
+    apt-get install -y git && \
+    apt-get install nano && \
+    apt-get -y install cron && \
+    apt-get install wget
+
+RUN apt-get update -y && \
+    pecl install mongodb && \
+    echo "extension=mongodb.so" >> /usr/local/etc/php/conf.d/mongodb.ini
+
+# Install Composer
+RUN curl -sS https://getcomposer.org/installer | php && \
+    mv composer.phar /usr/local/bin/composer && \
+    ln -s /root/.composer/vendor/bin/drush /usr/local/bin/drushss
 
 # install phpredis extension
 ENV PHPREDIS_VERSION 5.3.2
@@ -20,7 +37,7 @@ RUN apt-get update && \
 
 USER root
 
-RUN a2enmod ssl
+# RUN a2enmod ssl
 
 RUN mkdir web/sites/default/modules && \
     chmod 777 web/sites/default/modules
