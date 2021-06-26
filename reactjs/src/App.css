@@ -1,6 +1,8 @@
 .current-page {
     font-size: 1.5rem;
     vertical-align: middle;
+
+    font-family: CaveatRegular;
   }
   
   .country-card-container {
@@ -152,9 +154,10 @@
 
   .flex-item{
     padding-right: 10px;
+    font-family: CaveatSemiBold;
   }
   
-  .row            { 
+  .row { 
     -webkit-flex-direction: row; 
     flex-direction: row;
   }
