@@ -63,7 +63,7 @@ const UseHomeItem = (props) => {
         case 0:{
           return(<div />)
         }
-        case 1:{
+        default:{
           return(
               <div key={item.id}> 
                   <div class="hi-container">
@@ -112,6 +112,8 @@ const UseHomeItem = (props) => {
               </div>
           )
         }
+
+        /*
 
         case 2:{
             return(<div key={item.id}> 
@@ -305,6 +307,7 @@ const UseHomeItem = (props) => {
                     } 
                     </div>)
         }
+        */
     }
   }
 
