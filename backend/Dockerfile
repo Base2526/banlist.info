@@ -51,7 +51,7 @@ COPY modules web/sites/default/modules
 
 # COPY composer.json composer.json
 # COPY composer.lock composer.lock
-# RUN composer install
+RUN composer install
 
 # prod
 # COPY 000-default.conf /etc/apache2/sites-available/000-default.conf

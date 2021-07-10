@@ -7,8 +7,6 @@ import LoadingOverlay from 'react-loading-overlay';
 import io from 'socket.io-client';
 import { CacheSwitch, CacheRoute } from "react-router-cache-route";
 import axios from 'axios';
-import { Base64 } from 'js-base64';
-
 import Breadcrumbs from './pages/Breadcrumbs'
 import HeaderBar from './pages/HeaderBar';
 import Footer from './pages/Footer';
@@ -23,6 +21,8 @@ const App = (props) => {
   useEffect(() => {
     socketid()
     console.log('socketid()')
+
+    // socketid()
   }, []);
 
   useEffect(() => {
